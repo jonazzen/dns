@@ -13,88 +13,137 @@
   />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      --bg-primary: #f3f4f6;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+      --hover-bg: #e0f2fe;
+      --table-header-bg: #f9fafb;
+      --table-row-even: #f8fafc;
+      --table-row-hover: #f0f9ff;
+      --tooltip-bg: #1f2937;
+      --tooltip-text: #ffffff;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1f2937;
+      --bg-secondary: #374151;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border-color: #4b5563;
+      --hover-bg: #4b5563;
+      --table-header-bg: #374151;
+      --table-row-even: #2d3748;
+      --table-row-hover: #4b5563;
+      --tooltip-bg: #f3f4f6;
+      --tooltip-text: #1f2937;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
     .record-section {
       margin-bottom: 1rem;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
-      background: #ffffff;
+      background: var(--bg-secondary);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
+
     .record-section summary {
       padding: 12px 16px;
-      background: #f3f4f6;
+      background: var(--table-header-bg);
       font-weight: 600;
-      color: #1f2937;
+      color: var(--text-primary);
       cursor: pointer;
       display: flex;
       align-items: center;
-      transition: background 0.2s ease;
+      transition: background-color 0.2s ease, color 0.2s ease;
       user-select: none;
     }
+
     .record-section summary:hover {
-      background: #e5e7eb;
+      background: var(--hover-bg);
     }
+
     .record-section summary::-webkit-details-marker {
       display: none;
     }
+
     .record-section summary::after {
       content: '▼';
       font-size: 12px;
       margin-left: auto;
       transition: transform 0.2s ease;
     }
+
     .record-section[open] summary::after {
       transform: rotate(180deg);
     }
+
     .record-section:has(.info-icon:hover),
     .record-section:has(.info-icon:focus) {
       overflow: visible;
     }
+
     .table-container {
       overflow-x: auto;
       padding: 16px;
     }
+
     .dns-table {
       width: 100%;
       border-collapse: collapse;
     }
+
     .dns-table th,
     .dns-table td {
       padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
     }
+
     .dns-table th {
       font-weight: 500;
-      color: #374151;
-      background: #f9fafb;
+      background: var(--table-header-bg);
       cursor: pointer;
       user-select: none;
     }
+
     .dns-table th:hover {
-      background: #f0f9ff;
+      background: var(--table-row-hover);
     }
+
     .dns-table tr:nth-child(even) {
-      background: #f8fafc;
+      background: var(--table-row-even);
     }
+
     .dns-table tr:hover {
-      background: #f0f9ff;
+      background: var(--table-row-hover);
     }
+
     .sort-icon {
       display: inline-block;
       width: 12px;
       height: 12px;
       margin-left: 4px;
       vertical-align: middle;
-      fill: #6b7280;
-      transition: transform 0.2s ease;
+      fill: var(--text-secondary);
+      transition: transform 0.2s ease, fill 0.2s ease;
     }
+
     .sort-icon.asc {
       transform: rotate(180deg);
     }
+
     .copyable {
       cursor: pointer;
       position: relative;
@@ -102,13 +151,15 @@
       align-items: center;
       padding: 2px 4px;
       border-radius: 4px;
-      transition: background 0.2s ease;
+      transition: background-color 0.2s ease;
     }
+
     .copyable:hover {
-      background: #e0f2fe;
+      background: var(--hover-bg);
       text-decoration: underline;
       text-decoration-color: #3b82f6;
     }
+
     .copy-icon {
       opacity: 0;
       margin-left: 4px;
@@ -117,22 +168,25 @@
       fill: #3b82f6;
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
+
     .copyable:hover .copy-icon,
     .copyable:focus .copy-icon {
       opacity: 1;
     }
+
     .copyable.copied .copy-icon {
       opacity: 1;
       fill: #10b981;
       transform: scale(1.1);
     }
+
     .copy-tooltip {
       position: absolute;
       top: -2rem;
       left: 50%;
       transform: translateX(-50%);
-      background: #1f2937;
-      color: white;
+      background: var(--tooltip-bg);
+      color: var(--tooltip-text);
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 12px;
@@ -142,38 +196,43 @@
       opacity: 0;
       transition: opacity 0.2s ease;
     }
+
     .copyable:hover .copy-tooltip--hover,
     .copyable:focus .copy-tooltip--hover {
       opacity: 1;
     }
+
     .copyable.copied .copy-tooltip--copied {
       opacity: 1;
       top: -2rem;
     }
+
     .info-icon {
       position: relative;
       display: inline-block;
       width: 14px;
       height: 14px;
       margin-left: 4px;
-      fill: #6b7280;
+      fill: var(--text-secondary);
       cursor: pointer;
       vertical-align: middle;
       transition: transform 0.2s ease, fill 0.2s ease;
       z-index: 999;
     }
+
     .info-icon:hover,
     .info-icon:focus {
       transform: scale(1.1);
       fill: #3b82f6;
     }
+
     .info-tooltip {
       position: absolute;
       top: -2.5rem;
       left: 50%;
       transform: translateX(-50%);
-      background: #1f2937;
-      color: white;
+      background: var(--tooltip-bg);
+      color: var(--tooltip-text);
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 12px;
@@ -183,147 +242,193 @@
       opacity: 0;
       transition: opacity 0.2s ease;
     }
+
     .info-icon:hover .info-tooltip,
     .info-icon:focus .info-tooltip {
       opacity: 1;
     }
+
     .loading-spinner {
       display: inline-block;
       width: 16px;
       height: 16px;
-      border: 2px solid #ffffff;
+      border: 2px solid var(--tooltip-text);
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.5s linear infinite;
       margin-left: 8px;
     }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
       }
     }
+
     .filter-select {
       appearance: none;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
+      background: var(--table-header-bg);
+      border: 1px solid var(--border-color);
       border-radius: 6px;
       padding: 8px;
       font-size: 14px;
-      color: #1f2937;
+      color: var(--text-primary);
       cursor: pointer;
-      transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 0.75rem center;
       background-size: 1em;
       padding-right: 2.5rem;
     }
+
     .filter-select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 3px rgba(59, 130, 246, 0.1);
     }
+
     .input-focus {
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: var(--bg-secondary);
     }
+
     .input-focus:focus {
       border-color: #3b82f6;
       box-shadow: 0 0 3px rgba(59, 130, 246, 0.1);
     }
+
     .search-icon {
       width: 18px;
       height: 18px;
-      fill: white;
+      fill: var(--tooltip-text);
     }
+
     .beta-link {
       color: #3b82f6;
       transition: color 0.2s ease;
     }
+
     .beta-link:hover {
       color: #1d4ed8;
       text-decoration: underline;
     }
+
     .record-count {
       margin-left: 8px;
       font-size: 12px;
-      color: #6b7280;
+      color: var(--text-secondary);
     }
+
     .initial-message {
       text-align: center;
       padding: 40px 20px;
-      color: #4b5563;
+      color: var(--text-secondary);
       font-size: 16px;
       line-height: 1.5;
-      background: #f9fafb;
+      background: var(--table-header-bg);
       border-radius: 8px;
-      border: 1px dashed #d1d5db;
+      border: 1px dashed var(--border-color);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
+
     .initial-message svg {
       width: 50px;
       height: 50px;
-      fill: #9ca3af;
+      fill: var(--text-secondary);
       margin-bottom: 15px;
     }
+
     .initial-message p:first-child {
       font-weight: 600;
       margin-bottom: 10px;
     }
+
     #domainInputContainer {
       position: relative;
       flex-grow: 1;
     }
+
     #domainAutocompleteList {
       position: absolute;
-      border: 1px solid #d1d5db;
+      border: 1px solid var(--border-color);
       border-top: none;
       z-index: 10;
       left: 0;
       right: 0;
-      background-color: #ffffff;
+      background-color: var(--bg-secondary);
       max-height: 200px;
       overflow-y: auto;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       border-radius: 0 0 8px 8px;
+      transition: background-color 0.3s ease;
     }
+
     #domainAutocompleteList div {
       padding: 10px;
       cursor: pointer;
-      background-color: #ffffff;
-      border-bottom: 1px solid #eee;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
     }
+
     #domainAutocompleteList div:last-child {
       border-bottom: none;
     }
+
     #domainAutocompleteList div:hover,
     #domainAutocompleteList div.autocomplete-active {
-      background-color: #e0f2fe;
+      background-color: var(--hover-bg);
     }
+
     .record-row-added {
       background-color: #d1fae5;
     }
+
     .record-row-deleted {
       background-color: #fee2e2;
       text-decoration: line-through;
       opacity: 0.7;
     }
+
     .record-row-modified {
       background-color: #fffbeb;
     }
+
     .record-row-added:hover,
     .record-row-deleted:hover,
     .record-row-modified:hover {
       filter: brightness(98%);
     }
+
+    .theme-toggle-btn {
+      background: var(--table-header-bg);
+      color: var(--text-primary);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--hover-bg);
+    }
+
+    .theme-toggle-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--text-primary);
+    }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
   <div class="container mx-auto p-4 flex-grow flex flex-col max-w-5xl">
-    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm flex items-center">
-      <h1 class="text-2xl font-semibold mb-2 text-gray-900 mr-4">
+    <div class="bg-[var(--bg-secondary)] p-6 rounded-lg border border-[var(--border-color)] shadow-sm flex items-center justify-between">
+      <h1 class="text-2xl font-semibold mb-2 text-[var(--text-primary)] mr-4">
         OpenDNS
       </h1>
       <div class="flex-grow flex items-center gap-3">
@@ -332,7 +437,7 @@
             id="domainInput"
             type="text"
             placeholder="Enter domain (e.g., example.com)"
-            class="w-full p-3 border border-gray-300 rounded-lg text-sm bg-white input-focus"
+            class="w-full p-3 border border-[var(--border-color)] rounded-lg text-sm input-focus"
             aria-label="Domain name for DNS lookup"
             autocomplete="off"
           />
@@ -347,7 +452,6 @@
             <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"></path></svg>
           </span>
         </button>
-        <!-- New Clear History Button -->
         <button
           id="clearHistoryBtn"
           aria-label="Clear all stored history and records"
@@ -365,15 +469,25 @@
             />
           </svg>
         </button>
+        <button
+          id="themeToggleBtn"
+          aria-label="Toggle dark/light mode"
+          class="theme-toggle-btn sm:w-14 w-full flex justify-center items-center relative"
+          title="Toggle dark/light mode"
+        >
+          <svg id="themeIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+          </svg>
+        </button>
       </div>
     </div>
     <div id="result" class="mt-6">
       <div id="initialMessage" class="initial-message">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
-            </svg>
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
+        </svg>
         <p>Start your DNS lookup</p>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-[var(--text-secondary)]">
           Enter a domain name above to retrieve its DNS records.
         </p>
       </div>
@@ -381,7 +495,7 @@
         id="resultsHeader"
         class="flex flex-col sm:flex-row justify-between items-center mb-4 hidden"
       >
-        <h2 class="text-lg font-semibold text-gray-800 mb-2 sm:mb-0">
+        <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2 sm:mb-0">
           DNS Records
         </h2>
         <div class="flex flex-wrap gap-2 items-center">
@@ -398,7 +512,6 @@
             <option value="NS">NS</option>
             <option value="TXT">TXT</option>
           </select>
-          <!-- New Export Button -->
           <button
             id="exportBtn"
             aria-label="Export DNS records to a text file"
@@ -409,7 +522,7 @@
           </button>
         </div>
       </div>
-      <!-- historySelectContainer will be dynamically inserted here by JavaScript -->
+      <div id="historySelectContainer" class="flex items-center gap-2 mb-4 hidden"></div>
       <div id="resultSections"></div>
     </div>
     <div
@@ -417,786 +530,665 @@
       class="mt-4 p-4 bg-red-50 text-red-800 rounded-lg text-sm hidden"
     ></div>
     <div class="text-center mt-6">
-      <small class="text-gray-600">
-        <b>OpenDNS</b> Version: <b>1.1.8</b>
-      </small
-      >
+      <small class="text-[var(--text-secondary)]">
+        <b>OpenDNS</b> Version: <b>1.1.9</b>
+      </small>
     </div>
     <div aria-live="polite" class="sr-only" id="copy-status"></div>
   </div>
-    <script>
-      const lookupBtn = document.getElementById('lookupBtn');
-      const lookupBtnText = document.getElementById('lookupBtnText');
-      const domainInput = document.getElementById('domainInput');
-      const domainInputContainer = document.getElementById(
-        'domainInputContainer',
+  <script>
+    // DOM elements
+    const lookupBtn = document.getElementById('lookupBtn');
+    const lookupBtnText = document.getElementById('lookupBtnText');
+    const domainInput = document.getElementById('domainInput');
+    const domainInputContainer = document.getElementById('domainInputContainer');
+    const domainAutocompleteList = document.getElementById('domainAutocompleteList');
+    const resultDiv = document.getElementById('result');
+    const resultSections = document.getElementById('resultSections');
+    const errorDiv = document.getElementById('error');
+    const filterType = document.getElementById('filterType');
+    const copyStatus = document.getElementById('copy-status');
+    const initialMessage = document.getElementById('initialMessage');
+    const resultsHeader = document.getElementById('resultsHeader');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+
+    // Constants
+    const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
+    const API_URL = 'https://1.1.1.1/dns-query';
+    const LOCAL_STORAGE_HISTORY_KEY = 'dnsLookupHistory';
+    const LOCAL_STORAGE_RECORDS_KEY = 'dnsStoredRecords';
+    const LOCAL_STORAGE_THEME_KEY = 'dnsTheme';
+    const MAX_HISTORY_ITEMS = 10;
+    const MAX_SNAPSHOTS_PER_DOMAIN = 5;
+    const DEBOUNCE_DELAY = 300;
+
+    // State
+    let dnsRecords = [];
+    let currentSort = {};
+    let currentAutocompleteFocus = -1;
+    let currentDomain = '';
+    let currentSnapshotIndex = -1;
+    let debounceTimeout = null;
+
+    // SVG icons
+    const SVGS = {
+      copy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
+      checkmark: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`,
+      info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-10h-2v6h-2zm0-4h-2v2h2V6z"/></svg>`,
+      sort: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>`,
+      search: `<svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>`,
+      sun: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>`,
+      moon: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>`
+    };
+
+    const RECORD_DESCRIPTIONS = {
+      A: 'Maps a domain to an IPv4 address (e.g., 192.0.2.1)',
+      AAAA: 'Maps a domain to an IPv6 address (e.g., 2001:db8::1)',
+      CNAME: 'Aliases one domain to another (e.g., www.example.com to example.com)',
+      MX: 'Specifies mail servers for the domain (e.g., mail.example.com) with a preference value.',
+      NS: 'Defines authoritative nameservers for the domain. Crucial for delegation.',
+      TXT: 'Stores arbitrary text data, often for verification (e.g., SPF, DKIM, DMARC) or general info.'
+    };
+
+    // Utility functions
+    function escapeHtmlAttribute(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function normalizeTxtData(data) {
+      if (Array.isArray(data)) {
+        return data.join(' ').replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+      }
+      if (typeof data === 'string') {
+        return data.replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+      }
+      return String(data).replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+    }
+
+    function isValidDomain(domain) {
+      const domainRegex =
+        /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+      return (
+        domainRegex.test(domain) &&
+        domain.length <= 253 &&
+        !domain.includes('..') &&
+        !domain.startsWith('-') &&
+        !domain.endsWith('-')
       );
-      const domainAutocompleteList = document.getElementById(
-        'domainAutocompleteList',
-      );
-      const resultDiv = document.getElementById('result');
-      const resultSections = document.getElementById('resultSections');
-      const errorDiv = document.getElementById('error');
-      const filterType = document.getElementById('filterType');
-      const copyStatus = document.getElementById('copy-status');
-      const initialMessage = document.getElementById('initialMessage');
-      const resultsHeader = document.getElementById('resultsHeader');
-      const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-      const exportBtn = document.getElementById('exportBtn'); // Get the new export button
+    }
 
-      // Add a placeholder for history dropdown, will be created dynamically
-      const historySelectContainer = document.createElement('div');
-      historySelectContainer.id = 'historySelectContainer';
-      historySelectContainer.className = 'flex items-center gap-2 mb-4 hidden'; // Hidden by default
-      resultsHeader.parentNode.insertBefore(
-        historySelectContainer,
-        resultsHeader.nextSibling,
-      ); // Insert after resultsHeader
+    function showError(message) {
+      console.error('Error:', message);
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      initialMessage.classList.add('hidden');
+      resultsHeader.classList.add('hidden');
+      historySelectContainer.classList.add('hidden');
+      exportBtn.classList.add('hidden');
+      resultSections.innerHTML = '';
+    }
 
-      const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
-      const API_URL = 'https://1.1.1.1/dns-query';
-      const LOCAL_STORAGE_HISTORY_KEY = 'dnsLookupHistory';
-      const LOCAL_STORAGE_RECORDS_KEY = 'dnsStoredRecords'; // This will now store an array of snapshots
-      const MAX_HISTORY_ITEMS = 10;
-      const MAX_SNAPSHOTS_PER_DOMAIN = 5; // Max historical snapshots to keep per domain
+    function resetUI() {
+      errorDiv.classList.add('hidden');
+      resultSections.innerHTML = '';
+      dnsRecords = [];
+      filterType.value = '';
+      initialMessage.classList.remove('hidden');
+      resultsHeader.classList.add('hidden');
+      historySelectContainer.classList.add('hidden');
+      exportBtn.classList.add('hidden');
+      RECORD_TYPES.forEach((type) => {
+        currentSort[type] = { column: 'name', direction: 'asc' };
+      });
+      hideAutocompleteList();
+      currentDomain = '';
+      currentSnapshotIndex = -1;
+      domainInput.value = '';
+    }
 
-      let dnsRecords = []; // Currently displayed records
-      const currentSort = {};
-      let currentAutocompleteFocus = -1;
-      let currentDomain = ''; // Keep track of the currently looked-up domain
-      let currentSnapshotIndex = -1; // Index of the currently viewed snapshot in history
-
-      const SVGS = {
-        copy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
-        checkmark: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`,
-        info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-10h-2v6h-2zm0-4h-2v2h2V6z"/></svg>`,
-        sort: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>`,
-        search: `<svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>`,
+    async function copyToClipboard(text, element, field) {
+      const announceStatus = (message) => {
+        copyStatus.textContent = message;
+        setTimeout(() => {
+          copyStatus.textContent = '';
+        }, 3000);
       };
-      const RECORD_DESCRIPTIONS = {
-        A: 'Maps a domain to an IPv4 address (e.g., 192.0.2.1)',
-        AAAA: 'Maps a domain to an IPv6 address (e.g., 2001:db8::1)',
-        CNAME: 'Aliases one domain to another (e.g., www.example.com to example.com)',
-        MX: 'Specifies mail servers for the domain (e.g., mail.example.com) with a preference value.',
-        NS: 'Defines authoritative nameservers for the domain. Crucial for delegation.',
-        TXT: 'Stores arbitrary text data, often for verification (e.g., SPF, DKIM, DMARC) or general info.',
-      };
-
-      function escapeHtmlAttribute(value) {
-        if (value === null || value === undefined) return '';
-        return String(value)
-          .replace(/&/g, '&amp;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, '&#39;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-      }
-
-      function normalizeTxtData(data) {
-        if (Array.isArray(data)) {
-          return data.join(' ').replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
-        }
-        if (typeof data === 'string') {
-          return data.replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
-        }
-        return String(data).replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
-      }
-
-      function isValidDomain(domain) {
-        const domainRegex =
-          /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
-        return (
-          domainRegex.test(domain) &&
-          domain.length <= 253 &&
-          !domain.includes('..') &&
-          !domain.startsWith('-') &&
-          !domain.endsWith('-')
-        );
-      }
-
-      function showError(message) {
-        console.error('Error:', message);
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-        initialMessage.classList.add('hidden');
-        resultsHeader.classList.add('hidden');
-        historySelectContainer.classList.add('hidden'); // Hide history dropdown
-        exportBtn.classList.add('hidden'); // Hide export button
-        resultSections.innerHTML = '';
-      }
-
-      function resetUI() {
-        errorDiv.classList.add('hidden');
-        resultSections.innerHTML = '';
-        dnsRecords = [];
-        filterType.value = '';
-        initialMessage.classList.remove('hidden');
-        resultsHeader.classList.add('hidden');
-        historySelectContainer.classList.add('hidden'); // Hide history dropdown
-        exportBtn.classList.add('hidden'); // Hide export button
-        RECORD_TYPES.forEach((type) => {
-          currentSort[type] = { column: 'name', direction: 'asc' };
-        });
-        hideAutocompleteList();
-        currentDomain = '';
-        currentSnapshotIndex = -1;
-        domainInput.value = ''; // Clear domain input on reset
-      }
-
-      async function copyToClipboard(text, element, field) {
-        const announceStatus = (message) => {
-          copyStatus.textContent = message;
-          setTimeout(() => {
-            copyStatus.textContent = '';
-          }, 3000);
-        };
+      try {
+        await navigator.clipboard.writeText(text);
+        element.classList.add('copied');
+        element.querySelector('.copy-icon').innerHTML = SVGS.checkmark;
+        announceStatus(`Copied ${field} to clipboard.`);
+        setTimeout(() => {
+          element.classList.remove('copied');
+          element.querySelector('.copy-icon').innerHTML = SVGS.copy;
+        }, 2000);
+      } catch (err) {
+        console.error(`Clipboard API failed for ${field}:`, err);
+        announceStatus('Failed to copy: Please grant clipboard access or try again.');
         try {
-          await navigator.clipboard.writeText(text);
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
           element.classList.add('copied');
           element.querySelector('.copy-icon').innerHTML = SVGS.checkmark;
-          announceStatus(`Copied ${field} to clipboard.`);
+          announceStatus(`Copied ${field} to clipboard (fallback).`);
           setTimeout(() => {
             element.classList.remove('copied');
             element.querySelector('.copy-icon').innerHTML = SVGS.copy;
           }, 2000);
-        } catch (err) {
-          console.error(`Clipboard API failed for ${field}:`, err);
-          announceStatus(
-            'Failed to copy: Please grant clipboard access or try again.',
-          );
-          try {
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            element.classList.add('copied');
-            element.querySelector('.copy-icon').innerHTML = SVGS.checkmark;
-            announceStatus(`Copied ${field} to clipboard (fallback).`);
-            setTimeout(() => {
-              element.classList.remove('copied');
-              element.querySelector('.copy-icon').innerHTML = SVGS.copy;
-            }, 2000);
-          } catch (fallbackErr) {
-            console.error(`Fallback copy failed for ${field}:`, fallbackErr);
-            announceStatus(
-              'Failed to copy: Your browser does not support clipboard operations.',
-            );
-          }
+        } catch (fallbackErr) {
+          console.error(`Fallback copy failed for ${field}:`, fallbackErr);
+          announceStatus('Failed to copy: Your browser does not support clipboard operations.');
         }
       }
+    }
 
-      function sortRecords(records, column, direction) {
-        // Status order for sorting: added, modified, deleted, unchanged
-        const statusOrder = {
-          added: 1,
-          modified: 2,
-          deleted: 3,
-          unchanged: 4,
-          undefined: 5,
-        };
-
-        return [...records].sort((a, b) => {
-          // Primary sort by status
-          const statusCompare = statusOrder[a.status] - statusOrder[b.status];
-          if (statusCompare !== 0) return statusCompare;
-
-          let valueA = a[column];
-          let valueB = b[column];
-
-          if (column === 'data') {
-            valueA = a.type === 'TXT' ? normalizeTxtData(valueA) : String(valueA);
-            valueB = b.type === 'TXT' ? normalizeTxtData(valueB) : String(valueB);
-          } else if (column === 'ttl') {
-            valueA = parseInt(a.ttl, 10) || 0;
-            valueB = parseInt(b.ttl, 10) || 0;
-          } else {
-            // For 'name' or other string columns, use localeCompare
-            valueA = String(valueA).toLowerCase();
-            valueB = String(valueB).toLowerCase();
-          }
-
-          if (valueA < valueB) return direction === 'asc' ? -1 : 1;
-          if (valueA > valueB) return direction === 'asc' ? 1 : -1;
-          return 0;
-        });
-      }
-
-      function renderTable(records, type, sortCol, sortDir) {
-        if (!records || records.length === 0) {
-          return `<p class="text-center text-gray-500 py-4">No ${type} records found.</p>`;
-        }
-        const sortedRecords = sortRecords(records, sortCol, sortDir);
-        let html = `
-          <div class="table-container">
-            <table class="dns-table" role="table" aria-label="${type} DNS Records">
-              <thead>
-                <tr>
-                  <th scope="col" data-sort="name" data-type="${type}" tabindex="0" aria-sort="${
-          sortCol === 'name'
-            ? sortDir === 'asc'
-              ? 'ascending'
-              : 'descending'
-            : 'none'
-        }">Name <span class="sort-icon ${
-          sortCol === 'name' && sortDir === 'asc' ? 'asc' : ''
-        }">${sortCol === 'name' ? SVGS.sort : ''}</span></th>
-                  <th scope="col" data-sort="data" data-type="${type}" tabindex="0" aria-sort="${
-          sortCol === 'data'
-            ? sortDir === 'asc'
-              ? 'ascending'
-              : 'descending'
-            : 'none'
-        }">Data <span class="sort-icon ${
-          sortCol === 'data' && sortDir === 'asc' ? 'asc' : ''
-        }">${sortCol === 'data' ? SVGS.sort : ''}</span></th>
-                  <th scope="col" data-sort="ttl" data-type="${type}" tabindex="0" aria-sort="${
-          sortCol === 'ttl'
-            ? sortDir === 'asc'
-              ? 'ascending'
-              : 'descending'
-            : 'none'
-        }">TTL <span class="sort-icon ${
-          sortCol === 'ttl' && sortDir === 'asc' ? 'asc' : ''
-        }">${sortCol === 'ttl' ? SVGS.sort : ''}</span></th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-        sortedRecords.forEach((record) => {
-          const normalizedData =
-            record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
-          const normalizedTTL = record.ttl !== 'N/A' ? String(record.ttl) : 'N/A';
-          const rowClass =
-            record.status && ['added', 'modified', 'deleted'].includes(record.status)
-              ? `record-row-${record.status}`
-              : '';
-
-          let oldDataDisplay = '';
-          if (record.status === 'modified' && record.oldData !== undefined) {
-            const oldNormalizedData =
-              record.type === 'TXT' ? normalizeTxtData(record.oldData) : record.oldData;
-            oldDataDisplay = `<span class="text-gray-500 text-xs ml-1">(was: ${escapeHtmlAttribute(
-              oldNormalizedData,
-            )})</span>`;
-          }
-
-          let statusIndicator = '';
-          if (record.status === 'added') {
-            statusIndicator =
-              '<span class="text-green-600 text-xs font-semibold ml-1">(New)</span>';
-          } else if (record.status === 'modified') {
-            statusIndicator =
-              '<span class="text-yellow-600 text-xs font-semibold ml-1">(Changed)</span>';
-          } else if (record.status === 'deleted') {
-            statusIndicator =
-              '<span class="text-red-600 text-xs font-semibold ml-1">(Deleted)</span>';
-          } else if (record.status === 'unchanged' && currentSnapshotIndex > -1) {
-            // Only show 'Unchanged' when viewing history (and not the latest lookup)
-            statusIndicator =
-              '<span class="text-gray-500 text-xs font-semibold ml-1">(Unchanged)</span>';
-          }
-
-          html += `
-            <tr class="${rowClass}">
-              <td role="cell">
-                <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(
-                  record.name,
-                )}" aria-label="Copy DNS name: ${escapeHtmlAttribute(record.name)}">
-                  ${escapeHtmlAttribute(record.name)}
-                  ${statusIndicator}
-                  <span class="copy-icon">${SVGS.copy}</span>
-                  <span class="copy-tooltip copy-tooltip--hover">Copy</span>
-                  <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
-                </span>
-              </td>
-              <td role="cell">
-                <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(
-                  normalizedData,
-                )}" aria-label="Copy DNS data: ${escapeHtmlAttribute(
-            normalizedData,
-          )}">
-                  ${escapeHtmlAttribute(normalizedData)}
-                  ${oldDataDisplay}
-                  <span class="copy-icon">${SVGS.copy}</span>
-                  <span class="copy-tooltip copy-tooltip--hover">Copy</span>
-                  <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
-                </span>
-              </td>
-              <td role="cell">
-                <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(
-                  normalizedTTL,
-                )}" aria-label="Copy DNS TTL: ${escapeHtmlAttribute(normalizedTTL)}">
-                  ${normalizedTTL}
-                  <span class="copy-icon">${SVGS.copy}</span>
-                  <span class="copy-tooltip copy-tooltip--hover">Copy</span>
-                  <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
-                </span>
-              </td>
-            </tr>
-          `;
-        });
-        html += `
-              </tbody>
-            </table>
-          </div>
-        `;
-        return html;
-      }
-
-      function renderSections(records) {
-        resultSections.innerHTML = '';
-        const filterValue = filterType.value;
-        let anySectionsRendered = false;
-
-        RECORD_TYPES.forEach((type) => {
-          const typeRecords = records.filter((record) => record.type === type);
-          if (filterValue && filterValue !== type) {
-            return;
-          }
-
-          if (!currentSort[type]) {
-            currentSort[type] = { column: 'name', direction: 'asc' };
-          }
-          const currentTypeSort = currentSort[type];
-
-          if (typeRecords.length === 0) {
-            return;
-          }
-
-          anySectionsRendered = true;
-          const section = document.createElement('details');
-          section.className = 'record-section';
-          section.open = true;
-          section.innerHTML = `
-            <summary>
-              ${type} Records
-              <span class="info-icon" tabindex="0" role="button" aria-label="Learn about ${type} records">
-                ${SVGS.info}
-                <span class="info-tooltip">${
-                  RECORD_DESCRIPTIONS[type] || 'No description available.'
-                }</span>
-              </span>
-              <span class="record-count">(${typeRecords.length})</span>
-            </summary>
-            ${renderTable(
-              typeRecords,
-              type,
-              currentTypeSort.column,
-              currentTypeSort.direction,
-            )}
-          `;
-          resultSections.appendChild(section);
-
-          section.querySelectorAll('.dns-table th').forEach((th) => {
-            th.addEventListener('click', () => {
-              const column = th.getAttribute('data-sort');
-              let direction = 'asc';
-              if (currentTypeSort.column === column) {
-                direction = currentTypeSort.direction === 'asc' ? 'desc' : 'asc';
-              }
-              currentSort[type] = { column, direction };
-              const tableContainer = section.querySelector('.table-container');
-              if (tableContainer) {
-                const recordsToRender = records.filter(
-                  (record) => record.type === type,
-                );
-                tableContainer.innerHTML = renderTable(
-                  recordsToRender,
-                  type,
-                  column,
-                  direction,
-                );
-                addCopyListeners(tableContainer);
-              }
-            });
-            th.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                th.click();
-              }
-            });
-          });
-          addCopyListeners(section);
-        });
-
-        if (!anySectionsRendered) {
-          resultSections.innerHTML = `
-            <div class="initial-message">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-              </svg>
-              <p>No DNS records found for the applied filter.</p>
-              <p class="text-sm text-gray-500">Try adjusting your filter or searching for a different domain.</p>
-            </div>
-          `;
-          initialMessage.classList.add('hidden');
-          exportBtn.classList.add('hidden'); // Ensure export button is hidden if no records
-        } else {
-          exportBtn.classList.remove('hidden'); // Show export button if records are displayed
-        }
-      }
-
-      function addCopyListeners(container) {
-        container.querySelectorAll('.copyable').forEach((element) => {
-          if (element.dataset.listenersAdded) return;
-          const text = element.getAttribute('data-copy');
-          const field = element
-            .getAttribute('aria-label')
-            .replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
-          const handleClick = (e) => {
-            e.stopPropagation();
-            copyToClipboard(text, element, field);
-          };
-          const handleKeydown = (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              e.stopPropagation();
-              copyToClipboard(text, element, field);
-            }
-          };
-          element.addEventListener('click', handleClick);
-          element.addEventListener('keydown', handleKeydown);
-          element.dataset.listenersAdded = 'true';
-        });
-      }
-
-      async function fetchDNSRecord(domain, type) {
-        try {
-          const response = await fetch(
-            `${API_URL}?name=${encodeURIComponent(domain)}&type=${type}`,
-            { headers: { Accept: 'application/dns-json' } },
-          );
-          if (!response.ok) {
-            throw new Error(
-              `DNS query failed for ${type} records: HTTP ${response.status} - ${response.statusText}`,
-            );
-          }
-          const data = await response.json();
-          return { type, data };
-        } catch (error) {
-          console.error(`Fetch error for ${type} record type:`, error);
-          return { type, data: { Status: -1, Comment: error.message, Answer: [] } };
-        }
-      }
-
-      async function performDNSLookup(domain) {
-        resetUI();
-        currentDomain = domain.toLowerCase(); // Store the domain being looked up
-        errorDiv.classList.add('hidden');
-        lookupBtn.disabled = true;
-        lookupBtnText.innerHTML = `<span class="loading-spinner"></span>`;
-        domainInput.disabled = true;
-        filterType.disabled = true;
-        exportBtn.disabled = true; // Disable export button during lookup
-
-        try {
-          if (!isValidDomain(domain)) {
-            showError('Please enter a valid domain name (e.g., example.com).');
-            return;
-          }
-
-          const promises = RECORD_TYPES.map((type) =>
-            fetchDNSRecord(domain, type),
-          );
-          const results = await Promise.allSettled(promises);
-
-          let currentFetchedRecords = [];
-          let hasRecords = false;
-
-          results.forEach((result) => {
-            if (result.status === 'fulfilled' && result.value.data.Answer) {
-              const records = result.value.data.Answer.map((ans) => ({
-                name: ans.name || domain,
-                type: ans.type ? getTypeString(ans.type) : result.value.type,
-                data: ans.data,
-                ttl: ans.TTL !== undefined ? ans.TTL : 'N/A',
-              }));
-              currentFetchedRecords.push(...records);
-              if (records.length > 0) {
-                hasRecords = true;
-              }
-            } else if (result.status === 'rejected') {
-              console.warn(`Failed to fetch some record types: ${result.reason}`);
-            }
-          });
-
-          if (!hasRecords) {
-            showError(
-              `No DNS records found for "${domain}". This could mean the domain doesn't exist, or there are no public DNS records of the types we query (A, AAAA, CNAME, MX, NS, TXT).`,
-            );
-            return;
-          }
-
-          // Get the history of records for this domain
-          const domainSnapshots = getDomainSnapshots(currentDomain);
-          const previousSnapshot =
-            domainSnapshots.length > 0
-              ? domainSnapshots[domainSnapshots.length - 1].records
-              : null;
-
-          if (previousSnapshot && previousSnapshot.length > 0) {
-            const comparisonResult = compareDnsRecords(
-              currentFetchedRecords,
-              previousSnapshot,
-            );
-            dnsRecords = [
-              ...comparisonResult.added,
-              ...comparisonResult.modified,
-              ...comparisonResult.unchanged,
-              ...comparisonResult.deleted,
-            ];
-            dnsRecords.sort((a, b) => {
-              const typeOrder =
-                RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
-              if (typeOrder !== 0) return typeOrder;
-              const nameCompare = a.name.localeCompare(b.name);
-              if (nameCompare !== 0) return nameCompare;
-              // Sort by status: Added, Modified, Deleted, Unchanged
-              const statusOrder = {
-                added: 1,
-                modified: 2,
-                deleted: 3,
-                unchanged: 4,
-              };
-              return statusOrder[a.status] - statusOrder[b.status];
-            });
-          } else {
-            // First time lookup for this domain, mark all as unchanged (relative to no prior state)
-            dnsRecords = currentFetchedRecords.map((r) => ({
-              ...r,
-              status: 'unchanged',
-            }));
-          }
-
-          initialMessage.classList.add('hidden');
-          resultsHeader.classList.add('flex');
-          resultsHeader.classList.remove('hidden');
-
-          renderSections(dnsRecords); // This will handle showing the export button if records exist
-
-          // Save the new snapshot to history
-          saveDomainSnapshot(currentDomain, currentFetchedRecords);
-          saveDomainToHistory(domain); // Save to general search history
-
-          // After saving, re-render the history dropdown to include the new snapshot
-          populateHistoryDropdown(currentDomain);
-          currentSnapshotIndex = getDomainSnapshots(currentDomain).length - 1; // Select the latest snapshot
-          updateHistoryDropdownSelection();
-        } catch (err) {
-          showError(`An unexpected error occurred: ${err.message}`);
-        } finally {
-          lookupBtn.disabled = false;
-          lookupBtnText.innerHTML = SVGS.search;
-          domainInput.disabled = false;
-          filterType.disabled = false;
-          exportBtn.disabled = false; // Re-enable export button after lookup
-        }
-      }
-
-      function getTypeString(typeNum) {
-        switch (typeNum) {
-          case 1:
-            return 'A';
-          case 28:
-            return 'AAAA';
-          case 5:
-            return 'CNAME';
-          case 15:
-            return 'MX';
-          case 2:
-            return 'NS';
-          case 16:
-            return 'TXT';
-          default:
-            return `Type ${typeNum}`;
-        }
-      }
-
-      function loadSearchHistory() {
-        try {
-          const history = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
-          return history ? JSON.parse(history) : [];
-        } catch (e) {
-          console.error('Error loading search history from local storage:', e);
-          return [];
-        }
-      }
-
-      function saveDomainToHistory(domain) {
-        let history = loadSearchHistory();
-        history = history.filter(
-          (item) => item.toLowerCase() !== domain.toLowerCase(),
-        );
-        history.unshift(domain);
-        history = history.slice(0, MAX_HISTORY_ITEMS);
-        try {
-          localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
-        } catch (e) {
-          console.error('Error saving domain to local storage for history:', e);
-        }
-      }
-
-      // --- New / Modified functions for historical records ---
-
-      function loadAllStoredRecords() {
-        try {
-          const stored = localStorage.getItem(LOCAL_STORAGE_RECORDS_KEY);
-          return stored ? JSON.parse(stored) : {};
-        } catch (e) {
-          console.error('Error loading all stored records from local storage:', e);
-          return {};
-        }
-      }
-
-      function saveDomainSnapshot(domain, records) {
-        let allStoredRecords = loadAllStoredRecords();
-        const domainLower = domain.toLowerCase();
-
-        if (!allStoredRecords[domainLower]) {
-          allStoredRecords[domainLower] = [];
-        }
-
-        const newSnapshot = {
-          timestamp: new Date().toISOString(), // Use ISO string for consistent sorting
-          records: records,
-        };
-
-        // Add the new snapshot to the end of the history
-        allStoredRecords[domainLower].push(newSnapshot);
-
-        // Enforce MAX_SNAPSHOTS_PER_DOMAIN limit
-        if (allStoredRecords[domainLower].length > MAX_SNAPSHOTS_PER_DOMAIN) {
-          allStoredRecords[domainLower] = allStoredRecords[domainLower].slice(
-            allStoredRecords[domainLower].length - MAX_SNAPSHOTS_PER_DOMAIN,
-          );
-        }
-
-        try {
-          localStorage.setItem(
-            LOCAL_STORAGE_RECORDS_KEY,
-            JSON.stringify(allStoredRecords),
-          );
-        } catch (e) {
-          console.error('Error saving domain records snapshot to local storage:', e);
-        }
-      }
-
-      function getDomainSnapshots(domain) {
-        const allStoredRecords = loadAllStoredRecords();
-        return allStoredRecords[domain.toLowerCase()] || [];
-      }
-
-      const createRecordId = (record) => {
-        const dataToCompare =
-          record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
-        return `${record.name}||${record.type}||${dataToCompare}`;
+    function sortRecords(records, column, direction) {
+      const statusOrder = {
+        added: 1,
+        modified: 2,
+        deleted: 3,
+        unchanged: 4,
+        undefined: 5
       };
 
-      function compareDnsRecords(currentRecords, previousRecords) {
-        const added = [];
-        const deleted = [];
-        const modified = [];
-        const unchanged = [];
+      return [...records].sort((a, b) => {
+        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        if (statusCompare !== 0) return statusCompare;
 
-        const previousMap = new Map();
-        previousRecords.forEach((r) => previousMap.set(createRecordId(r), r));
+        let valueA = a[column];
+        let valueB = b[column];
 
-        const previousNameTypeMap = new Map();
-        previousRecords.forEach((r) => {
-          const key = `${r.name}||${r.type}`;
-          if (!previousNameTypeMap.has(key)) {
-            previousNameTypeMap.set(key, []);
-          }
-          previousNameTypeMap.get(key).push(r);
-        });
+        if (column === 'data') {
+          valueA = a.type === 'TXT' ? normalizeTxtData(valueA) : String(valueA);
+          valueB = b.type === 'TXT' ? normalizeTxtData(valueB) : String(valueB);
+        } else if (column === 'ttl') {
+          valueA = parseInt(a.ttl, 10) || 0;
+          valueB = parseInt(b.ttl, 10) || 0;
+        } else {
+          valueA = String(valueA).toLowerCase();
+          valueB = String(valueB).toLowerCase();
+        }
 
-        currentRecords.forEach((currentRec) => {
-          const currentId = createRecordId(currentRec);
-          const nameTypeKey = `${currentRec.name}||${currentRec.type}`;
+        if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+        if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
 
-          if (previousMap.has(currentId)) {
-            // Record exists in both current and previous, and is identical
-            unchanged.push({ ...currentRec, status: 'unchanged' });
-            previousMap.delete(currentId); // Mark as processed
-          } else {
-            // Check if it's a modification (same name/type, different data)
-            const potentialOldMatches = previousNameTypeMap.get(nameTypeKey);
-            let isModified = false;
-
-            if (potentialOldMatches) {
-              // Iterate through potential old matches for this name/type
-              for (let i = 0; i < potentialOldMatches.length; i++) {
-                const oldRec = potentialOldMatches[i];
-                const oldId = createRecordId(oldRec);
-
-                // If this old record hasn't been "matched" yet by an unchanged new record
-                if (previousMap.has(oldId)) {
-                  // Found a record with same name/type but different data
-                  modified.push({
-                    ...currentRec,
-                    status: 'modified',
-                    oldData: oldRec.data, // Store the old data for display
-                  });
-                  previousMap.delete(oldId); // Mark the old record as processed (modified)
-                  isModified = true;
-                  break; // Only one old record can correspond to one new record for modification
-                }
-              }
-            }
-
-            if (!isModified) {
-              // If not found in previous or was not a modification, it's new
-              added.push({ ...currentRec, status: 'added' });
-            }
-          }
-        });
-
-        // Any remaining records in previousMap were not found in currentRecords -> they are deleted
-        previousMap.forEach((oldRec) => {
-          deleted.push({ ...oldRec, status: 'deleted' });
-        });
-
-        return { added, deleted, modified, unchanged };
+    function renderTable(records, type, sortCol, sortDir) {
+      if (!records || records.length === 0) {
+        return `<p class="text-center text-[var(--text-secondary)] py-4">No ${type} records found.</p>`;
       }
+      const sortedRecords = sortRecords(records, sortCol, sortDir);
+      let html = `
+        <div class="table-container">
+          <table class="dns-table" role="table" aria-label="${type} DNS Records">
+            <thead>
+              <tr>
+                <th scope="col" data-sort="name" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'name' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">Name <span class="sort-icon ${sortCol === 'name' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'name' ? SVGS.sort : ''
+                }</span></th>
+                <th scope="col" data-sort="data" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'data' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">Data <span class="sort-icon ${sortCol === 'data' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'data' ? SVGS.sort : ''
+                }</span></th>
+                <th scope="col" data-sort="ttl" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'ttl' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">TTL <span class="sort-icon ${sortCol === 'ttl' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'ttl' ? SVGS.sort : ''
+                }</span></th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      sortedRecords.forEach((record) => {
+        const normalizedData = record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
+        const normalizedTTL = record.ttl !== 'N/A' ? String(record.ttl) : 'N/A';
+        const rowClass = record.status && ['added', 'modified', 'deleted'].includes(record.status)
+          ? `record-row-${record.status}`
+          : '';
 
-      // --- Autocomplete functions (remain largely the same) ---
-      function renderAutocompleteList(inputValue) {
-        const history = loadSearchHistory();
-        domainAutocompleteList.innerHTML = '';
-        currentAutocompleteFocus = -1;
+        let oldDataDisplay = '';
+        if (record.status === 'modified' && record.oldData !== undefined) {
+          const oldNormalizedData = record.type === 'TXT' ? normalizeTxtData(record.oldData) : record.oldData;
+          oldDataDisplay = `<span class="text-[var(--text-secondary)] text-xs ml-1">(was: ${escapeHtmlAttribute(oldNormalizedData)})</span>`;
+        }
 
-        const filteredHistory = history.filter((item) =>
-          item.toLowerCase().includes(inputValue.toLowerCase()),
-        );
+        let statusIndicator = '';
+        if (record.status === 'added') {
+          statusIndicator = '<span class="text-green-600 text-xs font-semibold ml-1">(New)</span>';
+        } else if (record.status === 'modified') {
+          statusIndicator = '<span class="text-yellow-600 text-xs font-semibold ml-1">(Changed)</span>';
+        } else if (record.status === 'deleted') {
+          statusIndicator = '<span class="text-red-600 text-xs font-semibold ml-1">(Deleted)</span>';
+        } else if (record.status === 'unchanged' && currentSnapshotIndex > -1) {
+          statusIndicator = '<span class="text-[var(--text-secondary)] text-xs font-semibold ml-1">(Unchanged)</span>';
+        }
 
-        if (filteredHistory.length === 0 && inputValue === '') {
-          // If no input, show recent history
-          history.forEach((item, index) => {
-            const div = document.createElement('div');
-            div.textContent = item;
-            div.addEventListener('click', () => {
-              domainInput.value = item;
-              performDNSLookup(item);
-              hideAutocompleteList();
-            });
-            domainAutocompleteList.appendChild(div);
+        html += `
+          <tr class="${rowClass}">
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(record.name)}" aria-label="Copy DNS name: ${escapeHtmlAttribute(record.name)}">
+                ${escapeHtmlAttribute(record.name)}
+                ${statusIndicator}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(normalizedData)}" aria-label="Copy DNS data: ${escapeHtmlAttribute(normalizedData)}">
+                ${escapeHtmlAttribute(normalizedData)}
+                ${oldDataDisplay}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(normalizedTTL)}" aria-label="Copy DNS TTL: ${escapeHtmlAttribute(normalizedTTL)}">
+                ${normalizedTTL}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    function renderSections(records) {
+      resultSections.innerHTML = '';
+      const filterValue = filterType.value;
+      let anySectionsRendered = false;
+
+      RECORD_TYPES.forEach((type) => {
+        const typeRecords = records.filter((record) => record.type === type);
+        if (filterValue && filterValue !== type) return;
+
+        if (!currentSort[type]) {
+          currentSort[type] = { column: 'name', direction: 'asc' };
+        }
+        const currentTypeSort = currentSort[type];
+
+        if (typeRecords.length === 0) return;
+
+        anySectionsRendered = true;
+        const section = document.createElement('details');
+        section.className = 'record-section';
+        section.open = true;
+        section.innerHTML = `
+          <summary>
+            ${type} Records
+            <span class="info-icon" tabindex="0" role="button" aria-label="Learn about ${type} records">
+              ${SVGS.info}
+              <span class="info-tooltip">${RECORD_DESCRIPTIONS[type] || 'No description available.'}</span>
+            </span>
+            <span class="record-count">(${typeRecords.length})</span>
+          </summary>
+          ${renderTable(typeRecords, type, currentTypeSort.column, currentTypeSort.direction)}
+        `;
+        resultSections.appendChild(section);
+
+        const ths = section.querySelectorAll('.dns-table th');
+        ths.forEach((th) => {
+          const clickHandler = () => {
+            const column = th.getAttribute('data-sort');
+            let direction = 'asc';
+            if (currentTypeSort.column === column) {
+              direction = currentTypeSort.direction === 'asc' ? 'desc' : 'asc';
+            }
+            currentSort[type] = { column, direction };
+            const tableContainer = section.querySelector('.table-container');
+            if (tableContainer) {
+              const recordsToRender = records.filter((record) => record.type === type);
+              tableContainer.innerHTML = renderTable(recordsToRender, type, column, direction);
+              addCopyListeners(tableContainer);
+            }
+          };
+          th.addEventListener('click', clickHandler);
+          th.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              clickHandler();
+            }
           });
-          if (history.length > 0) {
-            domainAutocompleteList.classList.remove('hidden');
-          } else {
-            hideAutocompleteList();
+        });
+        addCopyListeners(section);
+      });
+
+      if (!anySectionsRendered) {
+        resultSections.innerHTML = `
+          <div class="initial-message">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
+            <p>No DNS records found for the applied filter.</p>
+            <p class="text-sm text-[var(--text-secondary)]">Try adjusting your filter or searching for a different domain.</p>
+          </div>
+        `;
+        initialMessage.classList.add('hidden');
+        exportBtn.classList.add('hidden');
+      } else {
+        exportBtn.classList.remove('hidden');
+      }
+    }
+
+    function addCopyListeners(container) {
+      container.querySelectorAll('.copyable').forEach((element) => {
+        if (element.dataset.listenersAdded) return;
+        const text = element.getAttribute('data-copy');
+        const field = element.getAttribute('aria-label').replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
+        const handleClick = (e) => {
+          e.stopPropagation();
+          copyToClipboard(text, element, field);
+        };
+        const handleKeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            copyToClipboard(text, element, field);
           }
-          return;
-        } else if (filteredHistory.length === 0 && inputValue !== '') {
-          hideAutocompleteList();
+        };
+        element.addEventListener('click', handleClick);
+        element.addEventListener('keydown', handleKeydown);
+        element.dataset.listenersAdded = 'true';
+      });
+    }
+
+    async function fetchDNSRecord(domain, type) {
+      try {
+        const response = await fetch(
+          `${API_URL}?name=${encodeURIComponent(domain)}&type=${type}`,
+          { headers: { Accept: 'application/dns-json' } }
+        );
+        if (!response.ok) {
+          throw new Error(`DNS query failed for ${type} records: HTTP ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        return { type, data };
+      } catch (error) {
+        console.error(`Fetch error for ${type} record type:`, error);
+        return { type, data: { Status: -1, Comment: error.message, Answer: [] } };
+      }
+    }
+
+    async function performDNSLookup(domain) {
+      if (!domain) {
+        showError('Please enter a domain name.');
+        return;
+      }
+      resetUI();
+      currentDomain = domain.toLowerCase();
+      errorDiv.classList.add('hidden');
+      lookupBtn.disabled = true;
+      lookupBtnText.innerHTML = `<span class="loading-spinner"></span>`;
+      domainInput.disabled = true;
+      filterType.disabled = true;
+      exportBtn.disabled = true;
+
+      try {
+        if (!isValidDomain(domain)) {
+          showError('Please enter a valid domain name (e.g., example.com).');
           return;
         }
 
-        filteredHistory.forEach((item, index) => {
+        const promises = RECORD_TYPES.map((type) => fetchDNSRecord(domain, type));
+        const results = await Promise.allSettled(promises);
+
+        let currentFetchedRecords = [];
+        let hasRecords = false;
+
+        results.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value.data.Answer) {
+            const records = result.value.data.Answer.map((ans) => ({
+              name: ans.name || domain,
+              type: ans.type ? getTypeString(ans.type) : result.value.type,
+              data: ans.data,
+              ttl: ans.TTL !== undefined ? ans.TTL : 'N/A'
+            }));
+            currentFetchedRecords.push(...records);
+            if (records.length > 0) {
+              hasRecords = true;
+            }
+          } else if (result.status === 'rejected') {
+            console.warn(`Failed to fetch some record types: ${result.reason}`);
+          }
+        });
+
+        if (!hasRecords) {
+          showError(`No DNS records found for "${domain}". Try checking the domain spelling or try again later.`);
+          return;
+        }
+
+        const domainSnapshots = getDomainSnapshots(currentDomain);
+        const previousSnapshot = domainSnapshots.length > 0 ? domainSnapshots[domainSnapshots.length - 1].records : null;
+
+        if (previousSnapshot && previousSnapshot.length > 0) {
+          const comparisonResult = compareDnsRecords(currentFetchedRecords, previousSnapshot);
+          dnsRecords = [
+            ...comparisonResult.added,
+            ...comparisonResult.modified,
+            ...comparisonResult.unchanged,
+            ...comparisonResult.deleted
+          ];
+          dnsRecords.sort((a, b) => {
+            const typeOrder = RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
+            if (typeOrder !== 0) return typeOrder;
+            const nameCompare = a.name.localeCompare(b.name);
+            if (nameCompare !== 0) return nameCompare;
+            const statusOrder = { added: 1, modified: 2, deleted: 3, unchanged: 4 };
+            return statusOrder[a.status] - statusOrder[b.status];
+          });
+        } else {
+          dnsRecords = currentFetchedRecords.map((r) => ({ ...r, status: 'unchanged' }));
+        }
+
+        initialMessage.classList.add('hidden');
+        resultsHeader.classList.add('flex');
+        resultsHeader.classList.remove('hidden');
+
+        renderSections(dnsRecords);
+
+        try {
+          saveDomainSnapshot(currentDomain, currentFetchedRecords);
+          saveDomainToHistory(domain);
+        } catch (e) {
+          showError('Failed to save lookup history due to storage limitations.');
+        }
+
+        populateHistoryDropdown(currentDomain);
+        currentSnapshotIndex = getDomainSnapshots(currentDomain).length - 1;
+        updateHistoryDropdownSelection();
+      } catch (err) {
+        showError(`An unexpected error occurred: ${err.message}. Please try again.`);
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtnText.innerHTML = SVGS.search;
+        domainInput.disabled = false;
+        filterType.disabled = false;
+        exportBtn.disabled = false;
+      }
+    }
+
+    function getTypeString(typeNum) {
+      switch (typeNum) {
+        case 1: return 'A';
+        case 28: return 'AAAA';
+        case 5: return 'CNAME';
+        case 15: return 'MX';
+        case 2: return 'NS';
+        case 16: return 'TXT';
+        default: return `Type ${typeNum}`;
+      }
+    }
+
+    function loadSearchHistory() {
+      try {
+        const history = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
+        return history ? JSON.parse(history) : [];
+      } catch (e) {
+        console.error('Error loading search history from local storage:', e);
+        return [];
+      }
+    }
+
+    function saveDomainToHistory(domain) {
+      let history = loadSearchHistory();
+      history = history.filter((item) => item.toLowerCase() !== domain.toLowerCase());
+      history.unshift(domain);
+      history = history.slice(0, MAX_HISTORY_ITEMS);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
+      } catch (e) {
+        console.error('Error saving domain to local storage for history:', e);
+      }
+    }
+
+    function loadAllStoredRecords() {
+      try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_RECORDS_KEY);
+        return stored ? JSON.parse(stored) : {};
+      } catch (e) {
+        console.error('Error loading all stored records from local storage:', e);
+        return {};
+      }
+    }
+
+    function saveDomainSnapshot(domain, records) {
+      let allStoredRecords = loadAllStoredRecords();
+      const domainLower = domain.toLowerCase();
+
+      if (!allStoredRecords[domainLower]) {
+        allStoredRecords[domainLower] = [];
+      }
+
+      const newSnapshot = {
+        timestamp: new Date().toISOString(),
+        records: records
+      };
+
+      allStoredRecords[domainLower].push(newSnapshot);
+
+      if (allStoredRecords[domainLower].length > MAX_SNAPSHOTS_PER_DOMAIN) {
+        allStoredRecords[domainLower] = allStoredRecords[domainLower].slice(
+          allStoredRecords[domainLower].length - MAX_SNAPSHOTS_PER_DOMAIN
+        );
+      }
+
+      try {
+        localStorage.setItem(LOCAL_STORAGE_RECORDS_KEY, JSON.stringify(allStoredRecords));
+      } catch (e) {
+        console.error('Error saving domain records snapshot to local storage:', e);
+        throw e;
+      }
+    }
+
+    function getDomainSnapshots(domain) {
+      const allStoredRecords = loadAllStoredRecords();
+      return allStoredRecords[domain.toLowerCase()] || [];
+    }
+
+    function createRecordId(record) {
+      const dataToCompare = record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
+      return `${record.name}||${record.type}||${dataToCompare}`;
+    }
+
+    function compareDnsRecords(currentRecords, previousRecords) {
+      const added = [];
+      const deleted = [];
+      const modified = [];
+      const unchanged = [];
+
+      const previousMap = new Map();
+      previousRecords.forEach((r) => previousMap.set(createRecordId(r), r));
+
+      const previousNameTypeMap = new Map();
+      previousRecords.forEach((r) => {
+        const key = `${r.name}||${r.type}`;
+        if (!previousNameTypeMap.has(key)) {
+          previousNameTypeMap.set(key, []);
+        }
+        previousNameTypeMap.get(key).push(r);
+      });
+
+      currentRecords.forEach((currentRec) => {
+        const currentId = createRecordId(currentRec);
+        const nameTypeKey = `${currentRec.name}||${currentRec.type}`;
+
+        if (previousMap.has(currentId)) {
+          unchanged.push({ ...currentRec, status: 'unchanged' });
+          previousMap.delete(currentId);
+        } else {
+          const potentialOldMatches = previousNameTypeMap.get(nameTypeKey);
+          let isModified = false;
+
+          if (potentialOldMatches) {
+            for (let i = 0; i < potentialOldMatches.length; i++) {
+              const oldRec = potentialOldMatches[i];
+              const oldId = createRecordId(oldRec);
+              if (previousMap.has(oldId)) {
+                modified.push({
+                  ...currentRec,
+                  status: 'modified',
+                  oldData: oldRec.data
+                });
+                previousMap.delete(oldId);
+                isModified = true;
+                break;
+              }
+            }
+          }
+
+          if (!isModified) {
+            added.push({ ...currentRec, status: 'added' });
+          }
+        }
+      });
+
+      previousMap.forEach((oldRec) => {
+        deleted.push({ ...oldRec, status: 'deleted' });
+      });
+
+      return { added, deleted, modified, unchanged };
+    }
+
+    function renderAutocompleteList(inputValue) {
+      domainAutocompleteList.innerHTML = '';
+      currentAutocompleteFocus = -1;
+
+      const history = loadSearchHistory();
+      const filteredHistory = history.filter((item) =>
+        item.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (filteredHistory.length === 0 && inputValue === '') {
+        history.forEach((item) => {
           const div = document.createElement('div');
           div.textContent = item;
           div.addEventListener('click', () => {
@@ -1206,294 +1198,326 @@
           });
           domainAutocompleteList.appendChild(div);
         });
-        domainAutocompleteList.classList.remove('hidden');
-      }
-
-      function hideAutocompleteList() {
-        domainAutocompleteList.classList.add('hidden');
-        currentAutocompleteFocus = -1;
-        const items = domainAutocompleteList.getElementsByTagName('div');
-        for (let i = 0; i < items.length; i++) {
-          items[i].classList.remove('autocomplete-active');
-        }
-      }
-
-      function addActive(items) {
-        if (!items || items.length === 0) return false;
-        removeActive(items);
-        if (currentAutocompleteFocus >= items.length) currentAutocompleteFocus = 0;
-        if (currentAutocompleteFocus < 0)
-          currentAutocompleteFocus = items.length - 1;
-        items[currentAutocompleteFocus].classList.add('autocomplete-active');
-        items[currentAutocompleteFocus].scrollIntoView({ block: 'nearest' });
-      }
-
-      function removeActive(items) {
-        for (let i = 0; i < items.length; i++) {
-          items[i].classList.remove('autocomplete-active');
-        }
-      }
-
-      function selectAutocompleteItem() {
-        const items = domainAutocompleteList.getElementsByTagName('div');
-        if (currentAutocompleteFocus > -1 && items[currentAutocompleteFocus]) {
-          items[currentAutocompleteFocus].click();
-        } else if (domainInput.value) {
-          performDNSLookup(domainInput.value);
-        }
-      }
-
-      // --- History Dropdown UI and Logic ---
-      function populateHistoryDropdown(domain) {
-        historySelectContainer.innerHTML = '';
-        const domainSnapshots = getDomainSnapshots(domain);
-
-        // Only show if there's more than one snapshot (i.e., actual history)
-        if (domainSnapshots.length <= 1) {
-          historySelectContainer.classList.add('hidden');
-          return;
-        }
-
-        historySelectContainer.classList.remove('hidden');
-
-        const label = document.createElement('label');
-        label.setAttribute('for', 'historySelect');
-        label.className = 'text-sm font-medium text-gray-700 sr-only'; // Hidden but accessible
-        label.textContent = 'View historical DNS records';
-        historySelectContainer.appendChild(label);
-
-        const select = document.createElement('select');
-        select.id = 'historySelect';
-        select.className = 'filter-select min-w-[150px]'; // Apply filter-select style
-        select.setAttribute('aria-label', 'Select a historical DNS record snapshot');
-
-        // Add "Latest Records" option
-        const latestOption = document.createElement('option');
-        latestOption.value = 'latest';
-        latestOption.textContent = 'Latest Records';
-        select.appendChild(latestOption);
-
-        domainSnapshots.forEach((snapshot, index) => {
-          const option = document.createElement('option');
-          option.value = index;
-          const date = new Date(snapshot.timestamp);
-          // Format date and time for display
-          option.textContent = `Snapshot: ${date.toLocaleString()}`;
-          select.appendChild(option);
-        });
-
-        select.addEventListener('change', (e) => {
-          const selectedValue = e.target.value;
-          if (selectedValue === 'latest') {
-            currentSnapshotIndex = domainSnapshots.length - 1; // Always refer to the actual last index
-          } else {
-            currentSnapshotIndex = parseInt(selectedValue, 10);
-          }
-          displaySelectedSnapshot(currentDomain, currentSnapshotIndex);
-        });
-
-        historySelectContainer.appendChild(select);
-        updateHistoryDropdownSelection(); // Set initial selection
-      }
-
-      function updateHistoryDropdownSelection() {
-        const historySelect = document.getElementById('historySelect');
-        if (historySelect) {
-          const domainSnapshots = getDomainSnapshots(currentDomain);
-          // If viewing the most recent snapshot
-          if (currentSnapshotIndex === domainSnapshots.length - 1) {
-            historySelect.value = 'latest';
-          } else if (currentSnapshotIndex > -1) {
-            // If viewing a specific historical snapshot
-            historySelect.value = String(currentSnapshotIndex);
-          }
-        }
-      }
-
-      function displaySelectedSnapshot(domain, snapshotIndex) {
-        const domainSnapshots = getDomainSnapshots(domain);
-
-        if (snapshotIndex < 0 || snapshotIndex >= domainSnapshots.length) {
-          showError('Selected historical snapshot not found.');
-          return;
-        }
-
-        const selectedSnapshot = domainSnapshots[snapshotIndex];
-        const recordsToDisplay = selectedSnapshot.records;
-        let previousSnapshotRecords = null;
-
-        // Determine the 'previous' snapshot for comparison for historical view
-        // If we are looking at the very first snapshot, there is no previous state to compare against.
-        // Otherwise, compare with the immediately preceding snapshot in the array.
-        if (snapshotIndex > 0) {
-          previousSnapshotRecords = domainSnapshots[snapshotIndex - 1].records;
-        }
-
-        let processedRecords;
-        if (previousSnapshotRecords) {
-          const comparisonResult = compareDnsRecords(
-            recordsToDisplay,
-            previousSnapshotRecords,
-          );
-          processedRecords = [
-            ...comparisonResult.added,
-            ...comparisonResult.modified,
-            ...comparisonResult.unchanged,
-            ...comparisonResult.deleted,
-          ];
-          // Sort processed records for consistent display in history view
-          processedRecords.sort((a, b) => {
-            const typeOrder =
-              RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
-            if (typeOrder !== 0) return typeOrder;
-            const nameCompare = a.name.localeCompare(b.name);
-            if (nameCompare !== 0) return nameCompare;
-            const statusOrder = {
-              added: 1,
-              modified: 2,
-              deleted: 3,
-              unchanged: 4,
-            };
-            return statusOrder[a.status] - statusOrder[b.status];
-          });
+        if (history.length > 0) {
+          domainAutocompleteList.classList.remove('hidden');
         } else {
-          // If no previous snapshot (first snapshot for this domain), all are 'unchanged' relative to null
-          processedRecords = recordsToDisplay.map((r) => ({
-            ...r,
-            status: 'unchanged',
-          }));
+          hideAutocompleteList();
         }
-
-        // Update dnsRecords global variable for rendering
-        dnsRecords = processedRecords;
-        renderSections(dnsRecords); // Re-render based on selected history
-        initialMessage.classList.add('hidden');
-        resultsHeader.classList.add('flex');
-        resultsHeader.classList.remove('hidden');
-        historySelectContainer.classList.remove('hidden');
-        exportBtn.classList.remove('hidden'); // Ensure export button is shown when viewing history
+        return;
+      } else if (filteredHistory.length === 0 && inputValue !== '') {
+        hideAutocompleteList();
+        return;
       }
 
-      // --- Export functionality ---
-      function exportRecordsToTxt() {
-        if (!dnsRecords || dnsRecords.length === 0) {
-          alert('No DNS records to export!');
-          return;
-        }
-
-        let fileContent = `DNS Records for ${currentDomain || 'unknown-domain'}\n`;
-        fileContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
-
-        // Group records by type for better readability in the TXT file
-        const recordsByType = {};
-        RECORD_TYPES.forEach((type) => {
-          recordsByType[type] = dnsRecords.filter((r) => r.type === type);
+      filteredHistory.forEach((item) => {
+        const div = document.createElement('div');
+        div.textContent = item;
+        div.addEventListener('click', () => {
+          domainInput.value = item;
+          performDNSLookup(item);
+          hideAutocompleteList();
         });
+        domainAutocompleteList.appendChild(div);
+      });
+      domainAutocompleteList.classList.remove('hidden');
+    }
 
-        RECORD_TYPES.forEach((type) => {
-          const records = recordsByType[type];
-          if (records.length > 0) {
-            fileContent += `--- ${type} Records (${records.length}) ---\n`;
-            // Sort records within each type for consistent output in the file
-            const sortedTypeRecords = sortRecords(records, 'name', 'asc'); // Default sort for export
+    function hideAutocompleteList() {
+      domainAutocompleteList.classList.add('hidden');
+      currentAutocompleteFocus = -1;
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('autocomplete-active');
+      }
+    }
 
-            sortedTypeRecords.forEach((record) => {
-              const status = record.status ? ` (${record.status})` : '';
-              const oldData =
-                record.status === 'modified' && record.oldData !== undefined
-                  ? ` (was: ${normalizeTxtData(record.oldData)})`
-                  : '';
-              fileContent += `Name: ${record.name}\n`;
-              fileContent += `Type: ${record.type}\n`;
-              fileContent += `Data: ${normalizeTxtData(record.data)}${oldData}\n`;
-              fileContent += `TTL: ${record.ttl}${status}\n`;
-              fileContent += `---------------------------------\n`;
-            });
-            fileContent += `\n`; // Add extra newline between record types
-          }
-        });
+    function addActive(items) {
+      if (!items || items.length === 0) return;
+      removeActive(items);
+      if (currentAutocompleteFocus >= items.length) currentAutocompleteFocus = 0;
+      if (currentAutocompleteFocus < 0) currentAutocompleteFocus = items.length - 1;
+      items[currentAutocompleteFocus].classList.add('autocomplete-active');
+      items[currentAutocompleteFocus].scrollIntoView({ block: 'nearest' });
+    }
 
-        const filename = `dns_records_${
-          currentDomain.replace(/[^a-zA-Z0-9-.]/g, '_') || 'export'
-        }.txt`;
-        const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
+    function removeActive(items) {
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('autocomplete-active');
+      }
+    }
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a); // Append to body is good practice
-        a.click();
-        document.body.removeChild(a); // Clean up
-        URL.revokeObjectURL(url); // Release the object URL
+    function selectAutocompleteItem() {
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      if (currentAutocompleteFocus > -1 && items[currentAutocompleteFocus]) {
+        items[currentAutocompleteFocus].click();
+      } else if (domainInput.value) {
+        performDNSLookup(domainInput.value);
+      }
+    }
+
+    function populateHistoryDropdown(domain) {
+      const historySelectContainer = document.getElementById('historySelectContainer');
+      historySelectContainer.innerHTML = '';
+      const domainSnapshots = getDomainSnapshots(domain);
+
+      if (domainSnapshots.length <= 1) {
+        historySelectContainer.classList.add('hidden');
+        return;
       }
 
-      // --- Event Listeners ---
-      lookupBtn.addEventListener('click', () => {
-        performDNSLookup(domainInput.value.trim());
+      historySelectContainer.classList.remove('hidden');
+
+      const label = document.createElement('label');
+      label.setAttribute('for', 'historySelect');
+      label.className = 'text-sm font-medium text-[var(--text-primary)] sr-only';
+      label.textContent = 'View historical DNS records';
+      historySelectContainer.appendChild(label);
+
+      const select = document.createElement('select');
+      select.id = 'historySelect';
+      select.className = 'filter-select min-w-[150px]';
+      select.setAttribute('aria-label', 'Select a historical DNS record snapshot');
+
+      const latestOption = document.createElement('option');
+      latestOption.value = 'latest';
+      latestOption.textContent = 'Latest Records';
+      select.appendChild(latestOption);
+
+      domainSnapshots.forEach((snapshot, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        const date = new Date(snapshot.timestamp);
+        option.textContent = `Snapshot: ${date.toLocaleString()}`;
+        select.appendChild(option);
       });
 
-      // Event listener for the new "Clear History" button
-      clearHistoryBtn.addEventListener('click', () => {
-        if (
-          confirm(
-            'Are you sure you want to clear all stored DNS history and records? This cannot be undone.',
-          )
-        ) {
+      select.addEventListener('change', (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue === 'latest') {
+          currentSnapshotIndex = domainSnapshots.length - 1;
+        } else {
+          currentSnapshotIndex = parseInt(selectedValue, 10);
+        }
+        displaySelectedSnapshot(currentDomain, currentSnapshotIndex);
+      });
+
+      historySelectContainer.appendChild(select);
+      updateHistoryDropdownSelection();
+    }
+
+    function updateHistoryDropdownSelection() {
+      const historySelect = document.getElementById('historySelect');
+      if (historySelect) {
+        const domainSnapshots = getDomainSnapshots(currentDomain);
+        if (currentSnapshotIndex === domainSnapshots.length - 1) {
+          historySelect.value = 'latest';
+        } else if (currentSnapshotIndex > -1) {
+          historySelect.value = String(currentSnapshotIndex);
+        }
+      }
+    }
+
+    function displaySelectedSnapshot(domain, snapshotIndex) {
+      const domainSnapshots = getDomainSnapshots(domain);
+
+      if (snapshotIndex < 0 || snapshotIndex >= domainSnapshots.length) {
+        showError('Selected historical snapshot not found.');
+        return;
+      }
+
+      const selectedSnapshot = domainSnapshots[snapshotIndex];
+      const recordsToDisplay = selectedSnapshot.records;
+      let previousSnapshotRecords = snapshotIndex > 0 ? domainSnapshots[snapshotIndex - 1].records : null;
+
+      let processedRecords;
+      if (previousSnapshotRecords) {
+        const comparisonResult = compareDnsRecords(recordsToDisplay, previousSnapshotRecords);
+        processedRecords = [
+          ...comparisonResult.added,
+          ...comparisonResult.modified,
+          ...comparisonResult.unchanged,
+          ...comparisonResult.deleted
+        ];
+        processedRecords.sort((a, b) => {
+          const typeOrder = RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
+          if (typeOrder !== 0) return typeOrder;
+          const nameCompare = a.name.localeCompare(b.name);
+          if (nameCompare !== 0) return nameCompare;
+          const statusOrder = { added: 1, modified: 2, deleted: 3, unchanged: 4 };
+          return statusOrder[a.status] - statusOrder[b.status];
+        });
+      } else {
+        processedRecords = recordsToDisplay.map((r) => ({ ...r, status: 'unchanged' }));
+      }
+
+      dnsRecords = processedRecords;
+      renderSections(dnsRecords);
+      initialMessage.classList.add('hidden');
+      resultsHeader.classList.add('flex');
+      resultsHeader.classList.remove('hidden');
+      historySelectContainer.classList.remove('hidden');
+      exportBtn.classList.remove('hidden');
+    }
+
+    function exportRecordsToTxt() {
+      if (!dnsRecords || dnsRecords.length === 0) {
+        alert('No DNS records to export!');
+        return;
+      }
+
+      let fileContent = `DNS Records for ${currentDomain || 'unknown-domain'}\n`;
+      fileContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+
+      const recordsByType = {};
+      RECORD_TYPES.forEach((type) => {
+        recordsByType[type] = dnsRecords.filter((r) => r.type === type);
+      });
+
+      RECORD_TYPES.forEach((type) => {
+        const records = recordsByType[type];
+        if (records.length > 0) {
+          fileContent += `--- ${type} Records (${records.length}) ---\n`;
+          const sortedTypeRecords = sortRecords(records, 'name', 'asc');
+          sortedTypeRecords.forEach((record) => {
+            const status = record.status ? ` (${record.status})` : '';
+            const oldData = record.status === 'modified' && record.oldData !== undefined
+              ? ` (was: ${normalizeTxtData(record.oldData)})`
+              : '';
+            fileContent += `Name: ${record.name}\n`;
+            fileContent += `Type: ${record.type}\n`;
+            fileContent += `Data: ${normalizeTxtData(record.data)}${oldData}\n`;
+            fileContent += `TTL: ${record.ttl}${status}\n`;
+            fileContent += `---------------------------------\n`;
+          });
+          fileContent += `\n`;
+        }
+      });
+
+      const filename = `dns_records_${currentDomain.replace(/[^a-zA-Z0-9-.]/g, '_') || 'export'}.txt`;
+      const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Theme management
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeIcon.innerHTML = theme === 'dark' ? SVGS.sun : SVGS.moon;
+      try {
+        localStorage.setItem(LOCAL_STORAGE_THEME_KEY, theme);
+      } catch (e) {
+        console.error('Error saving theme to local storage:', e);
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+      setTheme(initialTheme);
+    }
+
+    // Debounce utility
+    function debounce(func, wait) {
+      return function (...args) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Event Listeners
+    const historySelectContainer = document.createElement('div');
+    historySelectContainer.id = 'historySelectContainer';
+    historySelectContainer.className = 'flex items-center gap-2 mb-4 hidden';
+    resultsHeader.parentNode.insertBefore(historySelectContainer, resultsHeader.nextSibling);
+
+    lookupBtn.addEventListener('click', () => {
+      performDNSLookup(domainInput.value.trim());
+    });
+
+    clearHistoryBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all stored DNS history and records? This cannot be undone.')) {
+        try {
           localStorage.clear();
-          resetUI(); // Reset the UI to its initial state
+          resetUI();
           alert('All local storage data has been cleared.');
+        } catch (e) {
+          showError('Failed to clear local storage. Please try again.');
         }
-      });
+      }
+    });
 
-      // Event listener for the new "Export" button
-      exportBtn.addEventListener('click', exportRecordsToTxt);
+    exportBtn.addEventListener('click', exportRecordsToTxt);
 
-      domainInput.addEventListener('keydown', (e) => {
-        const items = domainAutocompleteList.getElementsByTagName('div');
-        if (e.key === 'ArrowDown') {
-          currentAutocompleteFocus++;
-          addActive(items);
-          e.preventDefault();
-        } else if (e.key === 'ArrowUp') {
-          currentAutocompleteFocus--;
-          addActive(items);
-          e.preventDefault();
-        } else if (e.key === 'Enter') {
-          e.preventDefault();
-          selectAutocompleteItem();
-        } else if (e.key === 'Escape') {
-          hideAutocompleteList();
-        }
-      });
+    themeToggleBtn.addEventListener('click', toggleTheme);
 
-      domainInput.addEventListener('input', () => {
-        const inputValue = domainInput.value.trim();
-        renderAutocompleteList(inputValue);
-      });
+    domainInput.addEventListener('keydown', (e) => {
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      if (e.key === 'ArrowDown') {
+        currentAutocompleteFocus++;
+        addActive(items);
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        currentAutocompleteFocus--;
+        addActive(items);
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        selectAutocompleteItem();
+      } else if (e.key === 'Escape') {
+        hideAutocompleteList();
+      }
+    });
 
-      document.addEventListener('click', (e) => {
-        if (
-          e.target !== domainInput &&
-          !domainAutocompleteList.contains(e.target)
-        ) {
-          hideAutocompleteList();
-        }
-      });
+    domainInput.addEventListener('input', debounce(() => {
+      const inputValue = domainInput.value.trim();
+      renderAutocompleteList(inputValue);
+    }, DEBOUNCE_DELAY));
 
-      filterType.addEventListener('change', () => {
-        renderSections(dnsRecords);
-      });
+    document.addEventListener('click', (e) => {
+      if (e.target !== domainInput && !domainAutocompleteList.contains(e.target)) {
+        hideAutocompleteList();
+      }
+    });
 
-      document.addEventListener('DOMContentLoaded', () => {
-        resetUI();
-        const lastDomain = loadSearchHistory()[0];
-        if (lastDomain) {
-          domainInput.value = lastDomain;
-          // Optionally perform a lookup on load for the last domain for immediate viewing
-          // performDNSLookup(lastDomain);
-        }
-      });
-    </script>
-  </body>
+    filterType.addEventListener('change', () => {
+      renderSections(dnsRecords);
+    });
+
+    // Cleanup event listeners on page unload
+    window.addEventListener('beforeunload', () => {
+      domainInput.removeEventListener('input', renderAutocompleteList);
+      domainInput.removeEventListener('keydown', selectAutocompleteItem);
+      document.removeEventListener('click', hideAutocompleteList);
+      filterType.removeEventListener('change', renderSections);
+      lookupBtn.removeEventListener('click', performDNSLookup);
+      clearHistoryBtn.removeEventListener('click', resetUI);
+      exportBtn.removeEventListener('click', exportRecordsToTxt);
+      themeToggleBtn.removeEventListener('click', toggleTheme);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeTheme();
+      resetUI();
+      const lastDomain = loadSearchHistory()[0];
+      if (lastDomain) {
+        domainInput.value = lastDomain;
+      }
+    });
+  </script>
+</body>
 </html>
