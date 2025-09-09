@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenDNS "BETA"</title>
+  <title>OpenDNS</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -675,9 +675,10 @@
       border: 1px solid var(--error-text);
       box-shadow: var(--shadow-sm);
       font-weight: 500;
-      display: flex;
+      display: flex; /* Use flex to allow internal elements like icons/close buttons */
       align-items: center;
       gap: 0.75rem;
+      /* Default hidden state is handled by JS, but if present, these styles apply */
     }
 
     /* History Select Container */
@@ -688,6 +689,7 @@
       gap: 0.5rem;
       margin-top: -0.5rem; /* Pull up closer to results header */
       margin-bottom: 1rem; /* Space below it */
+      /* Default hidden state is handled by JS */
     }
 
     /* Footer */
@@ -755,7 +757,7 @@
   <div class="container">
     <div class="header">
       <h1 class="text-2xl font-extrabold text-[var(--text-primary)]">
-        OpenDNS "BETA"
+        OpenDNS
       </h1>
       <div class="input-group">
         <div id="domainInputContainer">
@@ -789,7 +791,7 @@
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            class="w-5 h-5 text-white" <!-- Ensure icon is white -->
+            class="w-5 h-5 text-white"
           >
             <path
               d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"
@@ -807,7 +809,7 @@
         </label>
       </div>
     </div>
-    <div id="result" class="flex flex-col gap-4"> <!-- Added gap for better result section spacing -->
+    <div id="result" class="flex flex-col gap-4">
       <div id="initialMessage" class="initial-message">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
@@ -857,17 +859,13 @@
     ></div>
     <div class="footer">
       <small>
-        <b>OpenDNS</b> Version: <b>1.2.80</b>
+        <b>OpenDNS</b> Version: <b>1.2.85</b>
       </small>
     </div>
     <div aria-live="polite" class="sr-only" id="copy-status"></div>
   </div>
   <script>
-    // ** JavaScript (No changes needed unless specific new elements require interaction) **
-    // Your existing JavaScript is very robust and handles the functionality well.
-    // The visual changes are purely CSS/HTML.
-    // However, ensure the `populateHistoryDropdown` function correctly appends to `historySelectContainer`
-    // where you want it (currently after `resultsHeader`).
+    // ** JavaScript **
 
     // DOM elements
     const lookupBtn = document.getElementById('lookupBtn');
@@ -958,23 +956,30 @@
     function showError(message) {
       console.error('Error:', message);
       errorDiv.textContent = message;
-      errorDiv.classList.remove('hidden');
+      errorDiv.classList.remove('hidden'); // Show the error
+      
+      // Hide other main content sections
       initialMessage.classList.add('hidden');
       resultsHeader.classList.add('hidden');
-      document.getElementById('historySelectContainer').classList.add('hidden'); // Explicitly hide
+      document.getElementById('historySelectContainer').classList.add('hidden');
       exportBtn.classList.add('hidden');
       resultSections.innerHTML = '';
     }
 
     function resetUI() {
-      errorDiv.classList.add('hidden');
+      // Always ensure error is hidden first when resetting
+      errorDiv.classList.add('hidden'); 
+      
       resultSections.innerHTML = '';
       dnsRecords = [];
       filterType.value = '';
-      initialMessage.classList.remove('hidden');
+      
+      // Always show initial message on a full reset, unless an error will immediately replace it
+      initialMessage.classList.remove('hidden'); 
       resultsHeader.classList.add('hidden');
-      document.getElementById('historySelectContainer').classList.add('hidden'); // Explicitly hide
+      document.getElementById('historySelectContainer').classList.add('hidden');
       exportBtn.classList.add('hidden');
+      
       RECORD_TYPES.forEach((type) => {
         currentSort[type] = { column: 'name', direction: 'asc' };
       });
@@ -1221,8 +1226,10 @@
             <p class="text-sm text-[var(--text-secondary)]">Try adjusting your filter or searching for a different domain.</p>
           </div>
         `;
-        initialMessage.classList.add('hidden');
-        exportBtn.classList.add('hidden');
+        // When no sections are rendered due to filtering, the initial message replaces the content.
+        // It's not a global 'initial state', but a specific 'no records for filter' state.
+        // So, we don't need to explicitly hide the global initialMessage if this one is shown.
+        exportBtn.classList.add('hidden'); // No records to export
       } else {
         exportBtn.classList.remove('hidden');
       }
@@ -1268,13 +1275,18 @@
     }
 
     async function performDNSLookup(domain) {
+      // Start by clearing any existing UI state, including errors
+      resetUI(); 
+
       if (!domain) {
         showError('Please enter a domain name.');
         return;
       }
-      resetUI();
+
       currentDomain = domain.toLowerCase();
-      errorDiv.classList.add('hidden');
+      // Only now hide the initial message, as we are performing a lookup
+      initialMessage.classList.add('hidden'); 
+
       lookupBtn.disabled = true;
       lookupBtnText.innerHTML = `<span class="loading-spinner"></span>`;
       domainInput.disabled = true;
@@ -1338,6 +1350,7 @@
           dnsRecords = currentFetchedRecords.map((r) => ({ ...r, status: 'unchanged' }));
         }
 
+        // Only hide initial message if actual records are found and displayed
         initialMessage.classList.add('hidden');
         resultsHeader.classList.add('flex');
         resultsHeader.classList.remove('hidden');
@@ -1676,7 +1689,8 @@
 
       dnsRecords = processedRecords;
       renderSections(dnsRecords);
-      initialMessage.classList.add('hidden');
+      // Ensure other parts of the UI are handled correctly
+      initialMessage.classList.add('hidden'); // Hide initial message as results are displayed
       resultsHeader.classList.add('flex');
       resultsHeader.classList.remove('hidden');
       document.getElementById('historySelectContainer').classList.remove('hidden'); // Ensure visible
@@ -1782,7 +1796,7 @@
       if (confirm('Are you sure you want to clear all stored DNS history and records? This cannot be undone.')) {
         try {
           localStorage.clear();
-          resetUI();
+          resetUI(); // A full reset clears everything and shows initial message
           alert('All local storage data has been cleared.');
         } catch (e) {
           showError('Failed to clear local storage. Please try again.');
@@ -1837,7 +1851,7 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       initializeTheme();
-      resetUI();
+      resetUI(); // Ensure UI is in a clean initial state on load
       const lastDomain = loadSearchHistory()[0];
       if (lastDomain) {
         domainInput.value = lastDomain;
