@@ -14,37 +14,48 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /*
-      ** CSS Styles (Copy the updated CSS from above here) **
+      ** Corrected and Refined CSS Styles **
       ** Start of updated CSS **
     */
 
     :root {
-      --bg-primary: #f8fafc; /* Slightly lighter, more inviting */
-      --bg-secondary: #ffffff;
-      --bg-tertiary: #eef1f5; /* Slightly softer */
-      --text-primary: #1e293b; /* Deeper dark for contrast */
-      --text-secondary: #64748b; /* Softer grey */
-      --border-color: #e2e8f0; /* Lighter border */
-      --hover-bg: #f0f4f8; /* Softer hover */
-      --table-header-bg: #f8fafc; /* Match primary bg */
-      --table-row-even: #fdfdfe;
-      --table-row-hover: #eef2f8; /* Softer blueish tint */
-      --tooltip-bg: #334155; /* Darker tooltip for better contrast */
-      --tooltip-text: #ffffff;
-      --accent-blue: #3b82f6;
-      --accent-blue-hover: #2563eb;
-      --error-bg: #fef2f2;
-      --error-text: #dc2626;
-      --success-bg: #d1fae5;
-      --warning-bg: #fef3c7;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08); /* More diffuse, slightly larger */
-      --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12); /* More pronounced */
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother animation curve */
-      --font-size-base: clamp(0.95rem, 0.8vw + 0.5rem, 1rem); /* Slight adjustment */
-      --radius-md: 10px; /* Slightly more rounded */
-      --radius-sm: 6px; /* Slightly more rounded */
+      /* Base Colors - Slightly adjusted for a modern, softer feel */
+      --bg-primary: #f8fafc; /* Very light background, almost white but softer */
+      --bg-secondary: #ffffff; /* Pure white for cards/elements */
+      --bg-tertiary: #eff3f7; /* Light grey for subtle accents/headers */
+      --text-primary: #1e293b; /* Deep dark for main text */
+      --text-secondary: #64748b; /* Medium grey for secondary text */
+      --border-color: #e2e8f0; /* Light grey for borders */
+      --hover-bg: #f0f4f8; /* Soft hover background */
+      --table-header-bg: var(--bg-tertiary); /* Match tertiary for header */
+      --table-row-even: #fdfdfe; /* Slightly off-white for even rows */
+      --table-row-hover: #eef2f8; /* Soft blueish tint on hover */
+      --tooltip-bg: #334155; /* Dark tooltip background */
+      --tooltip-text: #ffffff; /* White tooltip text */
 
-      /* New: Gradient for primary button */
+      /* Accent Colors - More vibrant but still professional */
+      --accent-blue: #3b82f6; /* Tailwind blue-500 equivalent */
+      --accent-blue-hover: #2563eb; /* Tailwind blue-600 equivalent */
+      --error-bg: #fef2f2; /* Light red background */
+      --error-text: #dc2626; /* Dark red text */
+      --success-bg: #d1fae5; /* Light green background */
+      --warning-bg: #fef3c7; /* Light yellow background */
+
+      /* Shadows - More pronounced but still soft and diffuse */
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08); /* Small, diffuse shadow */
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1); /* Medium, elevated shadow */
+      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15); /* Larger, more prominent shadow */
+
+      /* Transitions & Typography */
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother cubic-bezier */
+      --font-size-base: clamp(0.95rem, 0.8vw + 0.5rem, 1rem); /* Responsive font size */
+
+      /* Border Radii - Slightly more rounded edges for a friendlier feel */
+      --radius-lg: 12px; /* Large radius for cards/sections */
+      --radius-md: 8px; /* Medium radius for buttons/inputs */
+      --radius-sm: 5px; /* Small radius for subtle elements */
+
+      /* Button Gradients - Modern touch for primary actions */
       --btn-primary-gradient: linear-gradient(
         to bottom right,
         var(--accent-blue),
@@ -54,31 +65,30 @@
         to bottom right,
         var(--accent-blue-hover),
         #1d4ed8
-      ); /* Darker blue */
+      ); /* Darker blue on hover */
 
-      /* New: Slightly lighter red for clear button */
-      --btn-danger: #ef4444;
-      --btn-danger-hover: #dc2626;
-
-      /* New: Accent green for export button */
-      --btn-success: #22c55e;
-      --btn-success-hover: #16a34a;
+      --btn-danger: #ef4444; /* Tailwind red-500 */
+      --btn-danger-hover: #dc2626; /* Tailwind red-600 */
+      --btn-success: #22c55e; /* Tailwind green-500 */
+      --btn-success-hover: #16a34a; /* Tailwind green-600 */
     }
 
     [data-theme="dark"] {
-      --bg-primary: #1a202c; /* Deeper primary dark */
-      --bg-secondary: #2d3748;
-      --bg-tertiary: #3e4a5e; /* Softer tertiary dark */
-      --text-primary: #e2e8f0;
-      --text-secondary: #94a3b8;
-      --border-color: #475569; /* Softer border */
-      --hover-bg: #374151; /* Deeper hover */
-      --table-header-bg: #2d3748; /* Match secondary bg */
+      /* Dark Mode Colors - Adjusted for better contrast and harmony */
+      --bg-primary: #1e293b; /* Deep primary dark background */
+      --bg-secondary: #2d3748; /* Slightly lighter for cards/elements */
+      --bg-tertiary: #3e4a5e; /* Soft dark grey for accents/headers */
+      --text-primary: #e2e8f0; /* Light text */
+      --text-secondary: #94a3b8; /* Muted light grey for secondary text */
+      --border-color: #475569; /* Darker border */
+      --hover-bg: #374151; /* Deeper hover background */
+      --table-header-bg: var(--bg-tertiary); /* Match tertiary */
       --table-row-even: #252e3e; /* Even darker row */
-      --table-row-hover: #3e4a5e; /* Softer blueish tint */
-      --tooltip-bg: #f0f4f8; /* Lighter tooltip for contrast */
-      --tooltip-text: #1a202c;
-      --accent-blue: #60a5fa; /* Lighter blue for dark mode */
+      --table-row-hover: #3e4a5e; /* Soft blueish tint on hover */
+      --tooltip-bg: #f0f4f8; /* Lighter tooltip for dark mode contrast */
+      --tooltip-text: #1a202c; /* Dark tooltip text */
+
+      --accent-blue: #60a5fa; /* Lighter blue for dark mode contrast */
       --accent-blue-hover: #3b82f6; /* Still distinct on hover */
 
       --error-bg: #7f1d1d;
@@ -98,12 +108,13 @@
         #3b82f6
       );
 
-      --btn-danger: #ef4444;
+      --btn-danger: #ef4444; /* Keep consistent red */
       --btn-danger-hover: #dc2626;
-      --btn-success: #22c55e;
+      --btn-success: #22c55e; /* Keep consistent green */
       --btn-success-hover: #16a34a;
     }
 
+    /* Base body styles */
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg-primary);
@@ -113,59 +124,212 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      line-height: 1.6; /* Improved readability */
     }
 
-    /* Layout */
+    /* Container for overall layout */
     .container {
       max-width: 80rem;
       margin: 0 auto;
-      padding: 1.5rem; /* More padding */
+      padding: 1rem; /* Slightly less overall padding, let inner elements handle it */
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      gap: 2rem; /* More space between sections */
+      gap: 1.5rem; /* Consistent spacing between main sections */
     }
 
-    /* Header */
+    /* Header - Sticky, elevated, and well-spaced */
     .header {
       background: var(--bg-secondary);
-      border: none; /* Remove border, let shadow define separation */
-      border-radius: var(--radius-md);
-      padding: 1.5rem 2rem; /* More padding */
-      box-shadow: var(--shadow-md); /* Stronger shadow */
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem; /* Adjusted padding */
+      box-shadow: var(--shadow-md); /* Stronger shadow for elevation */
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1rem; /* Spacing between header elements */
       transition: var(--transition);
       position: sticky; /* Make it sticky */
       top: 1rem; /* Stick at 1rem from top */
       z-index: 100; /* Ensure it stays above other content */
     }
 
-    /* Input Group */
+    /* Input Group - Controls spacing and alignment of input/buttons */
     .input-group {
       display: flex;
       align-items: center;
-      gap: 0.875rem; /* Slightly more space */
+      gap: 0.75rem; /* Tighter spacing for input and buttons */
       flex-grow: 1;
       flex-wrap: wrap;
     }
 
-    /* Record Section */
+    /* Domain Input Container - for autocomplete positioning */
+    #domainInputContainer {
+      position: relative;
+      flex-grow: 1;
+      min-width: 180px; /* Ensure input doesn't get too small */
+    }
+
+    /* Input Focus - Styling for text inputs and selects */
+    .input-focus {
+      transition: var(--transition);
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem; /* Consistent padding */
+      box-shadow: var(--shadow-sm); /* Subtle shadow for input */
+      font-size: var(--font-size-base); /* Ensure consistent font size */
+      color: var(--text-primary);
+      width: 100%; /* Ensure it takes full width of its container */
+    }
+
+    .input-focus:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Focus ring effect */
+    }
+
+    /* Buttons (General styles for all functional buttons) */
+    .btn-base {
+      display: inline-flex; /* Use inline-flex for better alignment in groups */
+      justify-content: center;
+      align-items: center;
+      padding: 0.75rem 1.25rem; /* Consistent padding */
+      border-radius: var(--radius-md); /* Softer corners */
+      font-weight: 600; /* Slightly bolder text */
+      transition: var(--transition);
+      border: none;
+      cursor: pointer;
+      min-width: 2.75rem; /* Minimum width for small icon buttons */
+      line-height: 1; /* Ensure consistent text height */
+    }
+
+    /* Primary Lookup Button */
+    #lookupBtn {
+      background: var(--btn-primary-gradient);
+      color: var(--tooltip-text); /* White text for contrast */
+      box-shadow: var(--shadow-sm);
+    }
+
+    #lookupBtn:hover {
+      background: var(--btn-primary-gradient-hover);
+      transform: translateY(-1px); /* Slight lift effect */
+      box-shadow: var(--shadow-md); /* More pronounced shadow on hover */
+    }
+
+    #lookupBtn:active {
+      transform: translateY(0); /* Press down effect */
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Clear History Button */
+    #clearHistoryBtn {
+      background: var(--btn-danger);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    #clearHistoryBtn:hover {
+      background: var(--btn-danger-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    #clearHistoryBtn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Export Button */
+    #exportBtn {
+      background: var(--btn-success);
+      color: white;
+      box-shadow: var(--shadow-sm);
+      min-width: auto; /* Allow text button to expand */
+      padding: 0.75rem 1rem; /* Adjusted padding for text */
+    }
+
+    #exportBtn:hover {
+      background: var(--btn-success-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    #exportBtn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Icons */
+    .search-icon {
+      width: 1.25rem; /* Slightly larger icon */
+      height: 1.25rem;
+      fill: var(--tooltip-text); /* Fill with white for primary button */
+    }
+
+    /* Theme Toggle Switch */
+    .theme-toggle {
+      position: relative;
+      display: inline-block;
+      width: 3.25rem; /* Adjusted width */
+      height: 1.75rem; /* Adjusted height */
+    }
+
+    .theme-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .theme-toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 1.125rem; /* More rounded to match height */
+      transition: var(--transition);
+    }
+
+    .theme-toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 1.375rem; /* Adjusted circle size */
+      width: 1.375rem; /* Adjusted circle size */
+      left: 0.1875rem;
+      bottom: 0.1875rem;
+      background: var(--bg-secondary);
+      border-radius: 50%;
+      transition: var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-toggle input:checked + .theme-toggle-slider {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .theme-toggle input:checked + .theme-toggle-slider:before {
+      transform: translateX(1.5rem); /* Adjusted translation for new size */
+    }
+
+    .theme-toggle input:focus + .theme-toggle-slider {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      outline: none; /* Remove default outline */
+    }
+
+    /* Record Section (Card-like appearance) */
     .record-section {
       background: var(--bg-secondary);
-      border: none; /* Remove default border */
-      border-radius: var(--radius-md);
-      margin-bottom: 1.5rem; /* More spacing */
-      overflow: hidden;
+      border-radius: var(--radius-lg);
+      overflow: hidden; /* Ensure rounded corners clip content */
       transition: var(--transition);
       box-shadow: var(--shadow-md); /* Stronger shadow for card effect */
     }
 
     .record-section summary {
-      padding: 1rem 1.5rem; /* More padding */
+      padding: 1rem 1.5rem;
       background: var(--bg-tertiary); /* Use tertiary for header */
       font-weight: 600;
       color: var(--text-primary);
@@ -174,8 +338,9 @@
       align-items: center;
       gap: 0.5rem;
       transition: var(--transition);
-      border-bottom: 1px solid var(--border-color); /* Retain divider */
-      border-radius: var(--radius-md) var(--radius-md) 0 0; /* Rounded top */
+      border-bottom: 1px solid var(--border-color);
+      /* Only apply border-radius to top corners, as content fills bottom */
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
       font-size: 1.05rem; /* Slightly larger text */
     }
 
@@ -189,23 +354,19 @@
 
     .record-section summary::after {
       content: '▼';
-      font-size: 0.85rem;
+      font-size: 0.75rem; /* Smaller arrow */
       margin-left: auto;
       transition: transform 0.2s ease;
-    }
-
-    .record-section[open] summary {
-      border-radius: var(--radius-md) var(--radius-md) 0 0;
     }
 
     .record-section[open] summary::after {
       transform: rotate(180deg);
     }
 
-    /* Table */
+    /* Table container and styling */
     .table-container {
-      overflow-x: auto;
-      padding: 1.5rem; /* More padding */
+      overflow-x: auto; /* Allow horizontal scrolling for tables */
+      padding: 1rem 1.5rem 1.5rem; /* Adjusted padding to match summary */
     }
 
     .dns-table {
@@ -215,22 +376,22 @@
 
     .dns-table th,
     .dns-table td {
-      padding: 1rem 1.25rem; /* More padding in cells */
+      padding: 0.9rem 1.25rem; /* Slightly more padding in cells */
       text-align: left;
       border-bottom: 1px solid var(--border-color);
       color: var(--text-primary);
-      font-size: 0.95rem; /* Slightly smaller text for data density */
+      font-size: 0.9rem; /* Slightly smaller text for data density */
     }
 
     .dns-table th {
-      font-weight: 600; /* Slightly bolder */
-      background: var(--bg-tertiary); /* Match summary background */
+      font-weight: 600;
+      background: var(--table-header-bg); /* Use specific header background */
       cursor: pointer;
       user-select: none;
       transition: var(--transition);
       border-bottom: 2px solid var(--border-color); /* Thicker separator */
       position: sticky; /* Make table headers sticky */
-      top: 0;
+      top: 0; /* Stick to the top of the table-container */
       z-index: 10;
     }
 
@@ -247,7 +408,7 @@
       box-shadow: inset 3px 0 0 0 var(--accent-blue); /* Subtle left border highlight */
     }
 
-    /* Sort Icon */
+    /* Sort Icon for table headers */
     .sort-icon {
       display: inline-block;
       width: 0.75rem;
@@ -262,28 +423,28 @@
       transform: rotate(180deg);
     }
 
-    /* Copyable Elements */
+    /* Copyable Elements with Tooltips */
     .copyable {
       cursor: pointer;
       position: relative;
       display: inline-flex;
       align-items: center;
-      padding: 0.35rem 0.6rem; /* Slightly more padding */
+      padding: 0.3rem 0.5rem; /* Tighter padding for inline elements */
       border-radius: var(--radius-sm);
       transition: var(--transition);
     }
 
     .copyable:hover {
       background: var(--hover-bg);
+      color: var(--accent-blue);
       text-decoration: underline;
       text-decoration-color: var(--accent-blue);
-      color: var(--accent-blue); /* Highlight text on hover */
     }
 
     .copy-icon {
       opacity: 0;
       margin-left: 0.25rem;
-      width: 1rem; /* Slightly larger icon */
+      width: 1rem;
       height: 1rem;
       fill: var(--accent-blue);
       transition: var(--transition);
@@ -296,50 +457,51 @@
 
     .copyable.copied .copy-icon {
       opacity: 1;
-      fill: #10b981;
+      fill: #10b981; /* Tailwind green-500 for copied state */
       transform: scale(1.1);
     }
 
     .copy-tooltip {
       position: absolute;
-      top: -2.2rem; /* Adjusted position */
+      top: -2rem; /* Adjusted position */
       left: 50%;
       transform: translateX(-50%);
       background: var(--tooltip-bg);
       color: var(--tooltip-text);
-      padding: 0.35rem 0.75rem; /* More padding */
+      padding: 0.35rem 0.75rem;
       border-radius: var(--radius-sm);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       white-space: nowrap;
       pointer-events: none;
       z-index: 20;
       opacity: 0;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      backdrop-filter: blur(8px) saturate(1.8); /* Stronger blur for tooltip */
+      backdrop-filter: blur(6px) saturate(1.5); /* Slightly less aggressive blur */
     }
 
     .copyable:hover .copy-tooltip--hover,
     .copyable:focus .copy-tooltip--hover {
       opacity: 1;
+      transform: translateX(-50%) translateY(-2px); /* Slight lift on hover */
     }
 
     .copyable.copied .copy-tooltip--copied {
       opacity: 1;
-      top: -2.2rem;
+      top: -2rem;
+      transform: translateX(-50%) translateY(0); /* Stays in place when copied */
     }
 
-    /* Info Icon */
+    /* Info Icon & Tooltip */
     .info-icon {
       position: relative;
       display: inline-block;
-      width: 1rem; /* Slightly larger icon */
+      width: 1rem;
       height: 1rem;
       margin-left: 0.25rem;
       fill: var(--text-secondary);
       cursor: pointer;
       vertical-align: middle;
       transition: var(--transition);
-      z-index: 999;
     }
 
     .info-icon:hover,
@@ -355,32 +517,32 @@
       transform: translateX(-50%);
       background: var(--tooltip-bg);
       color: var(--tooltip-text);
-      padding: 0.35rem 0.75rem; /* More padding */
+      padding: 0.35rem 0.75rem;
       border-radius: var(--radius-sm);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       white-space: nowrap;
       pointer-events: none;
       z-index: 1000;
       opacity: 0;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      backdrop-filter: blur(8px) saturate(1.8); /* Stronger blur for tooltip */
+      backdrop-filter: blur(6px) saturate(1.5);
     }
 
     .info-icon:hover .info-tooltip,
     .info-icon:focus .info-tooltip {
       opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
     }
 
     /* Loading Spinner */
     .loading-spinner {
       display: inline-block;
-      width: 1.125rem; /* Slightly larger */
-      height: 1.125rem;
+      width: 1.2rem;
+      height: 1.2rem;
       border: 2px solid var(--tooltip-text);
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.5s linear infinite;
-      margin-left: 0.5rem;
     }
 
     @keyframes spin {
@@ -389,13 +551,13 @@
       }
     }
 
-    /* Select */
+    /* Select element for filters and history */
     .filter-select {
-      appearance: none;
-      background: var(--bg-secondary); /* Use secondary for select bg */
+      appearance: none; /* Remove default browser styling */
+      background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 0.75rem 2.5rem 0.75rem 1rem; /* More vertical padding and space for icon */
+      padding: 0.75rem 2.5rem 0.75rem 1rem; /* Adjust padding for icon */
       font-size: var(--font-size-base);
       color: var(--text-primary);
       cursor: pointer;
@@ -405,80 +567,45 @@
       background-position: right 0.75rem center;
       background-size: 1rem;
       box-shadow: var(--shadow-sm);
+      min-width: 150px; /* Ensure a decent minimum width */
     }
 
     .filter-select:focus {
       outline: none;
       border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Focus ring */
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
 
-    /* Input */
-    .input-focus {
-      transition: var(--transition);
-      background: var(--bg-secondary);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      padding: 0.75rem 1.25rem; /* More vertical padding */
-      box-shadow: var(--shadow-sm); /* Subtle shadow for input */
-    }
-
-    .input-focus:focus {
-      border-color: var(--accent-blue);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Focus ring */
-    }
-
-    /* Icons */
-    .search-icon {
-      width: 1.25rem; /* Slightly larger icon */
-      height: 1.25rem;
-      fill: var(--tooltip-text);
-    }
-
-    /* Buttons general styles */
-    .btn-base {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0.75rem 1.25rem; /* More padding */
-      border-radius: var(--radius-md); /* Softer corners */
-      font-weight: 600; /* Slightly bolder text */
-      transition: var(--transition);
-      border: none;
-      cursor: pointer;
-    }
-
-    /* Record States */
+    /* Record States for comparison */
     .record-row-added {
-      background: rgba(34, 197, 94, 0.1); /* Lighter green */
+      background: rgba(34, 197, 94, 0.08); /* Lighter green with alpha */
     }
 
     .record-row-deleted {
-      background: rgba(239, 68, 68, 0.1); /* Lighter red */
+      background: rgba(239, 68, 68, 0.08); /* Lighter red with alpha */
       text-decoration: line-through;
-      opacity: 0.7;
+      opacity: 0.8;
     }
 
     .record-row-modified {
-      background: rgba(234, 179, 8, 0.1); /* Lighter yellow */
+      background: rgba(234, 179, 8, 0.08); /* Lighter yellow with alpha */
     }
 
     .record-row-added:hover,
     .record-row-deleted:hover,
     .record-row-modified:hover {
-      filter: brightness(105%); /* Slightly more noticeable hover for these */
+      filter: brightness(105%);
     }
 
-    /* Initial Message */
+    /* Initial Message when no records are displayed */
     .initial-message {
       text-align: center;
-      padding: 3rem 1.5rem; /* More padding */
+      padding: 3rem 1.5rem;
       color: var(--text-secondary);
       font-size: var(--font-size-base);
-      line-height: 1.6; /* Slightly more line height */
-      background: var(--bg-secondary); /* Use secondary for initial message bg */
-      border-radius: var(--radius-md);
-      border: 2px dashed var(--border-color); /* Slightly thicker dashed border */
+      background: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      border: 2px dashed var(--border-color);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -488,44 +615,39 @@
     }
 
     .initial-message svg {
-      width: 3.5rem; /* Larger icon */
-      height: 3.5rem;
+      width: 3rem; /* Adjusted icon size */
+      height: 3rem;
       fill: var(--text-secondary);
       margin-bottom: 1rem;
     }
 
     .initial-message p:first-child {
-      font-weight: 700; /* Bolder */
+      font-weight: 700;
       margin-bottom: 0.5rem;
-      font-size: 1.15rem; /* Larger heading */
+      font-size: 1.15rem;
       color: var(--text-primary);
     }
 
-    /* Autocomplete */
-    #domainInputContainer {
-      position: relative;
-      flex-grow: 1;
-      min-width: 180px; /* Ensure input doesn't get too small */
-    }
-
+    /* Autocomplete List Styling */
     #domainAutocompleteList {
       position: absolute;
-      inset: 0 auto auto 0;
+      top: calc(100% - 1px); /* Overlap border slightly */
+      left: 0;
+      right: 0;
       border: 1px solid var(--border-color);
       border-top: none;
-      z-index: 10;
+      z-index: 20; /* Ensure it's above other content */
       background: var(--bg-secondary);
-      max-height: 15rem; /* Taller list */
+      max-height: 12rem; /* Reduced height for compactness */
       overflow-y: auto;
-      box-shadow: var(--shadow-md); /* Stronger shadow */
+      box-shadow: var(--shadow-md);
       border-radius: 0 0 var(--radius-md) var(--radius-md);
       transition: var(--transition);
-      top: calc(100% - 1px); /* Overlap border slightly */
-      width: 100%; /* Ensure it spans the input width */
+      width: 100%;
     }
 
     #domainAutocompleteList div {
-      padding: 0.75rem 1.25rem; /* More padding */
+      padding: 0.75rem 1rem;
       cursor: pointer;
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -540,7 +662,7 @@
     #domainAutocompleteList div:hover,
     #domainAutocompleteList div.autocomplete-active {
       background: var(--hover-bg);
-      color: var(--accent-blue); /* Highlight text */
+      color: var(--accent-blue);
     }
 
     /* Error Message */
@@ -548,80 +670,36 @@
       background: var(--error-bg);
       color: var(--error-text);
       border-radius: var(--radius-md);
-      padding: 1.25rem; /* More padding */
+      padding: 1rem; /* Consistent padding */
       transition: var(--transition);
-      border: 1px solid var(--error-text); /* Border matches text color */
+      border: 1px solid var(--error-text);
       box-shadow: var(--shadow-sm);
       font-weight: 500;
-      display: flex; /* Use flex for potential icon/closer */
+      display: flex;
       align-items: center;
       gap: 0.75rem;
     }
 
-    /* Toggle Switch */
-    .theme-toggle {
-      position: relative;
-      display: inline-block;
-      width: 3.5rem; /* Wider switch */
-      height: 1.875rem; /* Taller switch */
-    }
-
-    .theme-toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .theme-toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      inset: 0;
-      background: var(--bg-tertiary); /* Use tertiary background */
-      border: 1px solid var(--border-color);
-      border-radius: 1.25rem; /* More rounded */
-      transition: var(--transition);
-    }
-
-    .theme-toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 1.5rem; /* Larger circle */
-      width: 1.5rem; /* Larger circle */
-      left: 0.1875rem;
-      bottom: 0.1875rem; /* Adjust position */
-      background: var(--bg-secondary); /* Match bg secondary */
-      border-radius: 50%;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm); /* Shadow on the handle */
-    }
-
-    .theme-toggle input:checked + .theme-toggle-slider {
-      background: var(--accent-blue);
-      border-color: var(--accent-blue);
-    }
-
-    .theme-toggle input:checked + .theme-toggle-slider:before {
-      transform: translateX(1.5rem); /* Adjust translation for new size */
-    }
-
-    .theme-toggle input:focus + .theme-toggle-slider {
-      box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+    /* History Select Container */
+    #historySelectContainer {
+      display: flex; /* Ensure flex behavior */
+      align-items: center;
+      justify-content: flex-end; /* Align to right */
+      gap: 0.5rem;
+      margin-top: -0.5rem; /* Pull up closer to results header */
+      margin-bottom: 1rem; /* Space below it */
     }
 
     /* Footer */
     .footer {
       text-align: center;
-      padding: 1.5rem 0; /* More padding */
+      padding: 1.5rem 0;
       color: var(--text-secondary);
-      font-size: 0.9rem; /* Slightly larger text */
-      margin-top: 2rem; /* More space from content */
+      font-size: 0.9rem;
+      margin-top: 2rem;
     }
 
-    #historySelectContainer {
-      justify-content: flex-end; /* Align to right */
-      margin-top: -1rem; /* Pull up closer to results header */
-    }
-
+    /* Responsive Adjustments */
     @media (max-width: 640px) {
       .header {
         flex-direction: column;
@@ -637,13 +715,35 @@
       }
       #domainInputContainer {
         width: 100%;
+        min-width: unset;
       }
+      /* Specific override for lookup and clear to take full width */
       #lookupBtn, #clearHistoryBtn {
         width: 100%;
         max-width: none;
       }
       #historySelectContainer {
         justify-content: center; /* Center on small screens */
+        flex-direction: column; /* Stack on small screens */
+        align-items: stretch; /* Stretch items */
+        gap: 0.75rem;
+      }
+      #historySelectContainer .filter-select {
+         width: 100%;
+      }
+      #resultsHeader {
+        flex-direction: column;
+        align-items: flex-start; /* Align left */
+        gap: 1rem;
+      }
+      #resultsHeader .flex-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+      }
+      #resultsHeader .filter-select,
+      #resultsHeader #exportBtn {
+        width: 100%;
       }
     }
     /*
@@ -654,7 +754,7 @@
 <body>
   <div class="container">
     <div class="header">
-      <h1 class="text-2xl font-extrabold text-[var(--text-primary)]"> <!-- Bolder heading -->
+      <h1 class="text-2xl font-extrabold text-[var(--text-primary)]">
         OpenDNS
       </h1>
       <div class="input-group">
@@ -663,7 +763,7 @@
             id="domainInput"
             type="text"
             placeholder="Enter domain (e.g., example.com)"
-            class="input-focus w-full text-[var(--text-primary)]" <!-- Removed p-3 here, handled by input-focus -->
+            class="input-focus"
             aria-label="Domain name for DNS lookup"
             autocomplete="off"
           />
@@ -672,7 +772,8 @@
         <button
           id="lookupBtn"
           aria-label="Search DNS records"
-          class="btn-base sm:w-14" <!-- Added btn-base -->
+          class="btn-base"
+          title="Search DNS records"
         >
           <span id="lookupBtnText">
             <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"></path></svg>
@@ -681,14 +782,14 @@
         <button
           id="clearHistoryBtn"
           aria-label="Clear all stored history and records"
-          class="btn-base sm:w-14" <!-- Added btn-base -->
+          class="btn-base"
           title="Clear all stored history and records"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            class="w-5 h-5"
+            class="w-5 h-5 text-white" <!-- Ensure icon is white -->
           >
             <path
               d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"
@@ -706,7 +807,7 @@
         </label>
       </div>
     </div>
-    <div id="result">
+    <div id="result" class="flex flex-col gap-4"> <!-- Added gap for better result section spacing -->
       <div id="initialMessage" class="initial-message">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
@@ -718,9 +819,9 @@
       </div>
       <div
         id="resultsHeader"
-        class="flex flex-col sm:flex-row justify-between items-center mb-4 hidden"
+        class="flex flex-col sm:flex-row justify-between items-center hidden"
       >
-        <h2 class="text-xl font-bold text-[var(--text-primary)] mb-2 sm:mb-0"> <!-- Larger, bolder heading -->
+        <h2 class="text-xl font-bold text-[var(--text-primary)] mb-2 sm:mb-0">
           DNS Records
         </h2>
         <div class="flex flex-wrap gap-2 items-center">
@@ -740,23 +841,23 @@
           <button
             id="exportBtn"
             aria-label="Export DNS records to a text file"
-            class="btn-base hidden" <!-- Added btn-base -->
+            class="btn-base hidden"
             title="Export Records"
           >
             Export .TXT
           </button>
         </div>
       </div>
-      <!-- History Select Container will be injected here by JS -->
+      <!-- historySelectContainer will be injected here by JS, after resultsHeader -->
       <div id="resultSections"></div>
     </div>
     <div
       id="error"
-      class="mt-4 hidden"
+      class="hidden"
     ></div>
     <div class="footer">
       <small>
-        <b>OpenDNS</b> Version: <b>1.2.1</b>
+        <b>OpenDNS</b> Version: <b>1.2.80</b>
       </small>
     </div>
     <div aria-live="polite" class="sr-only" id="copy-status"></div>
@@ -860,7 +961,7 @@
       errorDiv.classList.remove('hidden');
       initialMessage.classList.add('hidden');
       resultsHeader.classList.add('hidden');
-      // No need to hide historySelectContainer here, it will be added/hidden by populateHistoryDropdown
+      document.getElementById('historySelectContainer').classList.add('hidden'); // Explicitly hide
       exportBtn.classList.add('hidden');
       resultSections.innerHTML = '';
     }
@@ -1495,15 +1596,10 @@
 
       historySelectContainer.classList.remove('hidden');
 
-      const label = document.createElement('label');
-      label.setAttribute('for', 'historySelect');
-      label.className = 'text-sm font-medium text-[var(--text-primary)] sr-only';
-      label.textContent = 'View historical DNS records';
-      historySelectContainer.appendChild(label);
-
+      // The label is already part of historySelectContainer's HTML structure
       const select = document.createElement('select');
       select.id = 'historySelect';
-      select.className = 'filter-select min-w-[150px]';
+      select.className = 'filter-select'; // Use filter-select class
       select.setAttribute('aria-label', 'Select a historical DNS record snapshot');
 
       const latestOption = document.createElement('option');
