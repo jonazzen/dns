@@ -101,13 +101,13 @@
         .copy-btn:hover {
             background-color: #0056b3;
         }
-        #export-btn, #history-btn, #delete-history-btn {
+        #export-btn, #history-btn, #clear-history-btn {
             background-color: #ff9500;
             margin-top: 10px;
             display: none;
             margin-right: 10px;
         }
-        #export-btn:hover, #history-btn:hover, #delete-history-btn:hover {
+        #export-btn:hover, #history-btn:hover, #clear-history-btn:hover {
             background-color: #e68a00;
         }
         #theme-toggle {
@@ -222,7 +222,7 @@
     <div style="display: flex; gap: 10px;">
         <button id="export-btn" onclick="exportRecords()"><i class="fas fa-download"></i> Export DNS Records</button>
         <button id="history-btn" onclick="showHistory()"><i class="fas fa-history"></i> View DNS History</button>
-        <button id="delete-history-btn" onclick="deleteHistory()"><i class="fas fa-trash"></i> Delete DNS History</button>
+        <button id="clear-history-btn" onclick="clearAllHistory()"><i class="fas fa-trash"></i> Clear All History</button>
     </div>
     <div id="results">
         <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
@@ -260,6 +260,13 @@
                     }
                 }
             });
+
+            // Check for existing history on page load
+            const domain = $('#domain').val().trim();
+            if (domain && localStorage.getItem(`dns_history_${domain}`)) {
+                $('#history-btn').show();
+                $('#clear-history-btn').show();
+            }
         });
 
         // Theme toggle function
@@ -284,14 +291,14 @@
             const loadingDiv = $('#loading');
             const exportBtn = $('#export-btn');
             const historyBtn = $('#history-btn');
-            const deleteHistoryBtn = $('#delete-history-btn');
+            const clearHistoryBtn = $('#clear-history-btn');
             const recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'].sort(); // Sort alphabetically
 
             // Clear previous results and hide buttons
             resultsDiv.empty();
             exportBtn.hide();
             historyBtn.hide();
-            deleteHistoryBtn.hide();
+            clearHistoryBtn.hide();
             dnsRecords = {}; // Reset current records
             loadingDiv.show();
 
@@ -310,7 +317,7 @@
             // Show history button if history exists
             if (history.length > 0) {
                 historyBtn.show();
-                deleteHistoryBtn.show();
+                clearHistoryBtn.show();
             }
 
             // Track completed requests
@@ -333,7 +340,7 @@
                     } else {
                         exportBtn.show();
                         historyBtn.show();
-                        deleteHistoryBtn.show();
+                        clearHistoryBtn.show();
                     }
                 }
             }
@@ -411,16 +418,19 @@
             });
         }
 
-        // Delete DNS history for the current domain
-        function deleteHistory() {
-            const domain = $('#domain').val().trim();
-            const historyKey = `dns_history_${domain}`;
-            if (confirm(`Are you sure you want to delete all DNS history for ${domain}?`)) {
-                localStorage.removeItem(historyKey);
+        // Clear all DNS history from local storage
+        function clearAllHistory() {
+            if (confirm('Are you sure you want to clear all DNS lookup history for all domains?')) {
+                // Remove all keys starting with 'dns_history_'
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('dns_history_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
                 $('#history-btn').hide();
-                $('#delete-history-btn').hide();
-                $('#history-dialog').dialog('close').empty().html('<p>No lookup history found for this domain.</p>');
-                alert(`DNS history for ${domain} has been deleted.`);
+                $('#clear-history-btn').hide();
+                $('#history-dialog').dialog('close').empty().html('<p>No lookup history found.</p>');
+                alert('All DNS lookup history has been cleared.');
                 // Refresh current results to show all as new
                 if (Object.keys(dnsRecords).length > 0) {
                     performLookup();
@@ -485,88 +495,88 @@
                                             </div>
                                             <div class="change-indicator">Record removed since previous lookup</div>
                                         </div>`;
-                                    }
-                                });
-                            }
-                            html += `</div>`;
-                        });
+                                }
+                            });
+                        }
                         html += `</div>`;
                     });
+                    html += `</div>`;
                     historyDiv.append(html);
-                }
-                $('#history-dialog').dialog('open');
+                });
             }
+            $('#history-dialog').dialog('open');
+        }
 
-            // Compare records to detect changes
-            function compareRecords(current, previous) {
-                if (!previous) return { status: 'new', details: 'New record' };
-                if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
-                return { status: 'modified', details: 'Record modified since last lookup' };
-            }
+        // Compare records to detect changes
+        function compareRecords(current, previous) {
+            if (!previous) return { status: 'new', details: 'New record' };
+            if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
+            return { status: 'modified', details: 'Record modified since last lookup' };
+        }
 
-            // Export DNS records as JSON
-            function exportRecords() {
-                const domain = $('#domain').val().trim();
-                const exportData = {
-                    domain: domain,
-                    timestamp: new Date().toISOString(),
-                    records: dnsRecords
-                };
-                const jsonString = JSON.stringify(exportData, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${domain}_dns_records.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
+        // Export DNS records as JSON
+        function exportRecords() {
+            const domain = $('#domain').val().trim();
+            const exportData = {
+                domain: domain,
+                timestamp: new Date().toISOString(),
+                records: dnsRecords
+            };
+            const jsonString = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${domain}_dns_records.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
-            // Copy to clipboard function with fallback
-            function copyToClipboard(elementId) {
-                const text = document.getElementById(elementId).textContent;
+        // Copy to clipboard function with fallback
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
 
-                // Try using Clipboard API first
-                if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        alert('Copied to clipboard: ' + text);
-                    }).catch(err => {
-                        console.error('Clipboard API failed: ', err);
-                        fallbackCopyToClipboard(text);
-                    });
-                } else {
-                    // Fallback for non-secure contexts or unsupported browsers
-                    fallbackCopyToClipboard(text);
-                }
-            }
-
-            // Fallback copy function using textarea
-            function fallbackCopyToClipboard(text) {
-                try {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = text;
-                    textarea.style.position = 'fixed'; // Prevent scrolling
-                    textarea.style.opacity = '0'; // Make invisible
-                    document.body.appendChild(textarea);
-                    textarea.focus();
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
+            // Try using Clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
                     alert('Copied to clipboard: ' + text);
-                } catch (err) {
-                    console.error('Fallback copy failed: ', err);
-                    alert('Failed to copy to clipboard.');
-                }
+                }).catch(err => {
+                    console.error('Clipboard API failed: ', err);
+                    fallbackCopyToClipboard(text);
+                });
+            } else {
+                // Fallback for non-secure contexts or unsupported browsers
+                fallbackCopyToClipboard(text);
             }
+        }
 
-            // Trigger lookup on Enter key press
-            $('#domain').on('keypress', function(e) {
-                if (e.which === 13) {
-                    performLookup();
-                }
-            });
-        </script>
-    </body>
+        // Fallback copy function using textarea
+        function fallbackCopyToClipboard(text) {
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed'; // Prevent scrolling
+                textarea.style.opacity = '0'; // Make invisible
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Copied to clipboard: ' + text);
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                alert('Failed to copy to clipboard.');
+            }
+        }
+
+        // Trigger lookup on Enter key press
+        $('#domain').on('keypress', function(e) {
+            if (e.which === 13) {
+                performLookup();
+            }
+        });
+    </script>
+</body>
 </html>
