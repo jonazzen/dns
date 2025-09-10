@@ -307,6 +307,12 @@
             const history = JSON.parse(localStorage.getItem(historyKey)) || [];
             const previousRecords = history.length > 0 ? history[history.length - 1].records : {};
 
+            // Show history button if history exists
+            if (history.length > 0) {
+                historyBtn.show();
+                deleteHistoryBtn.show();
+            }
+
             // Track completed requests
             let completedRequests = 0;
             const totalRequests = recordTypes.length;
@@ -327,7 +333,7 @@
                     } else {
                         exportBtn.show();
                         historyBtn.show();
-                        deleteHistoryBtn.show(); // Show delete history button
+                        deleteHistoryBtn.show();
                     }
                 }
             }
@@ -413,7 +419,12 @@
                 localStorage.removeItem(historyKey);
                 $('#history-btn').hide();
                 $('#delete-history-btn').hide();
+                $('#history-dialog').dialog('close').empty().html('<p>No lookup history found for this domain.</p>');
                 alert(`DNS history for ${domain} has been deleted.`);
+                // Refresh current results to show all as new
+                if (Object.keys(dnsRecords).length > 0) {
+                    performLookup();
+                }
             }
         }
 
@@ -474,88 +485,88 @@
                                             </div>
                                             <div class="change-indicator">Record removed since previous lookup</div>
                                         </div>`;
-                                }
-                            });
-                        }
+                                    }
+                                });
+                            }
+                            html += `</div>`;
+                        });
                         html += `</div>`;
                     });
-                    html += `</div>`;
                     historyDiv.append(html);
-                });
+                }
+                $('#history-dialog').dialog('open');
             }
-            $('#history-dialog').dialog('open');
-        }
 
-        // Compare records to detect changes
-        function compareRecords(current, previous) {
-            if (!previous) return { status: 'new', details: 'New record' };
-            if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
-            return { status: 'modified', details: 'Record modified since last lookup' };
-        }
+            // Compare records to detect changes
+            function compareRecords(current, previous) {
+                if (!previous) return { status: 'new', details: 'New record' };
+                if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
+                return { status: 'modified', details: 'Record modified since last lookup' };
+            }
 
-        // Export DNS records as JSON
-        function exportRecords() {
-            const domain = $('#domain').val().trim();
-            const exportData = {
-                domain: domain,
-                timestamp: new Date().toISOString(),
-                records: dnsRecords
-            };
-            const jsonString = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${domain}_dns_records.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+            // Export DNS records as JSON
+            function exportRecords() {
+                const domain = $('#domain').val().trim();
+                const exportData = {
+                    domain: domain,
+                    timestamp: new Date().toISOString(),
+                    records: dnsRecords
+                };
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${domain}_dns_records.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
 
-        // Copy to clipboard function with fallback
-        function copyToClipboard(elementId) {
-            const text = document.getElementById(elementId).textContent;
+            // Copy to clipboard function with fallback
+            function copyToClipboard(elementId) {
+                const text = document.getElementById(elementId).textContent;
 
-            // Try using Clipboard API first
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('Copied to clipboard: ' + text);
-                }).catch(err => {
-                    console.error('Clipboard API failed: ', err);
+                // Try using Clipboard API first
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('Copied to clipboard: ' + text);
+                    }).catch(err => {
+                        console.error('Clipboard API failed: ', err);
+                        fallbackCopyToClipboard(text);
+                    });
+                } else {
+                    // Fallback for non-secure contexts or unsupported browsers
                     fallbackCopyToClipboard(text);
-                });
-            } else {
-                // Fallback for non-secure contexts or unsupported browsers
-                fallbackCopyToClipboard(text);
+                }
             }
-        }
 
-        // Fallback copy function using textarea
-        function fallbackCopyToClipboard(text) {
-            try {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                textarea.style.position = 'fixed'; // Prevent scrolling
-                textarea.style.opacity = '0'; // Make invisible
-                document.body.appendChild(textarea);
-                textarea.focus();
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                alert('Copied to clipboard: ' + text);
-            } catch (err) {
-                console.error('Fallback copy failed: ', err);
-                alert('Failed to copy to clipboard.');
+            // Fallback copy function using textarea
+            function fallbackCopyToClipboard(text) {
+                try {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.style.position = 'fixed'; // Prevent scrolling
+                    textarea.style.opacity = '0'; // Make invisible
+                    document.body.appendChild(textarea);
+                    textarea.focus();
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('Copied to clipboard: ' + text);
+                } catch (err) {
+                    console.error('Fallback copy failed: ', err);
+                    alert('Failed to copy to clipboard.');
+                }
             }
-        }
 
-        // Trigger lookup on Enter key press
-        $('#domain').on('keypress', function(e) {
-            if (e.which === 13) {
-                performLookup();
-            }
-        });
-    </script>
-</body>
+            // Trigger lookup on Enter key press
+            $('#domain').on('keypress', function(e) {
+                if (e.which === 13) {
+                    performLookup();
+                }
+            });
+        </script>
+    </body>
 </html>
