@@ -8,6 +8,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
     <style>
         :root {
             --bg-color: #f4f4f4;
@@ -19,32 +20,48 @@
             --record-border: #28a745;
             --error-color: red;
             --loading-color: #666;
-            --tooltip-bg: #333;
-            --tooltip-border: #555;
-            --tooltip-text: white;
+            --tooltip-bg: linear-gradient(135deg, #ffffff, #e0e0e0);
+            --tooltip-border: #333;
+            --tooltip-text: #333;
             --new-record-bg: #d4edda;
             --modified-record-bg: #fff3cd;
             --removed-record-bg: #f8d7da;
+            --button-bg: #28a745;
+            --button-hover-bg: #218838;
+            --action-button-bg: #ff9500;
+            --action-button-hover-bg: #e68a00;
+            --copy-button-bg: #007bff;
+            --copy-button-hover-bg: #0056b3;
+            --theme-button-bg: #666;
+            --theme-button-hover-bg: #555;
         }
         [data-theme="dark"] {
-            --bg-color: #222;
+            --bg-color: #1a1a1a;
             --text-color: #e0e0e0;
-            --container-bg: #333;
+            --container-bg: #2c2c2c;
             --border-color: #555;
-            --record-type-bg: #444;
-            --record-bg: #3a3a3a;
+            --record-type-bg: #3a3a3a;
+            --record-bg: #333;
             --record-border: #34c759;
             --error-color: #ff5555;
             --loading-color: #aaa;
-            --tooltip-bg: #111;
-            --tooltip-border: #666;
-            --tooltip-text: #e0e0e0;
+            --tooltip-bg: linear-gradient(135deg, #444, #666);
+            --tooltip-border: #111;
+            --tooltip-text: #fff;
             --new-record-bg: #2e7d32;
             --modified-record-bg: #ffca28;
             --removed-record-bg: #d32f2f;
+            --button-bg: #34c759;
+            --button-hover-bg: #2ea043;
+            --action-button-bg: #ff9500;
+            --action-button-hover-bg: #e68a00;
+            --copy-button-bg: #1e90ff;
+            --copy-button-hover-bg: #0066cc;
+            --theme-button-bg: #555;
+            --theme-button-hover-bg: #444;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
@@ -54,6 +71,8 @@
         }
         h1 {
             text-align: center;
+            font-weight: 700;
+            font-size: 2em;
         }
         p.intro {
             color: var(--text-color);
@@ -69,62 +88,66 @@
             flex-grow: 1;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             background-color: var(--container-bg);
             color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
         }
         button {
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #28a745;
+            background-color: var(--button-bg);
             color: white;
-            border: none;
-            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
+            transition: background-color 0.2s ease;
         }
         button:hover {
-            background-color: #218838;
+            background-color: var(--button-hover-bg);
         }
         .copy-btn {
             padding: 5px 10px;
             font-size: 14px;
-            background-color: #007bff;
+            background-color: var(--copy-button-bg);
             margin-left: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         .copy-btn:hover {
-            background-color: #0056b3;
+            background-color: var(--copy-button-hover-bg);
         }
         #export-btn, #history-btn, #clear-history-btn {
-            background-color: #ff9500;
+            background-color: var(--action-button-bg);
             margin-top: 10px;
             display: none;
             margin-right: 10px;
         }
         #export-btn:hover, #history-btn:hover, #clear-history-btn:hover {
-            background-color: #e68a00;
+            background-color: var(--action-button-hover-bg);
         }
         #theme-toggle {
-            background-color: #666;
+            background-color: var(--theme-button-bg);
             position: absolute;
             top: 20px;
             right: 20px;
         }
         #theme-toggle:hover {
-            background-color: #555;
+            background-color: var(--theme-button-hover-bg);
         }
         #results {
             margin-top: 20px;
             padding: 15px;
             background-color: var(--container-bg);
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
             min-height: 100px;
         }
         .loading {
@@ -140,7 +163,7 @@
             margin-top: 20px;
             padding: 10px;
             background-color: var(--record-type-bg);
-            border-radius: 4px;
+            border-radius: 8px;
         }
         .record-type h3 {
             margin: 0 0 10px 0;
@@ -149,13 +172,15 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 700;
         }
         .record {
             margin: 10px 0;
             padding: 10px;
-            border-left: 3px solid var(--record-border);
+            border-left: 4px solid var(--record-border);
             background-color: var(--record-bg);
             position: relative;
+            border-radius: 6px;
         }
         .record.new {
             background-color: var(--new-record-bg);
@@ -179,32 +204,60 @@
         }
         .ui-tooltip {
             max-width: 300px;
-            font-size: 12px;
-            background-color: var(--tooltip-bg);
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            background: var(--tooltip-bg);
             color: var(--tooltip-text);
-            border: 1px solid var(--tooltip-border);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            padding: 8px;
+            border: 2px solid var(--tooltip-border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1000;
+        }
+        .ui-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            border-width: 8px 8px 0;
+            border-style: solid;
+            border-color: var(--tooltip-border) transparent transparent transparent;
+            z-index: 1001;
+        }
+        .ui-tooltip::before {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 21px;
+            border-width: 7px 7px 0;
+            border-style: solid;
+            border-color: var(--tooltip-bg) transparent transparent transparent;
+            z-index: 1002;
         }
         .ui-dialog {
             background-color: var(--container-bg);
             color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
         }
         .ui-dialog-titlebar {
             background-color: var(--record-type-bg);
             color: var(--text-color);
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
         }
         .history-entry {
             margin: 10px 0;
             padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
         }
         .history-entry h4 {
             margin: 0 0 10px 0;
             color: var(--text-color);
+            font-weight: 700;
         }
         .fa-spin {
             animation: fa-spin 2s infinite linear;
@@ -212,17 +265,17 @@
     </style>
 </head>
 <body data-theme="light">
-    <button id="theme-toggle" onclick="toggleTheme()"><i class="fas fa-sun"></i> Light Mode</button>
+    <button id="theme-toggle" data-tooltip="theme-toggle"><i class="fas fa-sun"></i> Light Mode</button>
     <h1><i class="fas fa-globe"></i> OpenDNS</h1>
     <div class="input-container">
         <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)">
-        <button onclick="performLookup()"><i class="fas fa-search"></i> Lookup</button>
+        <button id="lookup-btn" onclick="performLookup()" data-tooltip="lookup-btn"><i class="fas fa-search"></i> Lookup</button>
     </div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     <div style="display: flex; gap: 10px;">
-        <button id="export-btn" onclick="exportRecords()"><i class="fas fa-download"></i> Export DNS Records</button>
-        <button id="history-btn" onclick="showHistory()"><i class="fas fa-history"></i> View DNS History</button>
-        <button id="clear-history-btn" onclick="clearAllHistory()"><i class="fas fa-trash"></i> Clear All History</button>
+        <button id="export-btn" onclick="exportRecords()" data-tooltip="export-btn"><i class="fas fa-download"></i> Export DNS Records</button>
+        <button id="history-btn" onclick="showHistory()" data-tooltip="history-btn"><i class="fas fa-history"></i> View DNS History</button>
+        <button id="clear-history-btn" onclick="clearAllHistory()" data-tooltip="clear-history-btn"><i class="fas fa-trash"></i> Clear All History</button>
     </div>
     <div id="results">
         <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
@@ -235,17 +288,25 @@
             $(document).tooltip({
                 items: "[data-tooltip]",
                 content: function() {
-                    const recordType = $(this).attr('data-tooltip');
+                    const tooltipId = $(this).attr('data-tooltip');
+                    const recordType = $(this).text().trim();
                     const tooltips = {
                         'A': 'A (Address) records map a domain to an IPv4 address (e.g., 192.0.2.1). They are used to locate the server hosting a website or service.',
                         'AAAA': 'AAAA (IPv6 Address) records map a domain to an IPv6 address (e.g., 2001:db8::1). They are used for newer, larger IP address formats.',
                         'CNAME': 'CNAME (Canonical Name) records alias one domain to another. They point to another domain name rather than an IP address (e.g., www.example.com to example.com).',
                         'MX': 'MX (Mail Exchange) records specify the mail servers responsible for receiving email for a domain (e.g., mail.example.com). They include a priority value.',
                         'NS': 'NS (Name Server) records indicate which name servers are authoritative for a domain. They list the servers managing the domain’s DNS records.',
-                        'TXT': 'TXT (Text) records store arbitrary text data, often used for verification (e.g., SPF, DKIM) or configuration settings for services.'
+                        'TXT': 'TXT (Text) records store arbitrary text data, often used for verification (e.g., SPF, DKIM) or configuration settings for services.',
+                        'lookup-btn': 'Fetch the DNS records for the entered domain!',
+                        'export-btn': 'Download the current DNS records as a JSON file.',
+                        'history-btn': 'View all past DNS lookups for this domain.',
+                        'clear-history-btn': 'Clear all stored DNS lookup history for all domains.',
+                        'theme-toggle': 'Switch between light and dark mode for a better view.',
+                        'copy': 'Copy this DNS record data to your clipboard.'
                     };
-                    return tooltips[recordType] || 'No description available.';
-                }
+                    return tooltips[tooltipId] || tooltips[recordType] || 'No description available.';
+                },
+                position: { my: "center bottom-20", at: "center top" }
             });
 
             // Initialize history dialog
@@ -384,7 +445,7 @@
                                         <strong>TTL:</strong> ${answer.TTL}<br>
                                         <div class="data-container">
                                             <strong>Data:</strong> <span id="data-${recordType}-${index}">${answer.data}</span>
-                                            <button class="copy-btn" onclick="copyToClipboard('data-${recordType}-${index}')"><i class="fas fa-copy"></i> Copy</button>
+                                            <button class="copy-btn" data-tooltip="copy" onclick="copyToClipboard('data-${recordType}-${index}')"><i class="fas fa-copy"></i> Copy</button>
                                         </div>
                                         ${changeDetails}
                                     </div>`;
@@ -476,7 +537,7 @@
                                     <strong>TTL:</strong> ${record.TTL}<br>
                                     <div class="data-container">
                                         <strong>Data:</strong> <span id="history-data-${recordType}-${recordIndex}-${index}">${record.data}</span>
-                                        <button class="copy-btn" onclick="copyToClipboard('history-data-${recordType}-${recordIndex}-${index}')"><i class="fas fa-copy"></i> Copy</button>
+                                        <button class="copy-btn" data-tooltip="copy" onclick="copyToClipboard('history-data-${recordType}-${recordIndex}-${index}')"><i class="fas fa-copy"></i> Copy</button>
                                     </div>
                                     ${changeDetails}
                                 </div>`;
