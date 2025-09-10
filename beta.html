@@ -216,26 +216,6 @@
             position: relative;
             z-index: 1000;
         }
-        .ui-tooltip::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 20px;
-            border-width: 8px 8px 0;
-            border-style: solid;
-            border-color: var(--tooltip-border) transparent transparent transparent;
-            z-index: 1001;
-        }
-        .ui-tooltip::before {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 21px;
-            border-width: 7px 7px 0;
-            border-style: solid;
-            border-color: var(--tooltip-bg) transparent transparent transparent;
-            z-index: 1002;
-        }
         .ui-dialog {
             background-color: var(--container-bg);
             color: var(--text-color);
@@ -306,7 +286,7 @@
                     };
                     return tooltips[tooltipId] || tooltips[recordType] || 'No description available.';
                 },
-                position: { my: "center bottom-20", at: "center top" }
+                track: true
             });
 
             // Initialize history dialog
