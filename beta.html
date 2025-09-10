@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple DNS Lookup Tool</title>
+    <title>OpenDNS</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -20,10 +20,10 @@
             text-align: center;
             color: #333;
         }
-        p.intro, p.note {
+        p.intro {
             color: #555;
             font-size: 14px;
-            margin-bottom: 20px;
+            margin: 0;
         }
         .input-container {
             display: flex;
@@ -128,16 +128,16 @@
     </style>
 </head>
 <body>
-    <h1><i class="fas fa-globe"></i> Simple DNS Lookup Tool</h1>
-    <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
-    <p class="note">Note: For the "Copy" buttons to work reliably, run this tool on a local server (e.g., <code>http://localhost</code>) or an HTTPS website.</p>
+    <h1><i class="fas fa-globe"></i> OpenDNS</h1>
     <div class="input-container">
         <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)">
         <button onclick="performLookup()"><i class="fas fa-search"></i> Lookup</button>
     </div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
     <button id="export-btn" onclick="exportRecords()"><i class="fas fa-download"></i> Export DNS Records</button>
-    <div id="results"></div>
+    <div id="results">
+        <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
+    </div>
 
     <script>
         // Initialize jQuery UI tooltips
@@ -296,7 +296,7 @@
                 alert('Copied to clipboard: ' + text);
             } catch (err) {
                 console.error('Fallback copy failed: ', err);
-                alert('Failed to copy. Try running this tool on a local server (e.g., http://localhost) or an HTTPS website.');
+                alert('Failed to copy to clipboard.');
             }
         }
 
