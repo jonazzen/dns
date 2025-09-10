@@ -8,57 +8,57 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
     <style>
         :root {
-            --bg-color: #f4f4f4;
-            --text-color: #333;
-            --container-bg: white;
-            --border-color: #ddd;
-            --record-type-bg: #e9ecef;
-            --record-bg: #f8f9fa;
-            --record-border: #28a745;
-            --error-color: red;
-            --loading-color: #666;
-            --tooltip-bg: linear-gradient(135deg, #ffffff, #e0e0e0);
-            --tooltip-border: #333;
-            --tooltip-text: #333;
-            --new-record-bg: #d4edda;
-            --modified-record-bg: #fff3cd;
-            --removed-record-bg: #f8d7da;
-            --button-bg: #28a745;
-            --button-hover-bg: #218838;
-            --action-button-bg: #ff9500;
-            --action-button-hover-bg: #e68a00;
-            --copy-button-bg: #007bff;
-            --copy-button-hover-bg: #0056b3;
-            --theme-button-bg: #666;
-            --theme-button-hover-bg: #555;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --container-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --record-type-bg: #f1f5f9;
+            --record-bg: #f9fafb;
+            --record-border: #10b981;
+            --error-color: #ef4444;
+            --loading-color: #64748b;
+            --tooltip-bg: linear-gradient(135deg, #ffffff, #e2e8f0);
+            --tooltip-border: #1e293b;
+            --tooltip-text: #1e293b;
+            --new-record-bg: #d1fae5;
+            --modified-record-bg: #fef3c7;
+            --removed-record-bg: #fee2e2;
+            --button-bg: #10b981;
+            --button-hover-bg: #059669;
+            --action-button-bg: #f59e0b;
+            --action-button-hover-bg: #d97706;
+            --copy-button-bg: #3b82f6;
+            --copy-button-hover-bg: #2563eb;
+            --theme-button-bg: #6b7280;
+            --theme-button-hover-bg: #4b5563;
         }
         [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #e0e0e0;
-            --container-bg: #2c2c2c;
-            --border-color: #555;
-            --record-type-bg: #3a3a3a;
-            --record-bg: #333;
-            --record-border: #34c759;
-            --error-color: #ff5555;
-            --loading-color: #aaa;
-            --tooltip-bg: linear-gradient(135deg, #444, #666);
-            --tooltip-border: #111;
-            --tooltip-text: #fff;
-            --new-record-bg: #2e7d32;
-            --modified-record-bg: #ffca28;
-            --removed-record-bg: #d32f2f;
-            --button-bg: #34c759;
-            --button-hover-bg: #2ea043;
-            --action-button-bg: #ff9500;
-            --action-button-hover-bg: #e68a00;
-            --copy-button-bg: #1e90ff;
-            --copy-button-hover-bg: #0066cc;
-            --theme-button-bg: #555;
-            --theme-button-hover-bg: #444;
+            --bg-color: #111827;
+            --text-color: #e2e8f0;
+            --container-bg: #1f2a44;
+            --border-color: #4b5563;
+            --record-type-bg: #374151;
+            --record-bg: #1e293b;
+            --record-border: #34d399;
+            --error-color: #f87171;
+            --loading-color: #9ca3af;
+            --tooltip-bg: linear-gradient(135deg, #374151, #6b7280);
+            --tooltip-border: #111827;
+            --tooltip-text: #e2e8f0;
+            --new-record-bg: #065f46;
+            --modified-record-bg: #d97706;
+            --removed-record-bg: #991b1b;
+            --button-bg: #34d399;
+            --button-hover-bg: #22d3ee;
+            --action-button-bg: #f59e0b;
+            --action-button-hover-bg: #d97706;
+            --copy-button-bg: #60a5fa;
+            --copy-button-hover-bg: #3b82f6;
+            --theme-button-bg: #6b7280;
+            --theme-button-hover-bg: #4b5563;
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -72,30 +72,39 @@
         h1 {
             text-align: center;
             font-weight: 700;
-            font-size: 2em;
+            font-size: 2.2em;
+            margin-bottom: 20px;
         }
         p.intro {
             color: var(--text-color);
             font-size: 14px;
             margin: 0;
+            font-weight: 400;
         }
         .input-container {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
         #domain {
             flex-grow: 1;
-            padding: 10px;
+            padding: 12px;
             font-size: 16px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
             background-color: var(--container-bg);
             color: var(--text-color);
             font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #domain:focus {
+            border-color: var(--button-bg);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            outline: none;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             background-color: var(--button-bg);
             color: white;
@@ -104,34 +113,49 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             font-family: 'Roboto', sans-serif;
-            font-weight: 700;
-            transition: background-color 0.2s ease;
+            font-weight: 500;
+            transition: background-color 0.2s ease, transform 0.2s ease;
         }
         button:hover {
             background-color: var(--button-hover-bg);
+            transform: scale(1.05);
+        }
+        button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
         .copy-btn {
-            padding: 5px 10px;
+            padding: 6px 12px;
             font-size: 14px;
             background-color: var(--copy-button-bg);
-            margin-left: 10px;
+            margin-left: 12px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         .copy-btn:hover {
             background-color: var(--copy-button-hover-bg);
+            transform: scale(1.05);
+        }
+        .copy-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
         #export-btn, #history-btn, #clear-history-btn {
             background-color: var(--action-button-bg);
-            margin-top: 10px;
+            margin-top: 12px;
             display: none;
-            margin-right: 10px;
+            margin-right: 12px;
         }
         #export-btn:hover, #history-btn:hover, #clear-history-btn:hover {
             background-color: var(--action-button-hover-bg);
+            transform: scale(1.05);
+        }
+        #export-btn:focus, #history-btn:focus, #clear-history-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
         }
         #theme-toggle {
             background-color: var(--theme-button-bg);
@@ -141,46 +165,55 @@
         }
         #theme-toggle:hover {
             background-color: var(--theme-button-hover-bg);
+            transform: scale(1.05);
+        }
+        #theme-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
         }
         #results {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 24px;
+            padding: 16px;
             background-color: var(--container-bg);
             border-radius: 8px;
             border: 2px solid var(--border-color);
             min-height: 100px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: none;
         }
         .loading {
             display: none;
             text-align: center;
             font-style: italic;
             color: var(--loading-color);
+            font-weight: 400;
         }
         .error {
             color: var(--error-color);
         }
         .record-type {
             margin-top: 20px;
-            padding: 10px;
+            padding: 12px;
             background-color: var(--record-type-bg);
             border-radius: 8px;
         }
         .record-type h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             color: var(--text-color);
             cursor: help;
             display: flex;
             align-items: center;
             gap: 8px;
             font-weight: 700;
+            font-size: 1.2em;
         }
         .record {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 12px 0;
+            padding: 12px;
             border-left: 4px solid var(--record-border);
             background-color: var(--record-bg);
-            position: relative;
             border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         }
         .record.new {
             background-color: var(--new-record-bg);
@@ -195,8 +228,9 @@
         .change-indicator {
             font-size: 12px;
             font-style: italic;
-            margin-top: 5px;
+            margin-top: 8px;
             color: var(--text-color);
+            font-weight: 400;
         }
         .data-container {
             display: flex;
@@ -212,7 +246,7 @@
             border: 2px solid var(--tooltip-border);
             border-radius: 12px;
             padding: 10px 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1000;
         }
@@ -221,23 +255,27 @@
             color: var(--text-color);
             border: 2px solid var(--border-color);
             border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .ui-dialog-titlebar {
             background-color: var(--record-type-bg);
             color: var(--text-color);
             font-family: 'Roboto', sans-serif;
             font-weight: 700;
+            border-radius: 6px 6px 0 0;
         }
         .history-entry {
-            margin: 10px 0;
-            padding: 10px;
+            margin: 12px 0;
+            padding: 12px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
+            background-color: var(--record-bg);
         }
         .history-entry h4 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             color: var(--text-color);
             font-weight: 700;
+            font-size: 1.1em;
         }
         .fa-spin {
             animation: fa-spin 2s infinite linear;
@@ -252,7 +290,7 @@
         <button id="lookup-btn" onclick="performLookup()" data-tooltip="lookup-btn"><i class="fas fa-search"></i> Lookup</button>
     </div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 12px;">
         <button id="export-btn" onclick="exportRecords()" data-tooltip="export-btn"><i class="fas fa-download"></i> Export DNS Records</button>
         <button id="history-btn" onclick="showHistory()" data-tooltip="history-btn"><i class="fas fa-history"></i> View DNS History</button>
         <button id="clear-history-btn" onclick="clearAllHistory()" data-tooltip="clear-history-btn"><i class="fas fa-trash"></i> Clear All History</button>
@@ -299,6 +337,9 @@
                     Close: function() {
                         $(this).dialog('close');
                     }
+                },
+                open: function() {
+                    $(this).find('.history-entry').hide().fadeIn(300);
                 }
             });
 
@@ -308,20 +349,33 @@
                 $('#history-btn').show();
                 $('#clear-history-btn').show();
             }
+
+            // Animate buttons on hover
+            $('button').hover(
+                function() {
+                    $(this).stop().animate({ opacity: 0.9 }, 200);
+                },
+                function() {
+                    $(this).stop().animate({ opacity: 1 }, 200);
+                }
+            );
         });
 
-        // Theme toggle function
+        // Theme toggle function with animation
         function toggleTheme() {
             const body = document.body;
             const themeToggle = document.getElementById('theme-toggle');
             const isLightMode = body.getAttribute('data-theme') === 'light';
-            if (isLightMode) {
-                body.setAttribute('data-theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-            } else {
-                body.setAttribute('data-theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-            }
+            $(body).fadeTo(200, 0.5, function() {
+                if (isLightMode) {
+                    body.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+                } else {
+                    body.setAttribute('data-theme', 'light');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+                }
+                $(body).fadeTo(200, 1);
+            });
         }
 
         let dnsRecords = {}; // Store current DNS records for export
@@ -336,7 +390,7 @@
             const recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'].sort(); // Sort alphabetically
 
             // Clear previous results and hide buttons
-            resultsDiv.empty();
+            resultsDiv.empty().hide();
             exportBtn.hide();
             historyBtn.hide();
             clearHistoryBtn.hide();
@@ -345,7 +399,7 @@
 
             // Input validation
             if (!domain) {
-                resultsDiv.html('<p class="error"><i class="fas fa-exclamation-circle"></i> Please enter a valid domain name.</p>');
+                resultsDiv.html('<p class="error"><i class="fas fa-exclamation-circle"></i> Please enter a valid domain name.</p>').fadeIn(300);
                 loadingDiv.hide();
                 return;
             }
@@ -377,8 +431,9 @@
                     localStorage.setItem(historyKey, JSON.stringify(history));
                     loadingDiv.hide();
                     if (resultsDiv.is(':empty')) {
-                        resultsDiv.html('<p><i class="fas fa-info-circle"></i> No records found for this query.</p>');
+                        resultsDiv.html('<p><i class="fas fa-info-circle"></i> No records found for this query.</p>').fadeIn(300);
                     } else {
+                        resultsDiv.fadeIn(300);
                         exportBtn.show();
                         historyBtn.show();
                         clearHistoryBtn.show();
@@ -488,7 +543,7 @@
             historyDiv.empty();
 
             if (history.length === 0) {
-                historyDiv.html('<p>No lookup history found for this domain.</p>');
+                historyDiv.html('<p>No lookup history found for this domain.</p>').fadeIn(300);
             } else {
                 history.forEach((entry, index) => {
                     const timestamp = new Date(entry.timestamp).toLocaleString();
