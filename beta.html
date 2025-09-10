@@ -32,8 +32,10 @@
             --action-button-hover-bg: #d97706;
             --copy-button-bg: #3b82f6;
             --copy-button-hover-bg: #2563eb;
-            --theme-button-bg: #6b7280;
-            --theme-button-hover-bg: #4b5563;
+            --toggle-bg: #6b7280;
+            --toggle-hover-bg: #4b5563;
+            --toggle-slider-bg: #ffffff;
+            --toggle-slider-active-bg: #34d399;
         }
         [data-theme="dark"] {
             --bg-color: #111827;
@@ -57,8 +59,10 @@
             --action-button-hover-bg: #d97706;
             --copy-button-bg: #60a5fa;
             --copy-button-hover-bg: #3b82f6;
-            --theme-button-bg: #6b7280;
-            --theme-button-hover-bg: #4b5563;
+            --toggle-bg: #6b7280;
+            --toggle-hover-bg: #4b5563;
+            --toggle-slider-bg: #1f2a44;
+            --toggle-slider-active-bg: #34d399;
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -67,7 +71,7 @@
             padding: 20px;
             background-color: var(--bg-color);
             color: var(--text-color);
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         h1 {
             text-align: center;
@@ -157,17 +161,45 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
         }
-        #theme-toggle {
-            background-color: var(--theme-button-bg);
+        /* Toggle Switch Styling */
+        .theme-toggle-container {
             position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            align-items: center;
         }
-        #theme-toggle:hover {
-            background-color: var(--theme-button-hover-bg);
-            transform: scale(1.05);
+        #theme-toggle {
+            display: none;
         }
-        #theme-toggle:focus {
+        .theme-toggle-label {
+            width: 48px;
+            height: 24px;
+            background-color: var(--toggle-bg);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .theme-toggle-label:hover {
+            background-color: var(--toggle-hover-bg);
+        }
+        .theme-toggle-label::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: var(--toggle-slider-bg);
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        #theme-toggle:checked + .theme-toggle-label::after {
+            transform: translateX(24px);
+            background-color: var(--toggle-slider-active-bg);
+        }
+        #theme-toggle:focus + .theme-toggle-label {
             outline: none;
             box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
         }
@@ -283,7 +315,10 @@
     </style>
 </head>
 <body data-theme="light">
-    <button id="theme-toggle" data-tooltip="theme-toggle"><i class="fas fa-sun"></i> Light Mode</button>
+    <div class="theme-toggle-container" data-tooltip="theme-toggle">
+        <input type="checkbox" id="theme-toggle">
+        <label for="theme-toggle" class="theme-toggle-label"></label>
+    </div>
     <h1><i class="fas fa-globe"></i> OpenDNS</h1>
     <div class="input-container">
         <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)">
@@ -359,23 +394,24 @@
                     $(this).stop().animate({ opacity: 1 }, 200);
                 }
             );
+
+            // Theme toggle event listener
+            $('#theme-toggle').on('change', toggleTheme);
         });
 
-        // Theme toggle function with animation
+        // Theme toggle function
         function toggleTheme() {
+            console.log('Toggling theme...'); // Debug log
             const body = document.body;
             const themeToggle = document.getElementById('theme-toggle');
             const isLightMode = body.getAttribute('data-theme') === 'light';
-            $(body).fadeTo(200, 0.5, function() {
-                if (isLightMode) {
-                    body.setAttribute('data-theme', 'dark');
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-                } else {
-                    body.setAttribute('data-theme', 'light');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-                }
-                $(body).fadeTo(200, 1);
-            });
+            if (isLightMode) {
+                body.setAttribute('data-theme', 'dark');
+                console.log('Switched to dark mode');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                console.log('Switched to light mode');
+            }
         }
 
         let dnsRecords = {}; // Store current DNS records for export
