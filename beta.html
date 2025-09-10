@@ -9,19 +9,54 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+            --container-bg: white;
+            --border-color: #ddd;
+            --record-type-bg: #e9ecef;
+            --record-bg: #f8f9fa;
+            --record-border: #28a745;
+            --error-color: red;
+            --loading-color: #666;
+            --tooltip-bg: #333;
+            --tooltip-border: #555;
+            --tooltip-text: white;
+            --new-record-bg: #d4edda;
+            --modified-record-bg: #fff3cd;
+            --removed-record-bg: #f8d7da;
+        }
+        [data-theme="dark"] {
+            --bg-color: #222;
+            --text-color: #e0e0e0;
+            --container-bg: #333;
+            --border-color: #555;
+            --record-type-bg: #444;
+            --record-bg: #3a3a3a;
+            --record-border: #34c759;
+            --error-color: #ff5555;
+            --loading-color: #aaa;
+            --tooltip-bg: #111;
+            --tooltip-border: #666;
+            --tooltip-text: #e0e0e0;
+            --new-record-bg: #2e7d32;
+            --modified-record-bg: #ffca28;
+            --removed-record-bg: #d32f2f;
+        }
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
         h1 {
             text-align: center;
-            color: #333;
         }
         p.intro {
-            color: #555;
+            color: var(--text-color);
             font-size: 14px;
             margin: 0;
         }
@@ -34,8 +69,10 @@
             flex-grow: 1;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
         }
         button {
             padding: 10px 20px;
@@ -72,32 +109,41 @@
         #export-btn:hover {
             background-color: #e68a00;
         }
+        #theme-toggle {
+            background-color: #666;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        #theme-toggle:hover {
+            background-color: #555;
+        }
         #results {
             margin-top: 20px;
             padding: 15px;
-            background-color: white;
+            background-color: var(--container-bg);
             border-radius: 4px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             min-height: 100px;
         }
         .loading {
             display: none;
             text-align: center;
             font-style: italic;
-            color: #666;
+            color: var(--loading-color);
         }
         .error {
-            color: red;
+            color: var(--error-color);
         }
         .record-type {
             margin-top: 20px;
             padding: 10px;
-            background-color: #e9ecef;
+            background-color: var(--record-type-bg);
             border-radius: 4px;
         }
         .record-type h3 {
             margin: 0 0 10px 0;
-            color: #333;
+            color: var(--text-color);
             cursor: help;
             display: flex;
             align-items: center;
@@ -106,8 +152,25 @@
         .record {
             margin: 10px 0;
             padding: 10px;
-            border-left: 3px solid #28a745;
-            background-color: #f8f9fa;
+            border-left: 3px solid var(--record-border);
+            background-color: var(--record-bg);
+            position: relative;
+        }
+        .record.new {
+            background-color: var(--new-record-bg);
+        }
+        .record.modified {
+            background-color: var(--modified-record-bg);
+        }
+        .record.removed {
+            background-color: var(--removed-record-bg);
+            opacity: 0.7;
+        }
+        .change-indicator {
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 5px;
+            color: var(--text-color);
         }
         .data-container {
             display: flex;
@@ -116,9 +179,9 @@
         .ui-tooltip {
             max-width: 300px;
             font-size: 12px;
-            background-color: #333;
-            color: white;
-            border: 1px solid #555;
+            background-color: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            border: 1px solid var(--tooltip-border);
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             padding: 8px;
         }
@@ -127,7 +190,8 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
+    <button id="theme-toggle" onclick="toggleTheme()"><i class="fas fa-sun"></i> Light Mode</button>
     <h1><i class="fas fa-globe"></i> OpenDNS</h1>
     <div class="input-container">
         <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)">
@@ -159,7 +223,21 @@
             });
         });
 
-        let dnsRecords = {}; // Store DNS records for export
+        // Theme toggle function
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const isLightMode = body.getAttribute('data-theme') === 'light';
+            if (isLightMode) {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+        }
+
+        let dnsRecords = {}; // Store current DNS records for export
 
         function performLookup() {
             const domain = $('#domain').val().trim();
@@ -171,7 +249,7 @@
             // Clear previous results and hide export button
             resultsDiv.empty();
             exportBtn.hide();
-            dnsRecords = {}; // Reset records
+            dnsRecords = {}; // Reset current records
             loadingDiv.show();
 
             // Input validation
@@ -181,6 +259,9 @@
                 return;
             }
 
+            // Load previous records from local storage
+            const previousRecords = JSON.parse(localStorage.getItem(`dns_${domain}`)) || {};
+
             // Track completed requests
             let completedRequests = 0;
             const totalRequests = recordTypes.length;
@@ -189,6 +270,8 @@
             function checkAllDone() {
                 completedRequests++;
                 if (completedRequests === totalRequests) {
+                    // Save current records to local storage
+                    localStorage.setItem(`dns_${domain}`, JSON.stringify(dnsRecords));
                     loadingDiv.hide();
                     if (resultsDiv.is(':empty')) {
                         resultsDiv.html('<p><i class="fas fa-info-circle"></i> No records found for this query.</p>');
@@ -196,6 +279,13 @@
                         exportBtn.show(); // Show export button if results exist
                     }
                 }
+            }
+
+            // Compare records to detect changes
+            function compareRecords(current, previous) {
+                if (!previous) return { status: 'new', details: 'New record' };
+                if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
+                return { status: 'modified', details: 'Record modified since last lookup' };
             }
 
             // Query each record type
@@ -216,23 +306,44 @@
                     dataType: 'json',
                     success: function(data) {
                         if (data.Answer) {
-                            dnsRecords[recordType] = data.Answer; // Store records for export
-                            resultsDiv.append(
-                                `<div class="record-type">
-                                    <h3 data-tooltip="${recordType}"><i class="fas ${iconMap[recordType]}"></i> ${recordType} Records</h3>
-                                    ${data.Answer.map((answer, index) => `
-                                        <div class="record">
-                                            <strong>Name:</strong> ${answer.name}<br>
-                                            <strong>Type:</strong> ${answer.type}<br>
-                                            <strong>TTL:</strong> ${answer.TTL}<br>
-                                            <div class="data-container">
-                                                <strong>Data:</strong> <span id="data-${recordType}-${index}">${answer.data}</span>
-                                                <button class="copy-btn" onclick="copyToClipboard('data-${recordType}-${index}')"><i class="fas fa-copy"></i> Copy</button>
-                                            </div>
+                            dnsRecords[recordType] = data.Answer; // Store current records
+                            let html = `<div class="record-type"><h3 data-tooltip="${recordType}"><i class="fas ${iconMap[recordType]}"></i> ${recordType} Records</h3>`;
+                            data.Answer.forEach((answer, index) => {
+                                const previousAnswer = previousRecords[recordType] ? previousRecords[recordType].find(p => p.name === answer.name && p.type === answer.type) : null;
+                                const comparison = compareRecords(answer, previousAnswer);
+                                const changeClass = comparison.status; // new, modified, or unchanged
+                                const changeDetails = comparison.details ? `<div class="change-indicator">${comparison.details}</div>` : '';
+                                html += `
+                                    <div class="record ${changeClass}">
+                                        <strong>Name:</strong> ${answer.name}<br>
+                                        <strong>Type:</strong> ${answer.type}<br>
+                                        <strong>TTL:</strong> ${answer.TTL}<br>
+                                        <div class="data-container">
+                                            <strong>Data:</strong> <span id="data-${recordType}-${index}">${answer.data}</span>
+                                            <button class="copy-btn" onclick="copyToClipboard('data-${recordType}-${index}')"><i class="fas fa-copy"></i> Copy</button>
                                         </div>
-                                    `).join('')}
-                                </div>`
-                            );
+                                        ${changeDetails}
+                                    </div>`;
+                            });
+                            // Check for removed records
+                            if (previousRecords[recordType]) {
+                                previousRecords[recordType].forEach(prev => {
+                                    if (!data.Answer.find(curr => curr.name === prev.name && curr.type === prev.type)) {
+                                        html += `
+                                            <div class="record removed">
+                                                <strong>Name:</strong> ${prev.name}<br>
+                                                <strong>Type:</strong> ${prev.type}<br>
+                                                <strong>TTL:</strong> ${prev.TTL}<br>
+                                                <div class="data-container">
+                                                    <strong>Data:</strong> <span>${prev.data}</span>
+                                                </div>
+                                                <div class="change-indicator">Record removed since last lookup</div>
+                                            </div>`;
+                                    }
+                                });
+                            }
+                            html += `</div>`;
+                            resultsDiv.append(html);
                         }
                         checkAllDone();
                     },
