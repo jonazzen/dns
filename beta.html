@@ -101,12 +101,13 @@
         .copy-btn:hover {
             background-color: #0056b3;
         }
-        #export-btn {
+        #export-btn, #history-btn, #delete-history-btn {
             background-color: #ff9500;
             margin-top: 10px;
             display: none;
+            margin-right: 10px;
         }
-        #export-btn:hover {
+        #export-btn:hover, #history-btn:hover, #delete-history-btn:hover {
             background-color: #e68a00;
         }
         #theme-toggle {
@@ -185,6 +186,26 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             padding: 8px;
         }
+        .ui-dialog {
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .ui-dialog-titlebar {
+            background-color: var(--record-type-bg);
+            color: var(--text-color);
+        }
+        .history-entry {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .history-entry h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-color);
+        }
         .fa-spin {
             animation: fa-spin 2s infinite linear;
         }
@@ -198,13 +219,18 @@
         <button onclick="performLookup()"><i class="fas fa-search"></i> Lookup</button>
     </div>
     <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-    <button id="export-btn" onclick="exportRecords()"><i class="fas fa-download"></i> Export DNS Records</button>
+    <div style="display: flex; gap: 10px;">
+        <button id="export-btn" onclick="exportRecords()"><i class="fas fa-download"></i> Export DNS Records</button>
+        <button id="history-btn" onclick="showHistory()"><i class="fas fa-history"></i> View DNS History</button>
+        <button id="delete-history-btn" onclick="deleteHistory()"><i class="fas fa-trash"></i> Delete DNS History</button>
+    </div>
     <div id="results">
         <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
     </div>
+    <div id="history-dialog" style="display: none;"></div>
 
     <script>
-        // Initialize jQuery UI tooltips
+        // Initialize jQuery UI tooltips and dialog
         $(document).ready(function() {
             $(document).tooltip({
                 items: "[data-tooltip]",
@@ -219,6 +245,19 @@
                         'TXT': 'TXT (Text) records store arbitrary text data, often used for verification (e.g., SPF, DKIM) or configuration settings for services.'
                     };
                     return tooltips[recordType] || 'No description available.';
+                }
+            });
+
+            // Initialize history dialog
+            $('#history-dialog').dialog({
+                autoOpen: false,
+                modal: true,
+                width: 600,
+                title: 'DNS Lookup History',
+                buttons: {
+                    Close: function() {
+                        $(this).dialog('close');
+                    }
                 }
             });
         });
@@ -244,11 +283,15 @@
             const resultsDiv = $('#results');
             const loadingDiv = $('#loading');
             const exportBtn = $('#export-btn');
+            const historyBtn = $('#history-btn');
+            const deleteHistoryBtn = $('#delete-history-btn');
             const recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'].sort(); // Sort alphabetically
 
-            // Clear previous results and hide export button
+            // Clear previous results and hide buttons
             resultsDiv.empty();
             exportBtn.hide();
+            historyBtn.hide();
+            deleteHistoryBtn.hide();
             dnsRecords = {}; // Reset current records
             loadingDiv.show();
 
@@ -259,8 +302,10 @@
                 return;
             }
 
-            // Load previous records from local storage
-            const previousRecords = JSON.parse(localStorage.getItem(`dns_${domain}`)) || {};
+            // Load history from local storage
+            const historyKey = `dns_history_${domain}`;
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const previousRecords = history.length > 0 ? history[history.length - 1].records : {};
 
             // Track completed requests
             let completedRequests = 0;
@@ -270,13 +315,19 @@
             function checkAllDone() {
                 completedRequests++;
                 if (completedRequests === totalRequests) {
-                    // Save current records to local storage
-                    localStorage.setItem(`dns_${domain}`, JSON.stringify(dnsRecords));
+                    // Save current records to history
+                    history.push({
+                        timestamp: new Date().toISOString(),
+                        records: dnsRecords
+                    });
+                    localStorage.setItem(historyKey, JSON.stringify(history));
                     loadingDiv.hide();
                     if (resultsDiv.is(':empty')) {
                         resultsDiv.html('<p><i class="fas fa-info-circle"></i> No records found for this query.</p>');
                     } else {
-                        exportBtn.show(); // Show export button if results exist
+                        exportBtn.show();
+                        historyBtn.show();
+                        deleteHistoryBtn.show(); // Show delete history button
                     }
                 }
             }
@@ -352,6 +403,94 @@
                     }
                 });
             });
+        }
+
+        // Delete DNS history for the current domain
+        function deleteHistory() {
+            const domain = $('#domain').val().trim();
+            const historyKey = `dns_history_${domain}`;
+            if (confirm(`Are you sure you want to delete all DNS history for ${domain}?`)) {
+                localStorage.removeItem(historyKey);
+                $('#history-btn').hide();
+                $('#delete-history-btn').hide();
+                alert(`DNS history for ${domain} has been deleted.`);
+            }
+        }
+
+        // Show DNS history in a modal dialog
+        function showHistory() {
+            const domain = $('#domain').val().trim();
+            const historyKey = `dns_history_${domain}`;
+            const history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const historyDiv = $('#history-dialog');
+            historyDiv.empty();
+
+            if (history.length === 0) {
+                historyDiv.html('<p>No lookup history found for this domain.</p>');
+            } else {
+                history.forEach((entry, index) => {
+                    const timestamp = new Date(entry.timestamp).toLocaleString();
+                    let html = `<div class="history-entry"><h4>Lookup at ${timestamp}</h4>`;
+                    const recordTypes = Object.keys(entry.records).sort();
+                    recordTypes.forEach(recordType => {
+                        const iconMap = {
+                            'A': 'fa-server',
+                            'AAAA': 'fa-network-wired',
+                            'CNAME': 'fa-link',
+                            'MX': 'fa-envelope',
+                            'NS': 'fa-sitemap',
+                            'TXT': 'fa-file-alt'
+                        };
+                        html += `<div class="record-type"><h3><i class="fas ${iconMap[recordType]}"></i> ${recordType} Records</h3>`;
+                        const previousRecords = index > 0 ? history[index - 1].records : {};
+                        entry.records[recordType].forEach((record, recordIndex) => {
+                            const previousAnswer = previousRecords[recordType] ? previousRecords[recordType].find(p => p.name === record.name && p.type === record.type) : null;
+                            const comparison = compareRecords(record, previousAnswer);
+                            const changeClass = comparison.status;
+                            const changeDetails = comparison.details ? `<div class="change-indicator">${comparison.details}</div>` : '';
+                            html += `
+                                <div class="record ${changeClass}">
+                                    <strong>Name:</strong> ${record.name}<br>
+                                    <strong>Type:</strong> ${record.type}<br>
+                                    <strong>TTL:</strong> ${record.TTL}<br>
+                                    <div class="data-container">
+                                        <strong>Data:</strong> <span id="history-data-${recordType}-${recordIndex}-${index}">${record.data}</span>
+                                        <button class="copy-btn" onclick="copyToClipboard('history-data-${recordType}-${recordIndex}-${index}')"><i class="fas fa-copy"></i> Copy</button>
+                                    </div>
+                                    ${changeDetails}
+                                </div>`;
+                        });
+                        // Check for removed records in history
+                        if (previousRecords[recordType] && index > 0) {
+                            previousRecords[recordType].forEach(prev => {
+                                if (!entry.records[recordType].find(curr => curr.name === prev.name && curr.type === prev.type)) {
+                                    html += `
+                                        <div class="record removed">
+                                            <strong>Name:</strong> ${prev.name}<br>
+                                            <strong>Type:</strong> ${prev.type}<br>
+                                            <strong>TTL:</strong> ${prev.TTL}<br>
+                                            <div class="data-container">
+                                                <strong>Data:</strong> <span>${prev.data}</span>
+                                            </div>
+                                            <div class="change-indicator">Record removed since previous lookup</div>
+                                        </div>`;
+                                }
+                            });
+                        }
+                        html += `</div>`;
+                    });
+                    html += `</div>`;
+                    historyDiv.append(html);
+                });
+            }
+            $('#history-dialog').dialog('open');
+        }
+
+        // Compare records to detect changes
+        function compareRecords(current, previous) {
+            if (!previous) return { status: 'new', details: 'New record' };
+            if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
+            return { status: 'modified', details: 'Record modified since last lookup' };
         }
 
         // Export DNS records as JSON
