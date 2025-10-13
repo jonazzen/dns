@@ -1,700 +1,1787 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenDNS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenDNS 26 Beta 3</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
-  <style>
-    :root {
-      --bg-color: #f8fafc;
-      --text-color: #1e293b;
-      --container-bg: #ffffff;
-      --border-color: #e2e8f0;
-      --record-type-bg: #f1f5f9;
-      --record-bg: #f9fafb;
-      --record-border: #10b981;
-      --error-color: #ef4444;
-      --loading-color: #64748b;
-      --tooltip-bg: linear-gradient(135deg, #ffffff, #e2e8f0);
-      --tooltip-border: #1e293b;
-      --tooltip-text: #1e293b;
-      --new-record-bg: #d1fae5;
-      --modified-record-bg: #fef3c7;
-      --removed-record-bg: #fee2e2;
-      --button-bg: #10b981;
-      --button-hover-bg: #059669;
-      --action-button-bg: #f59e0b;
-      --action-button-hover-bg: #d97706;
-      --copy-button-bg: #3b82f6;
-      --copy-button-hover-bg: #2563eb;
-      --toggle-bg: #6b7280;
-      --toggle-hover-bg: #4b5563;
-      --toggle-slider-bg: #ffffff;
-      --toggle-slider-active-bg: #34d399;
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg-primary: #f5f7fa;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e8ecef;
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --border-color: #d1d5db;
+    --hover-bg: #edf2ff;
+    --table-header-bg: #f7fafc;
+    --table-row-even: #f9fafb;
+    --table-row-hover: #edf2ff;
+    --tooltip-bg: #1a202c;
+    --tooltip-text: #ffffff;
+    --accent-blue: #3b82f6;
+    --accent-blue-hover: #2563eb;
+    --error-bg: #fef2f2;
+    --error-text: #dc2626;
+    --success-bg: #d1fae5;
+    --warning-bg: #fef3c7;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    --font-size-base: clamp(14px, 2.5vw, 16px);
+    --radius-md: 8px;
+    --radius-sm: 4px;
+  }
+
+  /* ---------- Improved Dark Mode (keeps all required variables) ---------- */
+  [data-theme="dark"] {
+    /* Backgrounds */
+    --bg-primary: #0d1117;       /* page background */
+    --bg-secondary: #161b22;     /* cards, panels */
+    --bg-tertiary: #1e2632;      /* accents, dark alternate */
+
+    /* Text */
+    --text-primary: #e6edf3;     /* primary copy (soft white) */
+    --text-secondary: #9ca3af;   /* muted text */
+
+    /* Borders & dividers */
+    --border-color: #30363d;
+
+    /* Hover / states */
+    --hover-bg: #21262d;
+    --table-header-bg: #1e2632;
+    --table-row-even: #161b22;
+    --table-row-hover: #2b3340;
+
+    /* Tooltips (inverted for dark) */
+    --tooltip-bg: #e6edf3;
+    --tooltip-text: #0d1117;
+
+    /* Accents */
+    --accent-blue: #58a6ff;
+    --accent-blue-hover: #1f6feb;
+
+    /* Semantic */
+    --error-bg: #2d0000;
+    --error-text: #ff9b9b;
+    --success-bg: #003d2e;
+    --warning-bg: #4d3b00;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+
+  /* subtle depth for dark theme panels */
+  [data-theme="dark"] .record-section,
+  [data-theme="dark"] .header {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  /* make buttons pop in dark mode without changing layout */
+  [data-theme="dark"] button,
+  [data-theme="dark"] .btn {
+    background: var(--accent-blue);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(88,166,255,0.18);
+  }
+  [data-theme="dark"] button:hover,
+  [data-theme="dark"] .btn:hover {
+    background: var(--accent-blue-hover);
+    box-shadow: 0 0 12px rgba(88,166,255,0.28);
+  }
+
+  /* === ORIGINAL / BASE STYLES (kept intact) === */
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    transition: var(--transition);
+  }
+
+  /* Input Group */
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-grow: 1;
+    flex-wrap: wrap;
+  }
+
+  /* Record Section */
+  .record-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .record-section summary {
+    padding: 0.75rem 1rem;
+    background: var(--table-header-bg);
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+  }
+
+  .record-section summary:hover {
+    background: var(--hover-bg);
+  }
+
+  .record-section summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .record-section summary::after {
+    content: '▼';
+    font-size: 0.75rem;
+    margin-left: auto;
+    transition: transform 0.2s ease;
+  }
+
+  .record-section[open] summary::after {
+    transform: rotate(180deg);
+  }
+
+  /* Table */
+  .table-container {
+    overflow-x: auto;
+    padding: 1rem;
+  }
+
+  .dns-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .dns-table th,
+  .dns-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+  }
+
+  .dns-table th {
+    font-weight: 500;
+    background: var(--table-header-bg);
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition);
+  }
+
+  .dns-table th:hover {
+    background: var(--hover-bg);
+  }
+
+  .dns-table tr:nth-child(even) {
+    background: var(--table-row-even);
+  }
+
+  .dns-table tr:hover {
+    background: var(--table-row-hover);
+  }
+
+  /* Sort Icon */
+  .sort-icon {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 0.25rem;
+    vertical-align: middle;
+    fill: var(--text-secondary);
+    transition: var(--transition);
+  }
+
+  .sort-icon.asc {
+    transform: rotate(180deg);
+  }
+
+  /* Copyable Elements */
+  .copyable {
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+  }
+
+  .copyable:hover {
+    background: var(--hover-bg);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-blue);
+  }
+
+  .copy-icon {
+    opacity: 0;
+    margin-left: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    fill: var(--accent-blue);
+    transition: var(--transition);
+  }
+
+  .copyable:hover .copy-icon,
+  .copyable:focus .copy-icon {
+    opacity: 1;
+  }
+
+  .copyable.copied .copy-icon {
+    opacity: 1;
+    fill: #10b981;
+    transform: scale(1.1);
+  }
+
+  .copy-tooltip {
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: var(--transition);
+    backdrop-filter: blur(4px);
+  }
+
+  .copyable:hover .copy-tooltip--hover,
+  .copyable:focus .copy-tooltip--hover {
+    opacity: 1;
+  }
+
+  .copyable.copied .copy-tooltip--copied {
+    opacity: 1;
+    top: -2rem;
+  }
+
+  /* Info Icon */
+  .info-icon {
+    position: relative;
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-left: 0.25rem;
+    fill: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    transition: var(--transition);
+    z-index: 999;
+  }
+
+  .info-icon:hover,
+  .info-icon:focus {
+    transform: scale(1.1);
+    fill: var(--accent-blue);
+  }
+
+  .info-tooltip {
+    position: absolute;
+    top: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: var(--transition);
+    backdrop-filter: blur(4px);
+  }
+
+  .info-icon:hover .info-tooltip,
+  .info-icon:focus .info-tooltip {
+    opacity: 1;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--tooltip-text);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.5s linear infinite;
+    margin-left: 0.5rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Select */
+  .filter-select {
+    appearance: none;
+    background: var(--table-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
+    font-size: var(--font-size-base);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
+
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Input */
+  .input-focus {
+    transition: var(--transition);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+  }
+
+  .input-focus:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Icons */
+  .search-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: var(--tooltip-text);
+  }
+
+  /* Record States */
+  .record-row-added {
+    background: var(--success-bg);
+  }
+
+  .record-row-deleted {
+    background: var(--error-bg);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .record-row-modified {
+    background: var(--warning-bg);
+  }
+
+  .record-row-added:hover,
+  .record-row-deleted:hover,
+  .record-row-modified:hover {
+    filter: brightness(95%);
+  }
+
+  /* Initial Message */
+  .initial-message {
+    text-align: center;
+    padding: 2.5rem 1.25rem;
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    background: var(--table-header-bg);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .initial-message svg {
+    width: 3rem;
+    height: 3rem;
+    fill: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .initial-message p:first-child {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Autocomplete */
+  #domainInputContainer {
+    position: relative;
+    flex-grow: 1;
+  }
+
+  #domainAutocompleteList {
+    position: absolute;
+    inset: 0 auto auto 0;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    z-index: 10;
+    background: var(--bg-secondary);
+    max-height: 12.5rem;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    transition: var(--transition);
+  }
+
+  #domainAutocompleteList div {
+    padding: 0.625rem;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: var(--transition);
+  }
+
+  #domainAutocompleteList div:last-child {
+    border-bottom: none;
+  }
+
+  #domainAutocompleteList div:hover,
+  #domainAutocompleteList div.autocomplete-active {
+    background: var(--hover-bg);
+  }
+
+  /* Error Message */
+  #error {
+    background: var(--error-bg);
+    color: var(--error-text);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: var(--transition);
+  }
+
+  /* Toggle Switch */
+  .theme-toggle {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+  }
+
+  .theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .theme-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--table-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    transition: var(--transition);
+  }
+
+  .theme-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.125rem;
+    width: 1.125rem;
+    left: 0.1875rem;
+    bottom: 0.125rem;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: var(--transition);
+  }
+
+  .theme-toggle input:checked + .theme-toggle-slider {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+  }
+
+  .theme-toggle input:checked + .theme-toggle-slider:before {
+    transform: translateX(1.5rem);
+  }
+
+  .theme-toggle input:focus + .theme-toggle-slider {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 1rem 0;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  /* ===========================
+     MOBILE / RESPONSIVE ENHANCEMENTS
+     Non-destructive: only active below breakpoints
+     =========================== */
+
+  /* Tablet and below: stack and make controls full-width for easy tapping */
+  @media (max-width: 900px) {
+    .container {
+      padding: 0.75rem;
+      gap: 1rem;
     }
 
-    [data-theme="dark"] {
-      --bg-color: #0f172a;
-      --text-color: #f1f5f9;
-      --container-bg: #1e293b;
-      --border-color: #475569;
-      --record-type-bg: #2d3748;
-      --record-bg: #1f2a44;
-      --record-border: #2dd4bf;
-      --error-color: #f87171;
-      --loading-color: #94a3b8;
-      --tooltip-bg: linear-gradient(135deg, #2d3748, #475569);
-      --tooltip-border: #0f172a;
-      --tooltip-text: #e5e7eb;
-      --new-record-bg: #065f46;
-      --modified-record-bg: #b45309;
-      --removed-record-bg: #991b1b;
-      --button-bg: #2dd4bf;
-      --button-hover-bg: #22d3ee;
-      --action-button-bg: #d97706;
-      --action-button-hover-bg: #b45309;
-      --copy-button-bg: #60a5fa;
-      --copy-button-hover-bg: #3b82f6;
-      --toggle-bg: #475569;
-      --toggle-hover-bg: #334155;
-      --toggle-slider-bg: #1e293b;
-      --toggle-slider-active-bg: #2dd4bf;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      transition: background-color 0.3s ease, color 0.3s ease;
-      min-height: 100vh;
-      display: flex;
+    .header {
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
+      padding: 1rem;
     }
 
-    .search-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      max-width: 600px;
+    .input-group {
+      flex-direction: column;
       width: 100%;
-      position: relative;
-      z-index: 10;
-      transition: all 0.5s ease;
+      gap: 0.75rem;
     }
 
-    .search-container.centered {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+    /* Make inputs/selects/buttons take full width on smaller viewports */
+    input[type="text"],
+    select.filter-select,
+    .filter-select,
+    .input-focus,
+    button,
+    .btn {
+      width: 100%;
+      max-width: 100%;
+      font-size: 1rem;
+      box-sizing: border-box;
     }
 
-    .search-container.top {
-      position: static;
+    /* Larger comfortable tap targets */
+    button,
+    .btn,
+    select,
+    input {
+      min-height: 44px; /* comfortable for most touch devices */
+    }
+
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0.5rem;
+    }
+
+    .dns-table th,
+    .dns-table td {
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    .record-section summary {
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+
+    /* Tooltips: position below target on mobile to avoid clipping */
+    .copy-tooltip,
+    .info-tooltip {
+      top: auto;
+      bottom: -2rem;
+      font-size: 0.75rem;
+    }
+
+    .initial-message {
+      padding: 1.5rem 0.75rem;
+      font-size: 0.95rem;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      padding: 0.5rem;
+    }
+  }
+
+  /* Phones: tighten spacing slightly */
+  @media (max-width: 480px) {
+    body {
+      font-size: 0.9rem;
+    }
+
+    .header {
+      padding: 0.75rem;
+    }
+
+    .dns-table th,
+    .dns-table td {
+      padding: 0.4rem 0.5rem;
+    }
+
+    /* Ensure summary text and controls remain readable */
+    .record-section summary {
+      font-size: 0.95rem;
+    }
+
+    button,
+    .btn {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.95rem;
+      min-height: 44px;
+    }
+  }
+
+  /* Reduce hover-based effects on touch-only devices (avoid odd UX) */
+  @media (hover: none) {
+    .copyable:hover,
+    .info-icon:hover,
+    .dns-table th:hover,
+    .record-section summary:hover {
+      background: none;
       transform: none;
     }
-
-    .title {
-      font-weight: 700;
-      font-size: 1.5rem;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .copyable:hover .copy-icon,
+    .copyable:focus .copy-icon {
+      opacity: 1;
     }
-
-    #domain {
-      flex-grow: 1;
-      padding: 12px;
-      font-size: 1rem;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      background-color: var(--container-bg);
-      color: var(--text-color);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    #domain:focus {
-      border-color: var(--button-bg);
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-      outline: none;
-    }
-
-    button {
-      padding: 12px;
-      font-size: 1rem;
-      background-color: var(--button-bg);
-      color: #fff;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 500;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-    }
-
-    button:hover {
-      background-color: var(--button-hover-bg);
-      transform: scale(1.05);
-    }
-
-    button:focus {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
-    }
-
-    .copy-btn {
-      padding: 6px 12px;
-      font-size: 0.875rem;
-      background-color: var(--copy-button-bg);
-      margin-left: 12px;
-    }
-
-    .copy-btn:hover {
-      background-color: var(--copy-button-hover-bg);
-    }
-
-    .copy-btn:focus {
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    #export-btn, #history-btn, #clear-history-btn {
-      background-color: var(--action-button-bg);
-      margin: 12px 12px 0 0;
-      display: none;
-      padding: 12px 24px;
-    }
-
-    #export-btn:hover, #history-btn:hover, #clear-history-btn:hover {
-      background-color: var(--action-button-hover-bg);
-    }
-
-    #export-btn:focus, #history-btn:focus, #clear-history-btn:focus {
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    }
-
-    .theme-toggle-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-    }
-
-    #theme-toggle {
-      display: none;
-    }
-
-    .theme-toggle-label {
-      width: 60px;
-      height: 30px;
-      background-color: var(--toggle-bg);
-      border-radius: 15px;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      border: 2px solid var(--border-color);
-    }
-
-    .theme-toggle-label:hover {
-      background-color: var(--toggle-hover-bg);
-    }
-
-    .theme-toggle-label::after {
-      content: '';
-      width: 26px;
-      height: 26px;
-      background-color: var(--toggle-slider-bg);
-      border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    #theme-toggle:checked + .theme-toggle-label::after {
-      transform: translateX(30px);
-      background-color: var(--toggle-slider-active-bg);
-    }
-
-    #theme-toggle:focus + .theme-toggle-label {
-      box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
-    }
-
-    #results {
-      max-width: 600px;
-      width: 100%;
-      margin-top: 24px;
-      padding: 16px;
-      background-color: var(--container-bg);
-      border-radius: 8px;
-      border: 2px solid var(--border-color);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      display: none;
-    }
-
-    .loading {
-      display: none;
-      text-align: center;
-      font-style: italic;
-      color: var(--loading-color);
-    }
-
-    .error {
-      color: var(--error-color);
-    }
-
-    .record-type {
-      margin-top: 20px;
-      padding: 12px;
-      background-color: var(--record-type-bg);
-      border-radius: 8px;
-    }
-
-    .record-type h3 {
-      margin: 0 0 12px;
-      cursor: help;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      font-size: 1.2rem;
-    }
-
-    .record {
-      margin: 12px 0;
-      padding: 12px;
-      border-left: 4px solid var(--record-border);
-      background-color: var(--record-bg);
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .record.new { background-color: var(--new-record-bg); }
-    .record.modified { background-color: var(--modified-record-bg); }
-    .record.removed { background-color: var(--removed-record-bg); opacity: 0.7; }
-
-    .change-indicator {
-      font-size: 0.75rem;
-      font-style: italic;
-      margin-top: 8px;
-      color: var(--text-color);
-    }
-
-    .data-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ui-tooltip {
-      max-width: 300px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.875rem;
-      background: var(--tooltip-bg);
-      color: var(--tooltip-text);
-      border: 2px solid var(--tooltip-border);
-      border-radius: 12px;
-      padding: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .ui-dialog {
-      background-color: var(--container-bg);
-      color: var(--text-color);
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-    }
-
-    .ui-dialog-titlebar {
-      background-color: var(--record-type-bg);
-      color: var(--text-color);
-      font-weight: 700;
-      border-radius: 6px 6px 0 0;
-    }
-
-    .history-entry {
-      margin: 12px 0;
-      padding: 12px;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      background-color: var(--record-bg);
-    }
-
-    .history-entry h4 {
-      margin: 0 0 12px;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .fa-spin {
-      animation: fa-spin 2s infinite linear;
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
-    }
-  </style>
+  }
+</style>
 </head>
-<body data-theme="light">
-  <div class="theme-toggle-container" data-tooltip="theme-toggle">
-    <input type="checkbox" id="theme-toggle" aria-label="Toggle dark mode">
-    <label for="theme-toggle" class="theme-toggle-label"></label>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="text-2xl font-semibold text-[var(--text-primary)]">
+        OpenDNS
+      </h1>
+      <div class="input-group">
+        <div id="domainInputContainer">
+          <input
+            id="domainInput"
+            type="text"
+            placeholder="Enter domain (e.g., example.com)"
+            class="input-focus w-full p-3 text-[var(--text-primary)]"
+            aria-label="Domain name for DNS lookup"
+            autocomplete="off"
+          />
+          <div id="domainAutocompleteList" class="hidden"></div>
+        </div>
+        <button
+          id="lookupBtn"
+          aria-label="Search DNS records"
+          class="bg-[var(--accent-blue)] text-[var(--tooltip-text)] p-3 rounded-[var(--radius-md)] hover:bg-[var(--accent-blue-hover)] transition font-medium sm:w-14 flex justify-center items-center"
+        >
+          <span id="lookupBtnText">
+            <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"></path></svg>
+          </span>
+        </button>
+        <button
+          id="clearHistoryBtn"
+          aria-label="Clear all stored history and records"
+          class="bg-red-600 text-white p-3 rounded-[var(--radius-md)] hover:bg-red-700 transition font-medium sm:w-14 flex justify-center items-center"
+          title="Clear all stored history and records"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-5 h-5"
+          >
+            <path
+              d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41z"
+            />
+          </svg>
+        </button>
+        <label class="theme-toggle">
+          <input
+            type="checkbox"
+            id="themeToggle"
+            aria-label="Toggle dark/light mode"
+            title="Toggle dark/light mode"
+          />
+          <span class="theme-toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div id="result">
+      <div id="initialMessage" class="initial-message">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
+        </svg>
+        <p>Start your DNS lookup</p>
+        <p class="text-sm text-[var(--text-secondary)]">
+          Enter a domain name above to retrieve its DNS records.
+        </p>
+      </div>
+      <div
+        id="resultsHeader"
+        class="flex flex-col sm:flex-row justify-between items-center mb-4 hidden"
+      >
+        <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2 sm:mb-0">
+          DNS Records
+        </h2>
+        <div class="flex flex-wrap gap-2 items-center">
+          <select
+            id="filterType"
+            class="filter-select"
+            aria-label="Filter by record type"
+          >
+            <option value="">All Types</option>
+            <option value="A">A</option>
+            <option value="AAAA">AAAA</option>
+            <option value="CNAME">CNAME</option>
+            <option value="MX">MX</option>
+            <option value="NS">NS</option>
+            <option value="TXT">TXT</option>
+          </select>
+          <button
+            id="exportBtn"
+            aria-label="Export DNS records to a text file"
+            class="bg-green-600 text-white px-4 py-2 rounded-[var(--radius-md)] hover:bg-green-700 transition font-medium hidden"
+            title="Export Records"
+          >
+            Export .TXT
+          </button>
+        </div>
+      </div>
+      <div id="historySelectContainer" class="flex items-center gap-2 mb-4 hidden"></div>
+      <div id="resultSections"></div>
+    </div>
+    <div
+      id="error"
+      class="mt-4 hidden"
+    ></div>
+    <div class="footer">
+      <small>
+        <b>OpenDNS</b> Version: <b>26.1.4</b> Beta 3
+      </small>
+    </div>
+    <div aria-live="polite" class="sr-only" id="copy-status"></div>
   </div>
-  <div class="search-container centered">
-    <h1 class="title">OpenDNS</h1>
-    <input type="text" id="domain" placeholder="Enter domain (e.g., example.com)" aria-label="Domain name input" autofocus>
-    <button id="lookup-btn" data-tooltip="lookup-btn" aria-label="Perform DNS lookup"><i class="fas fa-search"></i></button>
-  </div>
-  <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> Loading...</div>
-  <div style="display: flex; gap: 12px; max-width: 600px; width: 100%;">
-    <button id="export-btn" data-tooltip="export-btn" aria-label="Export DNS records"><i class="fas fa-download"></i> Export DNS Records</button>
-    <button id="history-btn" data-tooltip="history-btn" aria-label="View DNS history"><i class="fas fa-history"></i> View DNS History</button>
-    <button id="clear-history-btn" data-tooltip="clear-history-btn" aria-label="Clear DNS history"><i class="fas fa-trash"></i> Clear All History</button>
-  </div>
-  <div id="results">
-    <p class="intro">Enter a domain name (e.g., example.com) to view its DNS records, including IP addresses, mail servers, name servers, and more. Hover over record type headings for explanations.</p>
-  </div>
-  <div id="history-dialog" style="display: none;"></div>
-  <footer style="margin-top: auto; padding: 16px; text-align: center;">
-    <small><b>OpenDNS</b> Version: <b>26.1.3</b> Beta 2</small>
-  </footer>
   <script>
-    // Initialize jQuery UI components
-    $(document).ready(function() {
-      console.log('Document ready, jQuery version:', $.fn.jquery);
-      console.log('Theme toggle visible:', $('.theme-toggle-container').is(':visible'));
+    // DOM elements
+    const lookupBtn = document.getElementById('lookupBtn');
+    const lookupBtnText = document.getElementById('lookupBtnText');
+    const domainInput = document.getElementById('domainInput');
+    const domainInputContainer = document.getElementById('domainInputContainer');
+    const domainAutocompleteList = document.getElementById('domainAutocompleteList');
+    const resultDiv = document.getElementById('result');
+    const resultSections = document.getElementById('resultSections');
+    const errorDiv = document.getElementById('error');
+    const filterType = document.getElementById('filterType');
+    const copyStatus = document.getElementById('copy-status');
+    const initialMessage = document.getElementById('initialMessage');
+    const resultsHeader = document.getElementById('resultsHeader');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const themeToggle = document.getElementById('themeToggle');
 
-      // Tooltips
-      $(document).tooltip({
-        items: "[data-tooltip], .record-type h3",
-        content: function() {
-          const tooltipId = $(this).attr('data-tooltip') || $(this).text().trim();
-          const tooltips = {
-            'A': 'A (Address) records map a domain to an IPv4 address (e.g., 192.0.2.1).',
-            'AAAA': 'AAAA (IPv6 Address) records map a domain to an IPv6 address (e.g., 2001:db8::1).',
-            'CNAME': 'CNAME (Canonical Name) records alias one domain to another.',
-            'MX': 'MX (Mail Exchange) records specify the mail servers for a domain.',
-            'NS': 'NS (Name Server) records indicate authoritative name servers.',
-            'TXT': 'TXT (Text) records store arbitrary text data for verification.',
-            'lookup-btn': 'Fetch the DNS records for the entered domain.',
-            'export-btn': 'Download the current DNS records as a JSON file.',
-            'history-btn': 'View all past DNS lookups for this domain.',
-            'clear-history-btn': 'Clear all stored DNS lookup history.',
-            'theme-toggle': 'Switch between light and dark mode.',
-            'copy': 'Copy this DNS record data to your clipboard.'
+    // Constants
+    const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
+    const API_URL = 'https://1.1.1.1/dns-query';
+    const LOCAL_STORAGE_HISTORY_KEY = 'dnsLookupHistory';
+    const LOCAL_STORAGE_RECORDS_KEY = 'dnsStoredRecords';
+    const LOCAL_STORAGE_THEME_KEY = 'dnsTheme';
+    const MAX_HISTORY_ITEMS = 10;
+    const MAX_SNAPSHOTS_PER_DOMAIN = 5;
+    const DEBOUNCE_DELAY = 300;
+
+    // State
+    let dnsRecords = [];
+    let currentSort = {};
+    let currentAutocompleteFocus = -1;
+    let currentDomain = '';
+    let currentSnapshotIndex = -1;
+    let debounceTimeout = null;
+
+    // SVG icons
+    const SVGS = {
+      copy: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`,
+      checkmark: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`,
+      info: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-10h-2v6h-2zm0-4h-2v2h2V6z"/></svg>`,
+      sort: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/></svg>`,
+      search: `<svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>`
+    };
+
+    const RECORD_DESCRIPTIONS = {
+      A: 'Maps a domain to an IPv4 address (e.g., 192.0.2.1)',
+      AAAA: 'Maps a domain to an IPv6 address (e.g., 2001:db8::1)',
+      CNAME: 'Aliases one domain to another (e.g., www.example.com to example.com)',
+      MX: 'Specifies mail servers for the domain (e.g., mail.example.com) with a preference value.',
+      NS: 'Defines authoritative nameservers for the domain. Crucial for delegation.',
+      TXT: 'Stores arbitrary text data, often for verification (e.g., SPF, DKIM, DMARC) or general info.'
+    };
+
+    // Utility functions
+    function escapeHtmlAttribute(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function normalizeTxtData(data) {
+      if (Array.isArray(data)) {
+        return data.join(' ').replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+      }
+      if (typeof data === 'string') {
+        return data.replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+      }
+      return String(data).replace(/^"(.*)"$/, '$1').replace(/\s+/g, ' ').trim();
+    }
+
+    function isValidDomain(domain) {
+      const domainRegex =
+        /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+      return (
+        domainRegex.test(domain) &&
+        domain.length <= 253 &&
+        !domain.includes('..') &&
+        !domain.startsWith('-') &&
+        !domain.endsWith('-')
+      );
+    }
+
+    function showError(message) {
+      console.error('Error:', message);
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      initialMessage.classList.add('hidden');
+      resultsHeader.classList.add('hidden');
+      historySelectContainer.classList.add('hidden');
+      exportBtn.classList.add('hidden');
+      resultSections.innerHTML = '';
+    }
+
+    function resetUI() {
+      errorDiv.classList.add('hidden');
+      resultSections.innerHTML = '';
+      dnsRecords = [];
+      filterType.value = '';
+      initialMessage.classList.remove('hidden');
+      resultsHeader.classList.add('hidden');
+      historySelectContainer.classList.add('hidden');
+      exportBtn.classList.add('hidden');
+      RECORD_TYPES.forEach((type) => {
+        currentSort[type] = { column: 'name', direction: 'asc' };
+      });
+      hideAutocompleteList();
+      currentDomain = '';
+      currentSnapshotIndex = -1;
+      domainInput.value = '';
+    }
+
+    async function copyToClipboard(text, element, field) {
+      const announceStatus = (message) => {
+        copyStatus.textContent = message;
+        setTimeout(() => {
+          copyStatus.textContent = '';
+        }, 3000);
+      };
+      try {
+        await navigator.clipboard.writeText(text);
+        element.classList.add('copied');
+        element.querySelector('.copy-icon').innerHTML = SVGS.checkmark;
+        announceStatus(`Copied ${field} to clipboard.`);
+        setTimeout(() => {
+          element.classList.remove('copied');
+          element.querySelector('.copy-icon').innerHTML = SVGS.copy;
+        }, 2000);
+      } catch (err) {
+        console.error(`Clipboard API failed for ${field}:`, err);
+        announceStatus('Failed to copy: Please grant clipboard access or try again.');
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          element.classList.add('copied');
+          element.querySelector('.copy-icon').innerHTML = SVGS.checkmark;
+          announceStatus(`Copied ${field} to clipboard (fallback).`);
+          setTimeout(() => {
+            element.classList.remove('copied');
+            element.querySelector('.copy-icon').innerHTML = SVGS.copy;
+          }, 2000);
+        } catch (fallbackErr) {
+          console.error(`Fallback copy failed for ${field}:`, fallbackErr);
+          announceStatus('Failed to copy: Your browser does not support clipboard operations.');
+        }
+      }
+    }
+
+    function sortRecords(records, column, direction) {
+      const statusOrder = {
+        added: 1,
+        modified: 2,
+        deleted: 3,
+        unchanged: 4,
+        undefined: 5
+      };
+
+      return [...records].sort((a, b) => {
+        const statusCompare = statusOrder[a.status] - statusOrder[b.status];
+        if (statusCompare !== 0) return statusCompare;
+
+        let valueA = a[column];
+        let valueB = b[column];
+
+        if (column === 'data') {
+          valueA = a.type === 'TXT' ? normalizeTxtData(valueA) : String(valueA);
+          valueB = b.type === 'TXT' ? normalizeTxtData(valueB) : String(valueB);
+        } else if (column === 'ttl') {
+          valueA = parseInt(a.ttl, 10) || 0;
+          valueB = parseInt(b.ttl, 10) || 0;
+        } else {
+          valueA = String(valueA).toLowerCase();
+          valueB = String(valueB).toLowerCase();
+        }
+
+        if (valueA < valueB) return direction === 'asc' ? -1 : 1;
+        if (valueA > valueB) return direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    function renderTable(records, type, sortCol, sortDir) {
+      if (!records || records.length === 0) {
+        return `<p class="text-center text-[var(--text-secondary)] py-4">No ${type} records found.</p>`;
+      }
+      const sortedRecords = sortRecords(records, sortCol, sortDir);
+      let html = `
+        <div class="table-container">
+          <table class="dns-table" role="table" aria-label="${type} DNS Records">
+            <thead>
+              <tr>
+                <th scope="col" data-sort="name" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'name' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">Name <span class="sort-icon ${sortCol === 'name' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'name' ? SVGS.sort : ''
+                }</span></th>
+                <th scope="col" data-sort="data" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'data' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">Data <span class="sort-icon ${sortCol === 'data' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'data' ? SVGS.sort : ''
+                }</span></th>
+                <th scope="col" data-sort="ttl" data-type="${type}" tabindex="0" aria-sort="${
+                  sortCol === 'ttl' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                }">TTL <span class="sort-icon ${sortCol === 'ttl' && sortDir === 'asc' ? 'asc' : ''}">${
+                  sortCol === 'ttl' ? SVGS.sort : ''
+                }</span></th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      sortedRecords.forEach((record) => {
+        const normalizedData = record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
+        const normalizedTTL = record.ttl !== 'N/A' ? String(record.ttl) : 'N/A';
+        const rowClass = record.status && ['added', 'modified', 'deleted'].includes(record.status)
+          ? `record-row-${record.status}`
+          : '';
+
+        let oldDataDisplay = '';
+        if (record.status === 'modified' && record.oldData !== undefined) {
+          const oldNormalizedData = record.type === 'TXT' ? normalizeTxtData(record.oldData) : record.oldData;
+          oldDataDisplay = `<span class="text-[var(--text-secondary)] text-xs ml-1">(was: ${escapeHtmlAttribute(oldNormalizedData)})</span>`;
+        }
+
+        let statusIndicator = '';
+        if (record.status === 'added') {
+          statusIndicator = '<span class="text-green-600 text-xs font-semibold ml-1">(New)</span>';
+        } else if (record.status === 'modified') {
+          statusIndicator = '<span class="text-yellow-600 text-xs font-semibold ml-1">(Changed)</span>';
+        } else if (record.status === 'deleted') {
+          statusIndicator = '<span class="text-red-600 text-xs font-semibold ml-1">(Deleted)</span>';
+        } else if (record.status === 'unchanged' && currentSnapshotIndex > -1) {
+          statusIndicator = '<span class="text-[var(--text-secondary)] text-xs font-semibold ml-1">(Unchanged)</span>';
+        }
+
+        html += `
+          <tr class="${rowClass}">
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(record.name)}" aria-label="Copy DNS name: ${escapeHtmlAttribute(record.name)}">
+                ${escapeHtmlAttribute(record.name)}
+                ${statusIndicator}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(normalizedData)}" aria-label="Copy DNS data: ${escapeHtmlAttribute(normalizedData)}">
+                ${escapeHtmlAttribute(normalizedData)}
+                ${oldDataDisplay}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+            <td role="cell">
+              <span class="copyable" role="button" tabindex="0" data-copy="${escapeHtmlAttribute(normalizedTTL)}" aria-label="Copy DNS TTL: ${escapeHtmlAttribute(normalizedTTL)}">
+                ${normalizedTTL}
+                <span class="copy-icon">${SVGS.copy}</span>
+                <span class="copy-tooltip copy-tooltip--hover">Copy</span>
+                <span class="copy-tooltip copy-tooltip--copied">Copied!</span>
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    function renderSections(records) {
+      resultSections.innerHTML = '';
+      const filterValue = filterType.value;
+      let anySectionsRendered = false;
+
+      RECORD_TYPES.forEach((type) => {
+        const typeRecords = records.filter((record) => record.type === type);
+        if (filterValue && filterValue !== type) return;
+
+        if (!currentSort[type]) {
+          currentSort[type] = { column: 'name', direction: 'asc' };
+        }
+        const currentTypeSort = currentSort[type];
+
+        if (typeRecords.length === 0) return;
+
+        anySectionsRendered = true;
+        const section = document.createElement('details');
+        section.className = 'record-section';
+        section.open = true;
+        section.innerHTML = `
+          <summary>
+            ${type} Records
+            <span class="info-icon" tabindex="0" role="button" aria-label="Learn about ${type} records">
+              ${SVGS.info}
+              <span class="info-tooltip">${RECORD_DESCRIPTIONS[type] || 'No description available.'}</span>
+            </span>
+            <span class="record-count">(${typeRecords.length})</span>
+          </summary>
+          ${renderTable(typeRecords, type, currentTypeSort.column, currentTypeSort.direction)}
+        `;
+        resultSections.appendChild(section);
+
+        const ths = section.querySelectorAll('.dns-table th');
+        ths.forEach((th) => {
+          const clickHandler = () => {
+            const column = th.getAttribute('data-sort');
+            let direction = 'asc';
+            if (currentTypeSort.column === column) {
+              direction = currentTypeSort.direction === 'asc' ? 'desc' : 'asc';
+            }
+            currentSort[type] = { column, direction };
+            const tableContainer = section.querySelector('.table-container');
+            if (tableContainer) {
+              const recordsToRender = records.filter((record) => record.type === type);
+              tableContainer.innerHTML = renderTable(recordsToRender, type, column, direction);
+              addCopyListeners(tableContainer);
+            }
           };
-          return tooltips[tooltipId] || 'No description available.';
-        },
-        track: true
-      });
-
-      // History dialog
-      $('#history-dialog').dialog({
-        autoOpen: false,
-        modal: true,
-        width: 600,
-        title: 'DNS Lookup History',
-        buttons: { Close: function() { $(this).dialog('close'); } }
-      });
-
-      // Event bindings
-      function bindEvents() {
-        $('#lookup-btn').off('click').on('click', function() {
-          console.log('Lookup button clicked');
-          performLookup();
+          th.addEventListener('click', clickHandler);
+          th.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              clickHandler();
+            }
+          });
         });
-        $('#export-btn').off('click').on('click', exportRecords);
-        $('#history-btn').off('click').on('click', showHistory);
-        $('#clear-history-btn').off('click').on('click', clearAllHistory);
-        $('#domain').off('keypress').on('keypress', function(e) {
-          if (e.which === 13) {
-            console.log('Enter key pressed');
-            performLookup();
+        addCopyListeners(section);
+      });
+
+      if (!anySectionsRendered) {
+        resultSections.innerHTML = `
+          <div class="initial-message">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
+            <p>No DNS records found for the applied filter.</p>
+            <p class="text-sm text-[var(--text-secondary)]">Try adjusting your filter or searching for a different domain.</p>
+          </div>
+        `;
+        initialMessage.classList.add('hidden');
+        exportBtn.classList.add('hidden');
+      } else {
+        exportBtn.classList.remove('hidden');
+      }
+    }
+
+    function addCopyListeners(container) {
+      container.querySelectorAll('.copyable').forEach((element) => {
+        if (element.dataset.listenersAdded) return;
+        const text = element.getAttribute('data-copy');
+        const field = element.getAttribute('aria-label').replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
+        const handleClick = (e) => {
+          e.stopPropagation();
+          copyToClipboard(text, element, field);
+        };
+        const handleKeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            copyToClipboard(text, element, field);
+          }
+        };
+        element.addEventListener('click', handleClick);
+        element.addEventListener('keydown', handleKeydown);
+        element.dataset.listenersAdded = 'true';
+      });
+    }
+
+    async function fetchDNSRecord(domain, type) {
+      try {
+        const response = await fetch(
+          `${API_URL}?name=${encodeURIComponent(domain)}&type=${type}`,
+          { headers: { Accept: 'application/dns-json' } }
+        );
+        if (!response.ok) {
+          throw new Error(`DNS query failed for ${type} records: HTTP ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        return { type, data };
+      } catch (error) {
+        console.error(`Fetch error for ${type} record type:`, error);
+        return { type, data: { Status: -1, Comment: error.message, Answer: [] } };
+      }
+    }
+
+    async function performDNSLookup(domain) {
+      if (!domain) {
+        showError('Please enter a domain name.');
+        return;
+      }
+      resetUI();
+      currentDomain = domain.toLowerCase();
+      errorDiv.classList.add('hidden');
+      lookupBtn.disabled = true;
+      lookupBtnText.innerHTML = `<span class="loading-spinner"></span>`;
+      domainInput.disabled = true;
+      filterType.disabled = true;
+      exportBtn.disabled = true;
+
+      try {
+        if (!isValidDomain(domain)) {
+          showError('Please enter a valid domain name (e.g., example.com).');
+          return;
+        }
+
+        const promises = RECORD_TYPES.map((type) => fetchDNSRecord(domain, type));
+        const results = await Promise.allSettled(promises);
+
+        let currentFetchedRecords = [];
+        let hasRecords = false;
+
+        results.forEach((result) => {
+          if (result.status === 'fulfilled' && result.value.data.Answer) {
+            const records = result.value.data.Answer.map((ans) => ({
+              name: ans.name || domain,
+              type: ans.type ? getTypeString(ans.type) : result.value.type,
+              data: ans.data,
+              ttl: ans.TTL !== undefined ? ans.TTL : 'N/A'
+            }));
+            currentFetchedRecords.push(...records);
+            if (records.length > 0) {
+              hasRecords = true;
+            }
+          } else if (result.status === 'rejected') {
+            console.warn(`Failed to fetch some record types: ${result.reason}`);
           }
         });
-        $('#domain').off('input').on('input', function() {
-          console.log('Input value:', $(this).val());
-        });
-        $('#theme-toggle').off('change').on('change', function() {
-          console.log('Theme toggle changed, checked:', this.checked);
-          toggleTheme();
-        });
-      }
-      bindEvents();
 
-      // Check history on load
-      const domain = $('#domain').val().trim();
-      if (domain && localStorage.getItem(`dns_history_${domain}`)) {
-        $('#history-btn, #clear-history-btn').show();
-      }
-    });
+        if (!hasRecords) {
+          showError(`No DNS records found for "${domain}". Try checking the domain spelling or try again later.`);
+          return;
+        }
 
-    // Theme toggle
-    function toggleTheme() {
-      const body = document.body;
-      const newTheme = body.dataset.theme === 'light' ? 'dark' : 'light';
-      body.setAttribute('data-theme', newTheme);
-      console.log('Theme toggled to:', newTheme);
+        const domainSnapshots = getDomainSnapshots(currentDomain);
+        const previousSnapshot = domainSnapshots.length > 0 ? domainSnapshots[domainSnapshots.length - 1].records : null;
+
+        if (previousSnapshot && previousSnapshot.length > 0) {
+          const comparisonResult = compareDnsRecords(currentFetchedRecords, previousSnapshot);
+          dnsRecords = [
+            ...comparisonResult.added,
+            ...comparisonResult.modified,
+            ...comparisonResult.unchanged,
+            ...comparisonResult.deleted
+          ];
+          dnsRecords.sort((a, b) => {
+            const typeOrder = RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
+            if (typeOrder !== 0) return typeOrder;
+            const nameCompare = a.name.localeCompare(b.name);
+            if (nameCompare !== 0) return nameCompare;
+            const statusOrder = { added: 1, modified: 2, deleted: 3, unchanged: 4 };
+            return statusOrder[a.status] - statusOrder[b.status];
+          });
+        } else {
+          dnsRecords = currentFetchedRecords.map((r) => ({ ...r, status: 'unchanged' }));
+        }
+
+        initialMessage.classList.add('hidden');
+        resultsHeader.classList.add('flex');
+        resultsHeader.classList.remove('hidden');
+
+        renderSections(dnsRecords);
+
+        try {
+          saveDomainSnapshot(currentDomain, currentFetchedRecords);
+          saveDomainToHistory(domain);
+        } catch (e) {
+          showError('Failed to save lookup history due to storage limitations.');
+        }
+
+        populateHistoryDropdown(currentDomain);
+        currentSnapshotIndex = getDomainSnapshots(currentDomain).length - 1;
+        updateHistoryDropdownSelection();
+      } catch (err) {
+        showError(`An unexpected error occurred: ${err.message}. Please try again.`);
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtnText.innerHTML = SVGS.search;
+        domainInput.disabled = false;
+        filterType.disabled = false;
+        exportBtn.disabled = false;
+      }
     }
 
-    // DNS lookup
-    let dnsRecords = {};
-    async function performLookup() {
-      console.log('Starting DNS lookup');
-      const domain = $('#domain').val().trim();
-      const $results = $('#results');
-      const $loading = $('#loading');
-      const $exportBtn = $('#export-btn');
-      const $historyBtn = $('#history-btn');
-      const $clearHistoryBtn = $('#clear-history-btn');
-      const recordTypes = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
+    function getTypeString(typeNum) {
+      switch (typeNum) {
+        case 1: return 'A';
+        case 28: return 'AAAA';
+        case 5: return 'CNAME';
+        case 15: return 'MX';
+        case 2: return 'NS';
+        case 16: return 'TXT';
+        default: return `Type ${typeNum}`;
+      }
+    }
 
-      // Animate search container
-      $('.search-container').removeClass('centered').addClass('top');
+    function loadSearchHistory() {
+      try {
+        const history = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
+        return history ? JSON.parse(history) : [];
+      } catch (e) {
+        console.error('Error loading search history from local storage:', e);
+        return [];
+      }
+    }
 
-      // Reset UI
-      $results.empty().hide();
-      $exportBtn.hide();
-      $historyBtn.hide();
-      $clearHistoryBtn.hide();
-      dnsRecords = {};
-      $loading.show();
+    function saveDomainToHistory(domain) {
+      let history = loadSearchHistory();
+      history = history.filter((item) => item.toLowerCase() !== domain.toLowerCase());
+      history.unshift(domain);
+      history = history.slice(0, MAX_HISTORY_ITEMS);
+      try {
+        localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
+      } catch (e) {
+        console.error('Error saving domain to local storage for history:', e);
+      }
+    }
 
-      // Validation
-      if (!domain || !/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(domain)) {
-        $results.html('<p class="error"><i class="fas fa-exclamation-circle"></i> Please enter a valid domain name (e.g., example.com).</p>').fadeIn(300);
-        $loading.hide();
+    function loadAllStoredRecords() {
+      try {
+        const stored = localStorage.getItem(LOCAL_STORAGE_RECORDS_KEY);
+        return stored ? JSON.parse(stored) : {};
+      } catch (e) {
+        console.error('Error loading all stored records from local storage:', e);
+        return {};
+      }
+    }
+
+    function saveDomainSnapshot(domain, records) {
+      let allStoredRecords = loadAllStoredRecords();
+      const domainLower = domain.toLowerCase();
+
+      if (!allStoredRecords[domainLower]) {
+        allStoredRecords[domainLower] = [];
+      }
+
+      const newSnapshot = {
+        timestamp: new Date().toISOString(),
+        records: records
+      };
+
+      allStoredRecords[domainLower].push(newSnapshot);
+
+      if (allStoredRecords[domainLower].length > MAX_SNAPSHOTS_PER_DOMAIN) {
+        allStoredRecords[domainLower] = allStoredRecords[domainLower].slice(
+          allStoredRecords[domainLower].length - MAX_SNAPSHOTS_PER_DOMAIN
+        );
+      }
+
+      try {
+        localStorage.setItem(LOCAL_STORAGE_RECORDS_KEY, JSON.stringify(allStoredRecords));
+      } catch (e) {
+        console.error('Error saving domain records snapshot to local storage:', e);
+        throw e;
+      }
+    }
+
+    function getDomainSnapshots(domain) {
+      const allStoredRecords = loadAllStoredRecords();
+      return allStoredRecords[domain.toLowerCase()] || [];
+    }
+
+    function createRecordId(record) {
+      const dataToCompare = record.type === 'TXT' ? normalizeTxtData(record.data) : record.data;
+      return `${record.name}||${record.type}||${dataToCompare}`;
+    }
+
+    function compareDnsRecords(currentRecords, previousRecords) {
+      const added = [];
+      const deleted = [];
+      const modified = [];
+      const unchanged = [];
+
+      const previousMap = new Map();
+      previousRecords.forEach((r) => previousMap.set(createRecordId(r), r));
+
+      const previousNameTypeMap = new Map();
+      previousRecords.forEach((r) => {
+        const key = `${r.name}||${r.type}`;
+        if (!previousNameTypeMap.has(key)) {
+          previousNameTypeMap.set(key, []);
+        }
+        previousNameTypeMap.get(key).push(r);
+      });
+
+      currentRecords.forEach((currentRec) => {
+        const currentId = createRecordId(currentRec);
+        const nameTypeKey = `${currentRec.name}||${currentRec.type}`;
+
+        if (previousMap.has(currentId)) {
+          unchanged.push({ ...currentRec, status: 'unchanged' });
+          previousMap.delete(currentId);
+        } else {
+          const potentialOldMatches = previousNameTypeMap.get(nameTypeKey);
+          let isModified = false;
+
+          if (potentialOldMatches) {
+            for (let i = 0; i < potentialOldMatches.length; i++) {
+              const oldRec = potentialOldMatches[i];
+              const oldId = createRecordId(oldRec);
+              if (previousMap.has(oldId)) {
+                modified.push({
+                  ...currentRec,
+                  status: 'modified',
+                  oldData: oldRec.data
+                });
+                previousMap.delete(oldId);
+                isModified = true;
+                break;
+              }
+            }
+          }
+
+          if (!isModified) {
+            added.push({ ...currentRec, status: 'added' });
+          }
+        }
+      });
+
+      previousMap.forEach((oldRec) => {
+        deleted.push({ ...oldRec, status: 'deleted' });
+      });
+
+      return { added, deleted, modified, unchanged };
+    }
+
+    function renderAutocompleteList(inputValue) {
+      domainAutocompleteList.innerHTML = '';
+      currentAutocompleteFocus = -1;
+
+      const history = loadSearchHistory();
+      const filteredHistory = history.filter((item) =>
+        item.toLowerCase().includes(inputValue.toLowerCase())
+      );
+
+      if (filteredHistory.length === 0 && inputValue === '') {
+        history.forEach((item) => {
+          const div = document.createElement('div');
+          div.textContent = item;
+          div.addEventListener('click', () => {
+            domainInput.value = item;
+            performDNSLookup(item);
+            hideAutocompleteList();
+          });
+          domainAutocompleteList.appendChild(div);
+        });
+        if (history.length > 0) {
+          domainAutocompleteList.classList.remove('hidden');
+        } else {
+          hideAutocompleteList();
+        }
+        return;
+      } else if (filteredHistory.length === 0 && inputValue !== '') {
+        hideAutocompleteList();
         return;
       }
 
-      // Load history
-      const historyKey = `dns_history_${domain}`;
-      const history = JSON.parse(localStorage.getItem(historyKey)) || [];
-      const previousRecords = history.at(-1)?.records || {};
-      if (history.length) {
-        $historyBtn.show();
-        $clearHistoryBtn.show();
+      filteredHistory.forEach((item) => {
+        const div = document.createElement('div');
+        div.textContent = item;
+        div.addEventListener('click', () => {
+          domainInput.value = item;
+          performDNSLookup(item);
+          hideAutocompleteList();
+        });
+        domainAutocompleteList.appendChild(div);
+      });
+      domainAutocompleteList.classList.remove('hidden');
+    }
+
+    function hideAutocompleteList() {
+      domainAutocompleteList.classList.add('hidden');
+      currentAutocompleteFocus = -1;
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('autocomplete-active');
+      }
+    }
+
+    function addActive(items) {
+      if (!items || items.length === 0) return;
+      removeActive(items);
+      if (currentAutocompleteFocus >= items.length) currentAutocompleteFocus = 0;
+      if (currentAutocompleteFocus < 0) currentAutocompleteFocus = items.length - 1;
+      items[currentAutocompleteFocus].classList.add('autocomplete-active');
+      items[currentAutocompleteFocus].scrollIntoView({ block: 'nearest' });
+    }
+
+    function removeActive(items) {
+      for (let i = 0; i < items.length; i++) {
+        items[i].classList.remove('autocomplete-active');
+      }
+    }
+
+    function selectAutocompleteItem() {
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      if (currentAutocompleteFocus > -1 && items[currentAutocompleteFocus]) {
+        items[currentAutocompleteFocus].click();
+      } else if (domainInput.value) {
+        performDNSLookup(domainInput.value);
+      }
+    }
+
+    function populateHistoryDropdown(domain) {
+      const historySelectContainer = document.getElementById('historySelectContainer');
+      historySelectContainer.innerHTML = '';
+      const domainSnapshots = getDomainSnapshots(domain);
+
+      if (domainSnapshots.length <= 1) {
+        historySelectContainer.classList.add('hidden');
+        return;
       }
 
-      // Fetch records
-      const iconMap = {
-        'A': 'fa-server', 'AAAA': 'fa-network-wired', 'CNAME': 'fa-link',
-        'MX': 'fa-envelope', 'NS': 'fa-sitemap', 'TXT': 'fa-file-alt'
-      };
+      historySelectContainer.classList.remove('hidden');
 
-      try {
-        const responses = await Promise.all(recordTypes.map(async type => {
-          try {
-            const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            return { type, data };
-          } catch (error) {
-            console.error(`Error fetching ${type} records:`, error);
-            return { type, data: {} };
-          }
-        }));
+      const label = document.createElement('label');
+      label.setAttribute('for', 'historySelect');
+      label.className = 'text-sm font-medium text-[var(--text-primary)] sr-only';
+      label.textContent = 'View historical DNS records';
+      historySelectContainer.appendChild(label);
 
-        responses.forEach(({ type, data }) => {
-          if (!data.Answer) return;
-          dnsRecords[type] = data.Answer;
-          let html = `<div class="record-type"><h3 data-tooltip="${type}"><i class="fas ${iconMap[type]}"></i> ${type} Records</h3>`;
-          data.Answer.forEach((answer, index) => {
-            const prevAnswer = previousRecords[type]?.find(p => p.name === answer.name && p.type === answer.type);
-            const { status, details } = compareRecords(answer, prevAnswer);
-            html += `
-              <div class="record ${status}">
-                <strong>Name:</strong> ${answer.name}<br>
-                <strong>Type:</strong> ${answer.type}<br>
-                <strong>TTL:</strong> ${answer.TTL}<br>
-                <div class="data-container">
-                  <strong>Data:</strong> <span id="data-${type}-${index}">${answer.data}</span>
-                  <button class="copy-btn" data-tooltip="copy" aria-label="Copy ${type} record data"><i class="fas fa-copy"></i> Copy</button>
-                </div>
-                ${details ? `<div class="change-indicator">${details}</div>` : ''}
-              </div>`;
-          });
+      const select = document.createElement('select');
+      select.id = 'historySelect';
+      select.className = 'filter-select min-w-[150px]';
+      select.setAttribute('aria-label', 'Select a historical DNS record snapshot');
 
-          // Check for removed records
-          if (previousRecords[type]) {
-            previousRecords[type].forEach(prev => {
-              if (!data.Answer.find(curr => curr.name === prev.name && curr.type === prev.type)) {
-                html += `
-                  <div class="record removed">
-                    <strong>Name:</strong> ${prev.name}<br>
-                    <strong>Type:</strong> ${prev.type}<br>
-                    <strong>TTL:</strong> ${prev.TTL}<br>
-                    <div class="data-container">
-                      <strong>Data:</strong> <span>${prev.data}</span>
-                    </div>
-                    <div class="change-indicator">Record removed since last lookup</div>
-                  </div>`;
-              }
-            });
-          }
-          html += `</div>`;
-          $results.append(html);
-        });
+      const latestOption = document.createElement('option');
+      latestOption.value = 'latest';
+      latestOption.textContent = 'Latest Records';
+      select.appendChild(latestOption);
 
-        // Save to history
-        history.push({ timestamp: new Date().toISOString(), records: dnsRecords });
-        localStorage.setItem(historyKey, JSON.stringify(history));
+      domainSnapshots.forEach((snapshot, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        const date = new Date(snapshot.timestamp);
+        option.textContent = `Snapshot: ${date.toLocaleString()}`;
+        select.appendChild(option);
+      });
 
-        // Update UI
-        $loading.hide();
-        $results.fadeIn(300);
-        if ($results.is(':empty')) {
-          $results.html('<p><i class="fas fa-info-circle"></i> No records found for this query.</p>').fadeIn(300);
+      select.addEventListener('change', (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue === 'latest') {
+          currentSnapshotIndex = domainSnapshots.length - 1;
         } else {
-          $exportBtn.show();
-          $historyBtn.show();
-          $clearHistoryBtn.show();
+          currentSnapshotIndex = parseInt(selectedValue, 10);
         }
-      } catch (error) {
-        console.error('Lookup failed:', error);
-        $results.html('<p class="error"><i class="fas fa-exclamation-circle"></i> Error fetching DNS records. Please try again later.</p>').fadeIn(300);
-        $loading.hide();
+        displaySelectedSnapshot(currentDomain, currentSnapshotIndex);
+      });
+
+      historySelectContainer.appendChild(select);
+      updateHistoryDropdownSelection();
+    }
+
+    function updateHistoryDropdownSelection() {
+      const historySelect = document.getElementById('historySelect');
+      if (historySelect) {
+        const domainSnapshots = getDomainSnapshots(currentDomain);
+        if (currentSnapshotIndex === domainSnapshots.length - 1) {
+          historySelect.value = 'latest';
+        } else if (currentSnapshotIndex > -1) {
+          historySelect.value = String(currentSnapshotIndex);
+        }
+      }
+    }
+
+    function displaySelectedSnapshot(domain, snapshotIndex) {
+      const domainSnapshots = getDomainSnapshots(domain);
+
+      if (snapshotIndex < 0 || snapshotIndex >= domainSnapshots.length) {
+        showError('Selected historical snapshot not found.');
+        return;
       }
 
-      // Bind copy buttons
-      $('.copy-btn').off('click').on('click', function() {
-        const text = $(this).prev().text();
-        console.log('Copying text:', text);
-        copyToClipboard(text);
-      });
-    }
+      const selectedSnapshot = domainSnapshots[snapshotIndex];
+      const recordsToDisplay = selectedSnapshot.records;
+      let previousSnapshotRecords = snapshotIndex > 0 ? domainSnapshots[snapshotIndex - 1].records : null;
 
-    // Clear history
-    function clearAllHistory() {
-      if (!confirm('Are you sure you want to clear all DNS lookup history?')) return;
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('dns_history_')) localStorage.removeItem(key);
-      });
-      $('#history-btn, #clear-history-btn').hide();
-      $('#history-dialog').dialog('close').empty().html('<p>No lookup history found.</p>');
-      alert('All DNS lookup history has been cleared.');
-      if (Object.keys(dnsRecords).length) performLookup();
-    }
-
-    // Show history
-    function showHistory() {
-      console.log('Showing history');
-      const domain = $('#domain').val().trim();
-      const historyKey = `dns_history_${domain}`;
-      const history = JSON.parse(localStorage.getItem(historyKey)) || [];
-      const $historyDiv = $('#history-dialog').empty();
-
-      if (!history.length) {
-        $historyDiv.html('<p>No lookup history found for this domain.</p>').fadeIn(300);
-      } else {
-        history.forEach((entry, index) => {
-          const timestamp = new Date(entry.timestamp).toLocaleString();
-          let html = `<div class="history-entry"><h4>Lookup at ${timestamp}</h4>`;
-          const recordTypes = Object.keys(entry.records).sort();
-          const iconMap = {
-            'A': 'fa-server', 'AAAA': 'fa-network-wired', 'CNAME': 'fa-link',
-            'MX': 'fa-envelope', 'NS': 'fa-sitemap', 'TXT': 'fa-file-alt'
-          };
-
-          recordTypes.forEach(type => {
-            html += `<div class="record-type"><h3><i class="fas ${iconMap[type]}"></i> ${type} Records</h3>`;
-            const prevRecords = index > 0 ? history[index - 1].records : {};
-            entry.records[type].forEach((record, recordIndex) => {
-              const prevAnswer = prevRecords[type]?.find(p => p.name === record.name && p.type === record.type);
-              const { status, details } = compareRecords(record, prevAnswer);
-              html += `
-                <div class="record ${status}">
-                  <strong>Name:</strong> ${record.name}<br>
-                  <strong>Type:</strong> ${record.type}<br>
-                  <strong>TTL:</strong> ${record.TTL}<br>
-                  <div class="data-container">
-                    <strong>Data:</strong> <span id="history-data-${type}-${recordIndex}-${index}">${record.data}</span>
-                    <button class="copy-btn" data-tooltip="copy" aria-label="Copy ${type} record data"><i class="fas fa-copy"></i> Copy</button>
-                  </div>
-                  ${details ? `<div class="change-indicator">${details}</div>` : ''}
-                </div>`;
-            });
-
-            if (prevRecords[type] && index > 0) {
-              prevRecords[type].forEach(prev => {
-                if (!entry.records[type].find(curr => curr.name === prev.name && curr.type === prev.type)) {
-                  html += `
-                    <div class="record removed">
-                      <strong>Name:</strong> ${prev.name}<br>
-                      <strong>Type:</strong> ${prev.type}<br>
-                      <strong>TTL:</strong> ${prev.TTL}<br>
-                      <div class="data-container">
-                        <strong>Data:</strong> <span>${prev.data}</span>
-                      </div>
-                      <div class="change-indicator">Record removed since previous lookup</div>
-                    </div>`;
-                }
-              });
-            }
-            html += `</div>`;
-          });
-          html += `</div>`;
-          $historyDiv.append(html);
+      let processedRecords;
+      if (previousSnapshotRecords) {
+        const comparisonResult = compareDnsRecords(recordsToDisplay, previousSnapshotRecords);
+        processedRecords = [
+          ...comparisonResult.added,
+          ...comparisonResult.modified,
+          ...comparisonResult.unchanged,
+          ...comparisonResult.deleted
+        ];
+        processedRecords.sort((a, b) => {
+          const typeOrder = RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
+          if (typeOrder !== 0) return typeOrder;
+          const nameCompare = a.name.localeCompare(b.name);
+          if (nameCompare !== 0) return nameCompare;
+          const statusOrder = { added: 1, modified: 2, deleted: 3, unchanged: 4 };
+          return statusOrder[a.status] - statusOrder[b.status];
         });
+      } else {
+        processedRecords = recordsToDisplay.map((r) => ({ ...r, status: 'unchanged' }));
       }
-      $historyDiv.dialog('open');
-      $('.copy-btn').off('click').on('click', function() {
-        const text = $(this).prev().text();
-        console.log('Copying history text:', text);
-        copyToClipboard(text);
+
+      dnsRecords = processedRecords;
+      renderSections(dnsRecords);
+      initialMessage.classList.add('hidden');
+      resultsHeader.classList.add('flex');
+      resultsHeader.classList.remove('hidden');
+      historySelectContainer.classList.remove('hidden');
+      exportBtn.classList.remove('hidden');
+    }
+
+    function exportRecordsToTxt() {
+      if (!dnsRecords || dnsRecords.length === 0) {
+        alert('No DNS records to export!');
+        return;
+      }
+
+      let fileContent = `DNS Records for ${currentDomain || 'unknown-domain'}\n`;
+      fileContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+
+      const recordsByType = {};
+      RECORD_TYPES.forEach((type) => {
+        recordsByType[type] = dnsRecords.filter((r) => r.type === type);
       });
-    }
 
-    // Compare records
-    function compareRecords(current, previous) {
-      if (!previous) return { status: 'new', details: 'New record' };
-      if (JSON.stringify(current) === JSON.stringify(previous)) return { status: 'unchanged', details: '' };
-      return { status: 'modified', details: 'Record modified since last lookup' };
-    }
+      RECORD_TYPES.forEach((type) => {
+        const records = recordsByType[type];
+        if (records.length > 0) {
+          fileContent += `--- ${type} Records (${records.length}) ---\n`;
+          const sortedTypeRecords = sortRecords(records, 'name', 'asc');
+          sortedTypeRecords.forEach((record) => {
+            const status = record.status ? ` (${record.status})` : '';
+            const oldData = record.status === 'modified' && record.oldData !== undefined
+              ? ` (was: ${normalizeTxtData(record.oldData)})`
+              : '';
+            fileContent += `Name: ${record.name}\n`;
+            fileContent += `Type: ${record.type}\n`;
+            fileContent += `Data: ${normalizeTxtData(record.data)}${oldData}\n`;
+            fileContent += `TTL: ${record.ttl}${status}\n`;
+            fileContent += `---------------------------------\n`;
+          });
+          fileContent += `\n`;
+        }
+      });
 
-    // Export records
-    function exportRecords() {
-      console.log('Exporting records');
-      const domain = $('#domain').val().trim();
-      const exportData = { domain, timestamp: new Date().toISOString(), records: dnsRecords };
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const filename = `dns_records_${currentDomain.replace(/[^a-zA-Z0-9-.]/g, '_') || 'export'}.txt`;
+      const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
+
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${domain}_dns_records.json`;
+      a.download = filename;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
 
-    // Copy to clipboard
-    async function copyToClipboard(text) {
+    // Theme management
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeToggle.checked = theme === 'dark';
       try {
-        await navigator.clipboard.writeText(text);
-        alert('Copied to clipboard: ' + text);
-      } catch (err) {
-        console.error('Copy failed:', err);
-        alert('Failed to copy to clipboard.');
+        localStorage.setItem(LOCAL_STORAGE_THEME_KEY, theme);
+      } catch (e) {
+        console.error('Error saving theme to local storage:', e);
       }
     }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+      setTheme(initialTheme);
+    }
+
+    // Debounce utility
+    function debounce(func, wait) {
+      return function (...args) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Event Listeners
+    const historySelectContainer = document.createElement('div');
+    historySelectContainer.id = 'historySelectContainer';
+    historySelectContainer.className = 'flex items-center gap-2 mb-4 hidden';
+    resultsHeader.parentNode.insertBefore(historySelectContainer, resultsHeader.nextSibling);
+
+    lookupBtn.addEventListener('click', () => {
+      performDNSLookup(domainInput.value.trim());
+    });
+
+    clearHistoryBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all stored DNS history and records? This cannot be undone.')) {
+        try {
+          localStorage.clear();
+          resetUI();
+          alert('All local storage data has been cleared.');
+        } catch (e) {
+          showError('Failed to clear local storage. Please try again.');
+        }
+      }
+    });
+
+    exportBtn.addEventListener('click', exportRecordsToTxt);
+
+    themeToggle.addEventListener('change', toggleTheme);
+
+    domainInput.addEventListener('keydown', (e) => {
+      const items = domainAutocompleteList.getElementsByTagName('div');
+      if (e.key === 'ArrowDown') {
+        currentAutocompleteFocus++;
+        addActive(items);
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        currentAutocompleteFocus--;
+        addActive(items);
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        selectAutocompleteItem();
+      } else if (e.key === 'Escape') {
+        hideAutocompleteList();
+      }
+    });
+
+    domainInput.addEventListener('input', debounce(() => {
+      const inputValue = domainInput.value.trim();
+      renderAutocompleteList(inputValue);
+    }, DEBOUNCE_DELAY));
+
+    document.addEventListener('click', (e) => {
+      if (e.target !== domainInput && !domainAutocompleteList.contains(e.target)) {
+        hideAutocompleteList();
+      }
+    });
+
+    filterType.addEventListener('change', () => {
+      renderSections(dnsRecords);
+    });
+
+    // Cleanup event listeners
+    window.addEventListener('beforeunload', () => {
+      domainInput.removeEventListener('input', renderAutocompleteList);
+      domainInput.removeEventListener('keydown', selectAutocompleteItem);
+      document.removeEventListener('click', hideAutocompleteList);
+      filterType.removeEventListener('change', renderSections);
+      lookupBtn.removeEventListener('click', performDNSLookup);
+      clearHistoryBtn.removeEventListener('click', resetUI);
+      exportBtn.removeEventListener('click', exportRecordsToTxt);
+      themeToggle.removeEventListener('change', toggleTheme);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeTheme();
+      resetUI();
+      const lastDomain = loadSearchHistory()[0];
+      if (lastDomain) {
+        domainInput.value = lastDomain;
+      }
+    });
   </script>
 </body>
 </html>
