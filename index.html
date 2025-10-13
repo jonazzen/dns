@@ -40,27 +40,55 @@
     --radius-sm: 4px;
   }
 
+  /* 🌑 Improved Dark Mode */
   [data-theme="dark"] {
-    --bg-primary: #1f2a44;
-    --bg-secondary: #2d3748;
-    --bg-tertiary: #374151;
-    --text-primary: #e2e8f0;
-    --text-secondary: #94a3b8;
-    --border-color: #4b5563;
-    --hover-bg: #4b5563;
-    --table-header-bg: #374151;
-    --table-row-even: #2d3748;
-    --table-row-hover: #4b5563;
-    --tooltip-bg: #e2e8f0;
-    --tooltip-text: #1f2a44;
-    --accent-blue: #60a5fa;
-    --accent-blue-hover: #3b82f6;
-    --error-bg: #7f1d1d;
-    --error-text: #fecaca;
-    --success-bg: #065f46;
-    --warning-bg: #92400e;
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #1e2632;
+    --text-primary: #e6edf3;
+    --text-secondary: #9ca3af;
+    --border-color: #30363d;
+    --hover-bg: #21262d;
+    --table-header-bg: #1e2632;
+    --table-row-even: #161b22;
+    --table-row-hover: #2b3340;
+    --tooltip-bg: #e6edf3;
+    --tooltip-text: #0d1117;
+    --accent-blue: #58a6ff;
+    --accent-blue-hover: #1f6feb;
+    --error-bg: #2d0000;
+    --error-text: #ff9b9b;
+    --success-bg: #003d2e;
+    --warning-bg: #4d3b00;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
   }
 
+  [data-theme="dark"] .record-section,
+  [data-theme="dark"] .header {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  [data-theme="dark"] button,
+  [data-theme="dark"] .btn {
+    background: var(--accent-blue);
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+  }
+
+  [data-theme="dark"] button:hover,
+  [data-theme="dark"] .btn:hover {
+    background: var(--accent-blue-hover);
+    box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+  }
+
+  [data-theme="dark"] .record-section summary:hover {
+    background: var(--hover-bg);
+    color: var(--accent-blue);
+  }
+
+  /* === Base Layout === */
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
@@ -72,7 +100,6 @@
     flex-direction: column;
   }
 
-  /* Layout */
   .container {
     max-width: 80rem;
     margin: 0 auto;
@@ -98,7 +125,6 @@
     transition: var(--transition);
   }
 
-  /* Input Group */
   .input-group {
     display: flex;
     align-items: center;
@@ -158,7 +184,6 @@
   .dns-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 600px;
   }
 
   .dns-table th,
@@ -178,28 +203,41 @@
     transition: var(--transition);
   }
 
+  .dns-table th:hover {
+    background: var(--hover-bg);
+  }
+
   .dns-table tr:nth-child(even) {
     background: var(--table-row-even);
   }
 
-  /* Buttons */
-  button,
-  .btn {
-    display: inline-block;
-    width: auto;
-    padding: 0.75rem 1.25rem;
-    border-radius: var(--radius-md);
-    border: none;
-    background: var(--accent-blue);
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-    transition: var(--transition);
+  .dns-table tr:hover {
+    background: var(--table-row-hover);
   }
 
-  button:hover,
-  .btn:hover {
+  /* Inputs & Selects */
+  .filter-select,
+  .input-focus,
+  input[type="text"],
+  button {
+    width: 100%;
+    max-width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    font-size: var(--font-size-base);
+    transition: var(--transition);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  button {
+    background: var(--accent-blue);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:hover {
     background: var(--accent-blue-hover);
   }
 
@@ -211,10 +249,10 @@
     font-size: 0.875rem;
   }
 
-  /* ========================================
-     📱 MOBILE-FIRST OPTIMIZATION
-     ======================================== */
-  @media (max-width: 900px) {
+  /* ===========================
+     📱 MOBILE OPTIMIZATION
+     =========================== */
+  @media (max-width: 768px) {
     .container {
       padding: 0.75rem;
       gap: 1rem;
@@ -229,19 +267,21 @@
     .input-group {
       flex-direction: column;
       width: 100%;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
-    /* Full-width inputs & selects */
     input[type="text"],
     select.filter-select,
-    button,
-    .btn {
+    button {
       width: 100%;
       font-size: 1rem;
     }
 
-    /* Table scroll */
+    .record-section summary {
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+
     .table-container {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -250,55 +290,25 @@
 
     .dns-table th,
     .dns-table td {
+      padding: 0.5rem 0.75rem;
       font-size: 0.9rem;
-      padding: 0.6rem 0.75rem;
       white-space: nowrap;
     }
 
-    /* Collapse sections more compactly */
-    .record-section summary {
-      font-size: 1rem;
-      padding: 0.75rem;
-    }
-
-    /* Tooltips reposition */
-    .copy-tooltip,
-    .info-tooltip {
-      top: auto;
-      bottom: -2rem;
-      font-size: 0.75rem;
-    }
-
-    /* Larger tap targets */
-    button,
-    .btn,
-    select,
-    input {
-      min-height: 48px;
-    }
-
-    /* Theme toggle tweaks */
-    .theme-toggle {
-      width: 2.5rem;
-      height: 1.25rem;
-    }
-    .theme-toggle-slider:before {
-      height: 1rem;
-      width: 1rem;
-    }
-
-    .initial-message {
-      padding: 1.5rem 0.75rem;
-      font-size: 0.95rem;
+    @media (hover: none) {
+      .copyable:hover,
+      .info-icon:hover {
+        background: none;
+        transform: none;
+      }
     }
 
     .footer {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       padding: 0.5rem;
     }
   }
 
-  /* Ultra small phones */
   @media (max-width: 480px) {
     body {
       font-size: 0.9rem;
@@ -311,12 +321,6 @@
     .dns-table th,
     .dns-table td {
       padding: 0.4rem 0.5rem;
-    }
-
-    button,
-    .btn {
-      padding: 0.65rem 1rem;
-      font-size: 0.95rem;
     }
 
     .record-section summary {
@@ -1417,6 +1421,7 @@
   </script>
 </body>
 </html>
+
 
 
 
