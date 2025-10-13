@@ -40,55 +40,66 @@
     --radius-sm: 4px;
   }
 
-  /* 🌑 Improved Dark Mode */
+  /* ---------- Improved Dark Mode (keeps all required variables) ---------- */
   [data-theme="dark"] {
-    --bg-primary: #0d1117;
-    --bg-secondary: #161b22;
-    --bg-tertiary: #1e2632;
-    --text-primary: #e6edf3;
-    --text-secondary: #9ca3af;
+    /* Backgrounds */
+    --bg-primary: #0d1117;       /* page background */
+    --bg-secondary: #161b22;     /* cards, panels */
+    --bg-tertiary: #1e2632;      /* accents, dark alternate */
+
+    /* Text */
+    --text-primary: #e6edf3;     /* primary copy (soft white) */
+    --text-secondary: #9ca3af;   /* muted text */
+
+    /* Borders & dividers */
     --border-color: #30363d;
+
+    /* Hover / states */
     --hover-bg: #21262d;
     --table-header-bg: #1e2632;
     --table-row-even: #161b22;
     --table-row-hover: #2b3340;
+
+    /* Tooltips (inverted for dark) */
     --tooltip-bg: #e6edf3;
     --tooltip-text: #0d1117;
+
+    /* Accents */
     --accent-blue: #58a6ff;
     --accent-blue-hover: #1f6feb;
+
+    /* Semantic */
     --error-bg: #2d0000;
     --error-text: #ff9b9b;
     --success-bg: #003d2e;
     --warning-bg: #4d3b00;
+
+    /* Shadows */
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
   }
 
+  /* subtle depth for dark theme panels */
   [data-theme="dark"] .record-section,
   [data-theme="dark"] .header {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(3px);
   }
 
+  /* make buttons pop in dark mode without changing layout */
   [data-theme="dark"] button,
   [data-theme="dark"] .btn {
     background: var(--accent-blue);
-    color: #ffffff;
-    box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(88,166,255,0.18);
   }
-
   [data-theme="dark"] button:hover,
   [data-theme="dark"] .btn:hover {
     background: var(--accent-blue-hover);
-    box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+    box-shadow: 0 0 12px rgba(88,166,255,0.28);
   }
 
-  [data-theme="dark"] .record-section summary:hover {
-    background: var(--hover-bg);
-    color: var(--accent-blue);
-  }
-
-  /* === Base Layout === */
+  /* === ORIGINAL / BASE STYLES (kept intact) === */
   body {
     font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
@@ -100,6 +111,7 @@
     flex-direction: column;
   }
 
+  /* Layout */
   .container {
     max-width: 80rem;
     margin: 0 auto;
@@ -125,6 +137,7 @@
     transition: var(--transition);
   }
 
+  /* Input Group */
   .input-group {
     display: flex;
     align-items: center;
@@ -215,30 +228,335 @@
     background: var(--table-row-hover);
   }
 
-  /* Inputs & Selects */
-  .filter-select,
-  .input-focus,
-  input[type="text"],
-  button {
-    width: 100%;
-    max-width: 100%;
+  /* Sort Icon */
+  .sort-icon {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: 0.25rem;
+    vertical-align: middle;
+    fill: var(--text-secondary);
+    transition: var(--transition);
+  }
+
+  .sort-icon.asc {
+    transform: rotate(180deg);
+  }
+
+  /* Copyable Elements */
+  .copyable {
+    cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+  }
+
+  .copyable:hover {
+    background: var(--hover-bg);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-blue);
+  }
+
+  .copy-icon {
+    opacity: 0;
+    margin-left: 0.25rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    fill: var(--accent-blue);
+    transition: var(--transition);
+  }
+
+  .copyable:hover .copy-icon,
+  .copyable:focus .copy-icon {
+    opacity: 1;
+  }
+
+  .copyable.copied .copy-icon {
+    opacity: 1;
+    fill: #10b981;
+    transform: scale(1.1);
+  }
+
+  .copy-tooltip {
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: var(--transition);
+    backdrop-filter: blur(4px);
+  }
+
+  .copyable:hover .copy-tooltip--hover,
+  .copyable:focus .copy-tooltip--hover {
+    opacity: 1;
+  }
+
+  .copyable.copied .copy-tooltip--copied {
+    opacity: 1;
+    top: -2rem;
+  }
+
+  /* Info Icon */
+  .info-icon {
+    position: relative;
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-left: 0.25rem;
+    fill: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    transition: var(--transition);
+    z-index: 999;
+  }
+
+  .info-icon:hover,
+  .info-icon:focus {
+    transform: scale(1.1);
+    fill: var(--accent-blue);
+  }
+
+  .info-tooltip {
+    position: absolute;
+    top: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: var(--transition);
+    backdrop-filter: blur(4px);
+  }
+
+  .info-icon:hover .info-tooltip,
+  .info-icon:focus .info-tooltip {
+    opacity: 1;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--tooltip-text);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.5s linear infinite;
+    margin-left: 0.5rem;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Select */
+  .filter-select {
+    appearance: none;
+    background: var(--table-header-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
     font-size: var(--font-size-base);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
+
+  .filter-select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Input */
+  .input-focus {
     transition: var(--transition);
     background: var(--bg-secondary);
-    color: var(--text-primary);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
   }
 
-  button {
-    background: var(--accent-blue);
-    color: #fff;
+  .input-focus:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+
+  /* Icons */
+  .search-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: var(--tooltip-text);
+  }
+
+  /* Record States */
+  .record-row-added {
+    background: var(--success-bg);
+  }
+
+  .record-row-deleted {
+    background: var(--error-bg);
+    text-decoration: line-through;
+    opacity: 0.7;
+  }
+
+  .record-row-modified {
+    background: var(--warning-bg);
+  }
+
+  .record-row-added:hover,
+  .record-row-deleted:hover,
+  .record-row-modified:hover {
+    filter: brightness(95%);
+  }
+
+  /* Initial Message */
+  .initial-message {
+    text-align: center;
+    padding: 2.5rem 1.25rem;
+    color: var(--text-secondary);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    background: var(--table-header-bg);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .initial-message svg {
+    width: 3rem;
+    height: 3rem;
+    fill: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .initial-message p:first-child {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Autocomplete */
+  #domainInputContainer {
+    position: relative;
+    flex-grow: 1;
+  }
+
+  #domainAutocompleteList {
+    position: absolute;
+    inset: 0 auto auto 0;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    z-index: 10;
+    background: var(--bg-secondary);
+    max-height: 12.5rem;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    transition: var(--transition);
+  }
+
+  #domainAutocompleteList div {
+    padding: 0.625rem;
     cursor: pointer;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: var(--transition);
   }
 
-  button:hover {
-    background: var(--accent-blue-hover);
+  #domainAutocompleteList div:last-child {
+    border-bottom: none;
+  }
+
+  #domainAutocompleteList div:hover,
+  #domainAutocompleteList div.autocomplete-active {
+    background: var(--hover-bg);
+  }
+
+  /* Error Message */
+  #error {
+    background: var(--error-bg);
+    color: var(--error-text);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: var(--transition);
+  }
+
+  /* Toggle Switch */
+  .theme-toggle {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.5rem;
+  }
+
+  .theme-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .theme-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--table-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    transition: var(--transition);
+  }
+
+  .theme-toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 1.125rem;
+    width: 1.125rem;
+    left: 0.1875rem;
+    bottom: 0.125rem;
+    background: var(--text-primary);
+    border-radius: 50%;
+    transition: var(--transition);
+  }
+
+  .theme-toggle input:checked + .theme-toggle-slider {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+  }
+
+  .theme-toggle input:checked + .theme-toggle-slider:before {
+    transform: translateX(1.5rem);
+  }
+
+  .theme-toggle input:focus + .theme-toggle-slider {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
   }
 
   /* Footer */
@@ -250,9 +568,12 @@
   }
 
   /* ===========================
-     📱 MOBILE OPTIMIZATION
+     MOBILE / RESPONSIVE ENHANCEMENTS
+     Non-destructive: only active below breakpoints
      =========================== */
-  @media (max-width: 768px) {
+
+  /* Tablet and below: stack and make controls full-width for easy tapping */
+  @media (max-width: 900px) {
     .container {
       padding: 0.75rem;
       gap: 1rem;
@@ -267,19 +588,28 @@
     .input-group {
       flex-direction: column;
       width: 100%;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
 
+    /* Make inputs/selects/buttons take full width on smaller viewports */
     input[type="text"],
     select.filter-select,
-    button {
+    .filter-select,
+    .input-focus,
+    button,
+    .btn {
       width: 100%;
+      max-width: 100%;
       font-size: 1rem;
+      box-sizing: border-box;
     }
 
-    .record-section summary {
-      font-size: 1rem;
-      padding: 0.75rem;
+    /* Larger comfortable tap targets */
+    button,
+    .btn,
+    select,
+    input {
+      min-height: 44px; /* comfortable for most touch devices */
     }
 
     .table-container {
@@ -290,25 +620,36 @@
 
     .dns-table th,
     .dns-table td {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.75rem;
       white-space: nowrap;
     }
 
-    @media (hover: none) {
-      .copyable:hover,
-      .info-icon:hover {
-        background: none;
-        transform: none;
-      }
+    .record-section summary {
+      font-size: 1rem;
+      padding: 0.75rem;
+    }
+
+    /* Tooltips: position below target on mobile to avoid clipping */
+    .copy-tooltip,
+    .info-tooltip {
+      top: auto;
+      bottom: -2rem;
+      font-size: 0.75rem;
+    }
+
+    .initial-message {
+      padding: 1.5rem 0.75rem;
+      font-size: 0.95rem;
     }
 
     .footer {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       padding: 0.5rem;
     }
   }
 
+  /* Phones: tighten spacing slightly */
   @media (max-width: 480px) {
     body {
       font-size: 0.9rem;
@@ -323,8 +664,31 @@
       padding: 0.4rem 0.5rem;
     }
 
+    /* Ensure summary text and controls remain readable */
     .record-section summary {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+    }
+
+    button,
+    .btn {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.95rem;
+      min-height: 44px;
+    }
+  }
+
+  /* Reduce hover-based effects on touch-only devices (avoid odd UX) */
+  @media (hover: none) {
+    .copyable:hover,
+    .info-icon:hover,
+    .dns-table th:hover,
+    .record-section summary:hover {
+      background: none;
+      transform: none;
+    }
+    .copyable:hover .copy-icon,
+    .copyable:focus .copy-icon {
+      opacity: 1;
     }
   }
 </style>
@@ -434,7 +798,7 @@
     ></div>
     <div class="footer">
       <small>
-        <b>OpenDNS</b> Version: <b>1.3.2</b>
+        <b>OpenDNS</b> Version: <b>1.3.4</b>
       </small>
     </div>
     <div aria-live="polite" class="sr-only" id="copy-status"></div>
@@ -1421,6 +1785,7 @@
   </script>
 </body>
 </html>
+
 
 
 
