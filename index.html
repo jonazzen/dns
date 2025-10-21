@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenDNS</title>
+  <title>DNS</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -697,7 +697,7 @@
   <div class="container">
     <div class="header">
       <h1 class="text-2xl font-semibold text-[var(--text-primary)]">
-        OpenDNS
+        DNS
       </h1>
       <div class="input-group">
         <div id="domainInputContainer">
@@ -711,10 +711,10 @@
           />
           <div id="domainAutocompleteList" class="hidden"></div>
         </div>
-        <button
+      <button
           id="lookupBtn"
           aria-label="Search DNS records"
-          class="bg-[var(--accent-blue)] text-[var(--tooltip-text)] p-3 rounded-[var(--radius-md)] hover:bg-[var(--accent-blue-hover)] transition font-medium sm:w-14 flex justify-center items-center"
+          class="bg-[var(--accent-blue)] text-[var(--tooltip-text)] rounded-full hover:bg-[var(--accent-blue-hover)] transition font-medium w-12 h-12 flex justify-center items-center flex-shrink-0"
         >
           <span id="lookupBtnText">
             <svg class="search-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"></path></svg>
@@ -723,7 +723,7 @@
         <button
           id="clearHistoryBtn"
           aria-label="Clear all stored history and records"
-          class="bg-red-600 text-white p-3 rounded-[var(--radius-md)] hover:bg-red-700 transition font-medium sm:w-14 flex justify-center items-center"
+          class="bg-red-600 text-white rounded-full hover:bg-red-700 transition font-medium w-12 h-12 flex justify-center items-center flex-shrink-0"
           title="Clear all stored history and records"
         >
           <svg
@@ -798,7 +798,7 @@
     ></div>
     <div class="footer">
       <small>
-        <b>OpenDNS</b> Version: <b>1.3.4</b>
+        <b>DNS</b> Version: <b>1.4.1</b>
       </small>
     </div>
     <div aria-live="polite" class="sr-only" id="copy-status"></div>
@@ -1785,11 +1785,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
