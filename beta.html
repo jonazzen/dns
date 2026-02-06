@@ -31,7 +31,9 @@
     --error-bg: #fef2f2;
     --error-text: #dc2626;
     --success-bg: #d1fae5;
+    --success-text: #047857; /* Added for feedback */
     --warning-bg: #fef3c7;
+    --warning-text: #d97706; /* Added for feedback */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
@@ -72,32 +74,35 @@
     --error-bg: #2d0000;
     --error-text: #ff9b9b;
     --success-bg: #003d2e;
+    --success-text: #5eead4;
     --warning-bg: #4d3b00;
+    --warning-text: #fcd34d;
 
-    /* Shadows */
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+    /* Shadows (adjusted for dark mode, using variables) */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
   }
 
-  /* subtle depth for dark theme panels */
+  /* subtle depth for dark theme panels - now using variables */
   [data-theme="dark"] .record-section,
   [data-theme="dark"] .header {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--shadow-md);
     backdrop-filter: blur(3px);
   }
 
   /* make buttons pop in dark mode without changing layout */
-  [data-theme="dark"] button,
-  [data-theme="dark"] .btn {
+  [data-theme="dark"] button:not(.btn-no-override),
+  [data-theme="dark"] .btn:not(.btn-no-override) {
     background: var(--accent-blue);
     color: #fff;
     box-shadow: 0 0 8px rgba(88,166,255,0.18);
   }
-  [data-theme="dark"] button:hover,
-  [data-theme="dark"] .btn:hover {
+  [data-theme="dark"] button:hover:not(.btn-no-override),
+  [data-theme="dark"] .btn:hover:not(.btn-no-override) {
     background: var(--accent-blue-hover);
     box-shadow: 0 0 12px rgba(88,166,255,0.28);
   }
+
 
   /* === ORIGINAL / BASE STYLES (kept intact) === */
   body {
@@ -481,6 +486,7 @@
     box-shadow: var(--shadow-md);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
     transition: var(--transition);
+    width: 100%; /* Ensure it spans the full width of its container */
   }
 
   #domainAutocompleteList div {
@@ -501,14 +507,53 @@
     background: var(--hover-bg);
   }
 
-  /* Error Message */
+  /* Error Message (Deprecated in favor of userFeedbackContainer) */
   #error {
+    display: none; /* Hidden */
+  }
+
+  /* User Feedback Container */
+  #userFeedbackContainer {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    width: clamp(20rem, 90%, 40rem);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    font-size: 0.95rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  #userFeedbackContainer.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #userFeedbackContainer.error {
     background: var(--error-bg);
     color: var(--error-text);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    transition: var(--transition);
   }
+
+  #userFeedbackContainer.warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+  }
+
+  #userFeedbackContainer.success {
+    background: var(--success-bg);
+    color: var(--success-text);
+  }
+
 
   /* Toggle Switch */
   .theme-toggle {
@@ -596,8 +641,8 @@
     select.filter-select,
     .filter-select,
     .input-focus,
-    button,
-    .btn {
+    button:not(.btn-no-override),
+    .btn:not(.btn-no-override) {
       width: 100%;
       max-width: 100%;
       font-size: 1rem;
@@ -605,8 +650,8 @@
     }
 
     /* Larger comfortable tap targets */
-    button,
-    .btn,
+    button:not(.btn-no-override),
+    .btn:not(.btn-no-override),
     select,
     input {
       min-height: 44px; /* comfortable for most touch devices */
@@ -669,8 +714,8 @@
       font-size: 0.95rem;
     }
 
-    button,
-    .btn {
+    button:not(.btn-no-override),
+    .btn:not(.btn-no-override) {
       padding: 0.6rem 0.75rem;
       font-size: 0.95rem;
       min-height: 44px;
@@ -694,6 +739,7 @@
 </style>
 </head>
 <body>
+  <div id="userFeedbackContainer" aria-live="assertive"></div>
   <div class="container">
     <div class="header">
       <h1 class="text-2xl font-semibold text-[var(--text-primary)]">
@@ -707,9 +753,11 @@
             placeholder="Enter domain (e.g., example.com)"
             class="input-focus w-full p-3 text-[var(--text-primary)]"
             aria-label="Domain name for DNS lookup"
+            aria-autocomplete="list"
+            aria-controls="domainAutocompleteList"
             autocomplete="off"
           />
-          <div id="domainAutocompleteList" class="hidden"></div>
+          <div id="domainAutocompleteList" class="hidden" role="listbox"></div>
         </div>
       <button
           id="lookupBtn"
@@ -723,7 +771,7 @@
         <button
           id="clearHistoryBtn"
           aria-label="Clear all stored history and records"
-          class="bg-red-600 text-white rounded-full hover:bg-red-700 transition font-medium w-12 h-12 flex justify-center items-center flex-shrink-0"
+          class="bg-red-600 text-white rounded-full hover:bg-red-700 transition font-medium w-12 h-12 flex justify-center items-center flex-shrink-0 btn-no-override"
           title="Clear all stored history and records"
         >
           <svg
@@ -737,12 +785,12 @@
             />
           </svg>
         </button>
-        <label class="theme-toggle">
+        <label class="theme-toggle" aria-label="Toggle dark/light mode">
           <input
             type="checkbox"
             id="themeToggle"
-            aria-label="Toggle dark/light mode"
-            title="Toggle dark/light mode"
+            role="switch"
+            aria-checked="false"
           />
           <span class="theme-toggle-slider"></span>
         </label>
@@ -763,7 +811,7 @@
         class="flex flex-col sm:flex-row justify-between items-center mb-4 hidden"
       >
         <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-2 sm:mb-0">
-          DNS Records
+          DNS Records for <span id="currentDomainDisplay"></span>
         </h2>
         <div class="flex flex-wrap gap-2 items-center">
           <select
@@ -782,7 +830,7 @@
           <button
             id="exportBtn"
             aria-label="Export DNS records to a text file"
-            class="bg-green-600 text-white px-4 py-2 rounded-[var(--radius-md)] hover:bg-green-700 transition font-medium hidden"
+            class="bg-green-600 text-white px-4 py-2 rounded-[var(--radius-md)] hover:bg-green-700 transition font-medium hidden btn-no-override"
             title="Export Records"
           >
             Export .TXT
@@ -805,21 +853,26 @@
   </div>
   <script>
     // DOM elements
-    const lookupBtn = document.getElementById('lookupBtn');
-    const lookupBtnText = document.getElementById('lookupBtnText');
-    const domainInput = document.getElementById('domainInput');
-    const domainInputContainer = document.getElementById('domainInputContainer');
-    const domainAutocompleteList = document.getElementById('domainAutocompleteList');
-    const resultDiv = document.getElementById('result');
-    const resultSections = document.getElementById('resultSections');
-    const errorDiv = document.getElementById('error');
-    const filterType = document.getElementById('filterType');
-    const copyStatus = document.getElementById('copy-status');
-    const initialMessage = document.getElementById('initialMessage');
-    const resultsHeader = document.getElementById('resultsHeader');
-    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-    const exportBtn = document.getElementById('exportBtn');
-    const themeToggle = document.getElementById('themeToggle');
+    const DOMElements = {
+      lookupBtn: document.getElementById('lookupBtn'),
+      lookupBtnText: document.getElementById('lookupBtnText'),
+      domainInput: document.getElementById('domainInput'),
+      domainInputContainer: document.getElementById('domainInputContainer'),
+      domainAutocompleteList: document.getElementById('domainAutocompleteList'),
+      resultDiv: document.getElementById('result'),
+      resultSections: document.getElementById('resultSections'),
+      errorDiv: document.getElementById('error'), // Deprecated, but kept for removal clarity
+      filterType: document.getElementById('filterType'),
+      copyStatus: document.getElementById('copy-status'),
+      initialMessage: document.getElementById('initialMessage'),
+      resultsHeader: document.getElementById('resultsHeader'),
+      clearHistoryBtn: document.getElementById('clearHistoryBtn'),
+      exportBtn: document.getElementById('exportBtn'),
+      themeToggle: document.getElementById('themeToggle'),
+      userFeedbackContainer: document.getElementById('userFeedbackContainer'),
+      currentDomainDisplay: document.getElementById('currentDomainDisplay'),
+      historySelectContainer: document.getElementById('historySelectContainer'), // Initialized later
+    };
 
     // Constants
     const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
@@ -830,14 +883,19 @@
     const MAX_HISTORY_ITEMS = 10;
     const MAX_SNAPSHOTS_PER_DOMAIN = 5;
     const DEBOUNCE_DELAY = 300;
+    const FEEDBACK_DISPLAY_TIME = 4000; // Time in ms to show user feedback
 
-    // State
-    let dnsRecords = [];
-    let currentSort = {};
-    let currentAutocompleteFocus = -1;
-    let currentDomain = '';
-    let currentSnapshotIndex = -1;
-    let debounceTimeout = null;
+    // State (centralized)
+    const appState = {
+      dnsRecords: [],
+      currentSort: {}, // { 'A': {column: 'name', direction: 'asc'}, ... }
+      currentAutocompleteFocus: -1,
+      currentDomain: '',
+      currentSnapshotIndex: -1,
+      debounceTimeout: null,
+      theme: 'light',
+      isLoading: false,
+    };
 
     // SVG icons
     const SVGS = {
@@ -856,6 +914,45 @@
       NS: 'Defines authoritative nameservers for the domain. Crucial for delegation.',
       TXT: 'Stores arbitrary text data, often for verification (e.g., SPF, DKIM, DMARC) or general info.'
     };
+
+    let userFeedbackTimeout;
+    function showUserFeedback(message, type = 'info', duration = FEEDBACK_DISPLAY_TIME) {
+      clearTimeout(userFeedbackTimeout);
+      const feedbackDiv = DOMElements.userFeedbackContainer;
+      feedbackDiv.textContent = message;
+      feedbackDiv.className = ``; // Reset classes
+      feedbackDiv.classList.add('show', type);
+      userFeedbackTimeout = setTimeout(() => {
+        feedbackDiv.classList.remove('show');
+      }, duration);
+    }
+
+
+    // --- State Management and UI Update ---
+    function updateState(newState, reRender = true) {
+      Object.assign(appState, newState);
+      if (!reRender) return;
+
+      if (newState.currentDomain !== undefined) {
+        DOMElements.currentDomainDisplay.textContent = appState.currentDomain;
+        populateHistoryDropdown(appState.currentDomain);
+      }
+      if (newState.dnsRecords !== undefined || newState.filterType !== undefined || newState.currentSort !== undefined) {
+        renderSections(appState.dnsRecords);
+      }
+      if (newState.isLoading !== undefined) {
+        DOMElements.lookupBtn.disabled = appState.isLoading;
+        DOMElements.domainInput.disabled = appState.isLoading;
+        DOMElements.filterType.disabled = appState.isLoading;
+        DOMElements.exportBtn.disabled = appState.isLoading;
+        DOMElements.lookupBtnText.innerHTML = appState.isLoading ? `<span class="loading-spinner"></span>` : SVGS.search;
+      }
+      if (newState.theme !== undefined) {
+          document.documentElement.setAttribute('data-theme', appState.theme);
+          DOMElements.themeToggle.checked = appState.theme === 'dark';
+          DOMElements.themeToggle.setAttribute('aria-checked', appState.theme === 'dark');
+      }
+    }
 
     // Utility functions
     function escapeHtmlAttribute(value) {
@@ -892,38 +989,42 @@
 
     function showError(message) {
       console.error('Error:', message);
-      errorDiv.textContent = message;
-      errorDiv.classList.remove('hidden');
-      initialMessage.classList.add('hidden');
-      resultsHeader.classList.add('hidden');
-      historySelectContainer.classList.add('hidden');
-      exportBtn.classList.add('hidden');
-      resultSections.innerHTML = '';
+      showUserFeedback(message, 'error');
+      DOMElements.initialMessage.classList.add('hidden');
+      DOMElements.resultsHeader.classList.add('hidden');
+      DOMElements.historySelectContainer.classList.add('hidden');
+      DOMElements.exportBtn.classList.add('hidden');
+      DOMElements.resultSections.innerHTML = '';
     }
 
     function resetUI() {
-      errorDiv.classList.add('hidden');
-      resultSections.innerHTML = '';
-      dnsRecords = [];
-      filterType.value = '';
-      initialMessage.classList.remove('hidden');
-      resultsHeader.classList.add('hidden');
-      historySelectContainer.classList.add('hidden');
-      exportBtn.classList.add('hidden');
+      showUserFeedback('', 'info', 0); // Clear any existing feedback
+      DOMElements.resultSections.innerHTML = '';
+      updateState({
+        dnsRecords: [],
+        currentAutocompleteFocus: -1,
+        currentDomain: '',
+        currentSnapshotIndex: -1,
+        isLoading: false,
+      }, false); // Don't re-render everything on reset, will be done selectively
+      DOMElements.filterType.value = '';
+      DOMElements.initialMessage.classList.remove('hidden');
+      DOMElements.resultsHeader.classList.add('hidden');
+      DOMElements.historySelectContainer.classList.add('hidden');
+      DOMElements.exportBtn.classList.add('hidden');
       RECORD_TYPES.forEach((type) => {
-        currentSort[type] = { column: 'name', direction: 'asc' };
+        appState.currentSort[type] = { column: 'name', direction: 'asc' };
       });
       hideAutocompleteList();
-      currentDomain = '';
-      currentSnapshotIndex = -1;
-      domainInput.value = '';
+      DOMElements.domainInput.value = '';
+      DOMElements.currentDomainDisplay.textContent = '';
     }
 
     async function copyToClipboard(text, element, field) {
       const announceStatus = (message) => {
-        copyStatus.textContent = message;
+        DOMElements.copyStatus.textContent = message;
         setTimeout(() => {
-          copyStatus.textContent = '';
+          DOMElements.copyStatus.textContent = '';
         }, 3000);
       };
       try {
@@ -994,10 +1095,12 @@
       });
     }
 
-    function renderTable(records, type, sortCol, sortDir) {
+    function renderTable(records, type) {
       if (!records || records.length === 0) {
         return `<p class="text-center text-[var(--text-secondary)] py-4">No ${type} records found.</p>`;
       }
+      const sortCol = appState.currentSort[type].column;
+      const sortDir = appState.currentSort[type].direction;
       const sortedRecords = sortRecords(records, sortCol, sortDir);
       let html = `
         <div class="table-container">
@@ -1043,7 +1146,7 @@
           statusIndicator = '<span class="text-yellow-600 text-xs font-semibold ml-1">(Changed)</span>';
         } else if (record.status === 'deleted') {
           statusIndicator = '<span class="text-red-600 text-xs font-semibold ml-1">(Deleted)</span>';
-        } else if (record.status === 'unchanged' && currentSnapshotIndex > -1) {
+        } else if (record.status === 'unchanged' && appState.currentSnapshotIndex > -1) {
           statusIndicator = '<span class="text-[var(--text-secondary)] text-xs font-semibold ml-1">(Unchanged)</span>';
         }
 
@@ -1087,67 +1190,55 @@
     }
 
     function renderSections(records) {
-      resultSections.innerHTML = '';
-      const filterValue = filterType.value;
+      DOMElements.resultSections.innerHTML = '';
+      const filterValue = DOMElements.filterType.value;
       let anySectionsRendered = false;
 
       RECORD_TYPES.forEach((type) => {
         const typeRecords = records.filter((record) => record.type === type);
         if (filterValue && filterValue !== type) return;
 
-        if (!currentSort[type]) {
-          currentSort[type] = { column: 'name', direction: 'asc' };
+        if (!appState.currentSort[type]) {
+          appState.currentSort[type] = { column: 'name', direction: 'asc' };
         }
-        const currentTypeSort = currentSort[type];
+        const currentTypeSort = appState.currentSort[type];
 
         if (typeRecords.length === 0) return;
 
         anySectionsRendered = true;
+        const sectionId = `section-${type}`;
         const section = document.createElement('details');
         section.className = 'record-section';
+        section.id = sectionId;
         section.open = true;
-        section.innerHTML = `
-          <summary>
+        section.setAttribute('role', 'group');
+        section.setAttribute('aria-labelledby', `${sectionId}-summary`);
+
+        // Dynamically create summary element for ARIA
+        const summary = document.createElement('summary');
+        summary.id = `${sectionId}-summary`;
+        summary.setAttribute('aria-expanded', 'true');
+        summary.setAttribute('aria-controls', `${sectionId}-content`);
+        summary.innerHTML = `
             ${type} Records
             <span class="info-icon" tabindex="0" role="button" aria-label="Learn about ${type} records">
               ${SVGS.info}
               <span class="info-tooltip">${RECORD_DESCRIPTIONS[type] || 'No description available.'}</span>
             </span>
             <span class="record-count">(${typeRecords.length})</span>
-          </summary>
-          ${renderTable(typeRecords, type, currentTypeSort.column, currentTypeSort.direction)}
         `;
-        resultSections.appendChild(section);
+        section.appendChild(summary);
 
-        const ths = section.querySelectorAll('.dns-table th');
-        ths.forEach((th) => {
-          const clickHandler = () => {
-            const column = th.getAttribute('data-sort');
-            let direction = 'asc';
-            if (currentTypeSort.column === column) {
-              direction = currentTypeSort.direction === 'asc' ? 'desc' : 'asc';
-            }
-            currentSort[type] = { column, direction };
-            const tableContainer = section.querySelector('.table-container');
-            if (tableContainer) {
-              const recordsToRender = records.filter((record) => record.type === type);
-              tableContainer.innerHTML = renderTable(recordsToRender, type, column, direction);
-              addCopyListeners(tableContainer);
-            }
-          };
-          th.addEventListener('click', clickHandler);
-          th.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              clickHandler();
-            }
-          });
-        });
-        addCopyListeners(section);
+        const contentDiv = document.createElement('div');
+        contentDiv.id = `${sectionId}-content`;
+        contentDiv.innerHTML = renderTable(typeRecords, type);
+        section.appendChild(contentDiv);
+        
+        DOMElements.resultSections.appendChild(section);
       });
 
       if (!anySectionsRendered) {
-        resultSections.innerHTML = `
+        DOMElements.resultSections.innerHTML = `
           <div class="initial-message">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
@@ -1156,34 +1247,13 @@
             <p class="text-sm text-[var(--text-secondary)]">Try adjusting your filter or searching for a different domain.</p>
           </div>
         `;
-        initialMessage.classList.add('hidden');
-        exportBtn.classList.add('hidden');
+        DOMElements.initialMessage.classList.add('hidden');
+        DOMElements.exportBtn.classList.add('hidden');
       } else {
-        exportBtn.classList.remove('hidden');
+        DOMElements.exportBtn.classList.remove('hidden');
       }
     }
 
-    function addCopyListeners(container) {
-      container.querySelectorAll('.copyable').forEach((element) => {
-        if (element.dataset.listenersAdded) return;
-        const text = element.getAttribute('data-copy');
-        const field = element.getAttribute('aria-label').replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
-        const handleClick = (e) => {
-          e.stopPropagation();
-          copyToClipboard(text, element, field);
-        };
-        const handleKeydown = (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            e.stopPropagation();
-            copyToClipboard(text, element, field);
-          }
-        };
-        element.addEventListener('click', handleClick);
-        element.addEventListener('keydown', handleKeydown);
-        element.dataset.listenersAdded = 'true';
-      });
-    }
 
     async function fetchDNSRecord(domain, type) {
       try {
@@ -1203,18 +1273,13 @@
     }
 
     async function performDNSLookup(domain) {
+      if (appState.isLoading) return; // Prevent multiple lookups
       if (!domain) {
         showError('Please enter a domain name.');
         return;
       }
       resetUI();
-      currentDomain = domain.toLowerCase();
-      errorDiv.classList.add('hidden');
-      lookupBtn.disabled = true;
-      lookupBtnText.innerHTML = `<span class="loading-spinner"></span>`;
-      domainInput.disabled = true;
-      filterType.disabled = true;
-      exportBtn.disabled = true;
+      updateState({ isLoading: true, currentDomain: domain.toLowerCase() });
 
       try {
         if (!isValidDomain(domain)) {
@@ -1250,18 +1315,19 @@
           return;
         }
 
-        const domainSnapshots = getDomainSnapshots(currentDomain);
+        const domainSnapshots = getDomainSnapshots(appState.currentDomain);
         const previousSnapshot = domainSnapshots.length > 0 ? domainSnapshots[domainSnapshots.length - 1].records : null;
 
+        let processedRecords;
         if (previousSnapshot && previousSnapshot.length > 0) {
           const comparisonResult = compareDnsRecords(currentFetchedRecords, previousSnapshot);
-          dnsRecords = [
+          processedRecords = [
             ...comparisonResult.added,
             ...comparisonResult.modified,
             ...comparisonResult.unchanged,
             ...comparisonResult.deleted
           ];
-          dnsRecords.sort((a, b) => {
+          processedRecords.sort((a, b) => {
             const typeOrder = RECORD_TYPES.indexOf(a.type) - RECORD_TYPES.indexOf(b.type);
             if (typeOrder !== 0) return typeOrder;
             const nameCompare = a.name.localeCompare(b.name);
@@ -1270,33 +1336,31 @@
             return statusOrder[a.status] - statusOrder[b.status];
           });
         } else {
-          dnsRecords = currentFetchedRecords.map((r) => ({ ...r, status: 'unchanged' }));
+          processedRecords = currentFetchedRecords.map((r) => ({ ...r, status: 'unchanged' }));
         }
 
-        initialMessage.classList.add('hidden');
-        resultsHeader.classList.add('flex');
-        resultsHeader.classList.remove('hidden');
+        DOMElements.initialMessage.classList.add('hidden');
+        DOMElements.resultsHeader.classList.add('flex');
+        DOMElements.resultsHeader.classList.remove('hidden');
 
-        renderSections(dnsRecords);
+        updateState({ dnsRecords: processedRecords }, false); // Update state, then render below
+        renderSections(appState.dnsRecords);
+
 
         try {
-          saveDomainSnapshot(currentDomain, currentFetchedRecords);
+          saveDomainSnapshot(appState.currentDomain, currentFetchedRecords);
           saveDomainToHistory(domain);
         } catch (e) {
-          showError('Failed to save lookup history due to storage limitations.');
+          showUserFeedback('Failed to save lookup history due to storage limitations.', 'warning');
         }
 
-        populateHistoryDropdown(currentDomain);
-        currentSnapshotIndex = getDomainSnapshots(currentDomain).length - 1;
+        updateState({ currentSnapshotIndex: getDomainSnapshots(appState.currentDomain).length - 1 }, false);
+        populateHistoryDropdown(appState.currentDomain);
         updateHistoryDropdownSelection();
       } catch (err) {
         showError(`An unexpected error occurred: ${err.message}. Please try again.`);
       } finally {
-        lookupBtn.disabled = false;
-        lookupBtnText.innerHTML = SVGS.search;
-        domainInput.disabled = false;
-        filterType.disabled = false;
-        exportBtn.disabled = false;
+        updateState({ isLoading: false });
       }
     }
 
@@ -1312,14 +1376,33 @@
       }
     }
 
-    function loadSearchHistory() {
+    function saveToLocalStorage(key, data) {
       try {
-        const history = localStorage.getItem(LOCAL_STORAGE_HISTORY_KEY);
-        return history ? JSON.parse(history) : [];
+        localStorage.setItem(key, JSON.stringify(data));
       } catch (e) {
-        console.error('Error loading search history from local storage:', e);
-        return [];
+        if (e.name === 'QuotaExceededError') {
+          showUserFeedback('Your browser storage is full. Some history or settings might not be saved.', 'warning');
+        } else {
+          showUserFeedback(`Failed to save data: ${e.message}`, 'error');
+        }
+        console.error(`Error saving ${key} to local storage:`, e);
+        throw e; // Re-throw to allow further error handling if needed
       }
+    }
+
+    function loadFromLocalStorage(key, defaultValue = null) {
+      try {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+      } catch (e) {
+        showUserFeedback(`Failed to load data: ${e.message}`, 'error');
+        console.error(`Error loading ${key} from local storage:`, e);
+        return defaultValue;
+      }
+    }
+
+    function loadSearchHistory() {
+      return loadFromLocalStorage(LOCAL_STORAGE_HISTORY_KEY, []);
     }
 
     function saveDomainToHistory(domain) {
@@ -1327,21 +1410,11 @@
       history = history.filter((item) => item.toLowerCase() !== domain.toLowerCase());
       history.unshift(domain);
       history = history.slice(0, MAX_HISTORY_ITEMS);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_HISTORY_KEY, JSON.stringify(history));
-      } catch (e) {
-        console.error('Error saving domain to local storage for history:', e);
-      }
+      saveToLocalStorage(LOCAL_STORAGE_HISTORY_KEY, history);
     }
 
     function loadAllStoredRecords() {
-      try {
-        const stored = localStorage.getItem(LOCAL_STORAGE_RECORDS_KEY);
-        return stored ? JSON.parse(stored) : {};
-      } catch (e) {
-        console.error('Error loading all stored records from local storage:', e);
-        return {};
-      }
+      return loadFromLocalStorage(LOCAL_STORAGE_RECORDS_KEY, {});
     }
 
     function saveDomainSnapshot(domain, records) {
@@ -1364,13 +1437,7 @@
           allStoredRecords[domainLower].length - MAX_SNAPSHOTS_PER_DOMAIN
         );
       }
-
-      try {
-        localStorage.setItem(LOCAL_STORAGE_RECORDS_KEY, JSON.stringify(allStoredRecords));
-      } catch (e) {
-        console.error('Error saving domain records snapshot to local storage:', e);
-        throw e;
-      }
+      saveToLocalStorage(LOCAL_STORAGE_RECORDS_KEY, allStoredRecords);
     }
 
     function getDomainSnapshots(domain) {
@@ -1443,104 +1510,101 @@
     }
 
     function renderAutocompleteList(inputValue) {
-      domainAutocompleteList.innerHTML = '';
-      currentAutocompleteFocus = -1;
+      DOMElements.domainAutocompleteList.innerHTML = '';
+      updateState({ currentAutocompleteFocus: -1 }, false);
 
       const history = loadSearchHistory();
       const filteredHistory = history.filter((item) =>
         item.toLowerCase().includes(inputValue.toLowerCase())
       );
 
-      if (filteredHistory.length === 0 && inputValue === '') {
-        history.forEach((item) => {
-          const div = document.createElement('div');
-          div.textContent = item;
-          div.addEventListener('click', () => {
-            domainInput.value = item;
-            performDNSLookup(item);
-            hideAutocompleteList();
-          });
-          domainAutocompleteList.appendChild(div);
-        });
-        if (history.length > 0) {
-          domainAutocompleteList.classList.remove('hidden');
-        } else {
-          hideAutocompleteList();
-        }
-        return;
-      } else if (filteredHistory.length === 0 && inputValue !== '') {
+      const itemsToShow = inputValue === '' ? history : filteredHistory;
+
+      if (itemsToShow.length === 0) {
         hideAutocompleteList();
         return;
       }
 
-      filteredHistory.forEach((item) => {
+      itemsToShow.forEach((item, index) => {
         const div = document.createElement('div');
         div.textContent = item;
-        div.addEventListener('click', () => {
-          domainInput.value = item;
-          performDNSLookup(item);
-          hideAutocompleteList();
-        });
-        domainAutocompleteList.appendChild(div);
+        div.id = `autocomplete-item-${index}`; // Unique ID for ARIA
+        div.setAttribute('role', 'option');
+        div.setAttribute('aria-selected', 'false'); // Default
+        DOMElements.domainAutocompleteList.appendChild(div);
       });
-      domainAutocompleteList.classList.remove('hidden');
+      DOMElements.domainAutocompleteList.classList.remove('hidden');
+      DOMElements.domainInput.setAttribute('aria-expanded', 'true');
     }
 
     function hideAutocompleteList() {
-      domainAutocompleteList.classList.add('hidden');
-      currentAutocompleteFocus = -1;
-      const items = domainAutocompleteList.getElementsByTagName('div');
+      DOMElements.domainAutocompleteList.classList.add('hidden');
+      updateState({ currentAutocompleteFocus: -1 }, false);
+      const items = DOMElements.domainAutocompleteList.getElementsByTagName('div');
       for (let i = 0; i < items.length; i++) {
         items[i].classList.remove('autocomplete-active');
+        items[i].setAttribute('aria-selected', 'false');
       }
+      DOMElements.domainInput.removeAttribute('aria-activedescendant');
+      DOMElements.domainInput.setAttribute('aria-expanded', 'false');
     }
 
     function addActive(items) {
       if (!items || items.length === 0) return;
       removeActive(items);
-      if (currentAutocompleteFocus >= items.length) currentAutocompleteFocus = 0;
-      if (currentAutocompleteFocus < 0) currentAutocompleteFocus = items.length - 1;
-      items[currentAutocompleteFocus].classList.add('autocomplete-active');
-      items[currentAutocompleteFocus].scrollIntoView({ block: 'nearest' });
+      let newFocus = appState.currentAutocompleteFocus;
+      if (newFocus >= items.length) newFocus = 0;
+      if (newFocus < 0) newFocus = items.length - 1;
+      updateState({ currentAutocompleteFocus: newFocus }, false);
+
+      items[appState.currentAutocompleteFocus].classList.add('autocomplete-active');
+      items[appState.currentAutocompleteFocus].setAttribute('aria-selected', 'true');
+      DOMElements.domainInput.setAttribute('aria-activedescendant', items[appState.currentAutocompleteFocus].id);
+      items[appState.currentAutocompleteFocus].scrollIntoView({ block: 'nearest' });
     }
 
     function removeActive(items) {
       for (let i = 0; i < items.length; i++) {
         items[i].classList.remove('autocomplete-active');
+        items[i].setAttribute('aria-selected', 'false');
       }
+      DOMElements.domainInput.removeAttribute('aria-activedescendant');
     }
 
     function selectAutocompleteItem() {
-      const items = domainAutocompleteList.getElementsByTagName('div');
-      if (currentAutocompleteFocus > -1 && items[currentAutocompleteFocus]) {
-        items[currentAutocompleteFocus].click();
-      } else if (domainInput.value) {
-        performDNSLookup(domainInput.value);
+      const items = DOMElements.domainAutocompleteList.getElementsByTagName('div');
+      if (appState.currentAutocompleteFocus > -1 && items[appState.currentAutocompleteFocus]) {
+        DOMElements.domainInput.value = items[appState.currentAutocompleteFocus].textContent;
+        performDNSLookup(DOMElements.domainInput.value);
+        hideAutocompleteList();
+      } else if (DOMElements.domainInput.value) {
+        performDNSLookup(DOMElements.domainInput.value);
+        hideAutocompleteList(); // Hide even if not from list
       }
     }
 
     function populateHistoryDropdown(domain) {
-      const historySelectContainer = document.getElementById('historySelectContainer');
-      historySelectContainer.innerHTML = '';
+      DOMElements.historySelectContainer.innerHTML = '';
       const domainSnapshots = getDomainSnapshots(domain);
 
       if (domainSnapshots.length <= 1) {
-        historySelectContainer.classList.add('hidden');
+        DOMElements.historySelectContainer.classList.add('hidden');
         return;
       }
 
-      historySelectContainer.classList.remove('hidden');
+      DOMElements.historySelectContainer.classList.remove('hidden');
 
       const label = document.createElement('label');
       label.setAttribute('for', 'historySelect');
       label.className = 'text-sm font-medium text-[var(--text-primary)] sr-only';
       label.textContent = 'View historical DNS records';
-      historySelectContainer.appendChild(label);
+      DOMElements.historySelectContainer.appendChild(label);
 
       const select = document.createElement('select');
       select.id = 'historySelect';
       select.className = 'filter-select min-w-[150px]';
       select.setAttribute('aria-label', 'Select a historical DNS record snapshot');
+      select.setAttribute('data-action', 'select-history');
 
       const latestOption = document.createElement('option');
       latestOption.value = 'latest';
@@ -1555,28 +1619,18 @@
         select.appendChild(option);
       });
 
-      select.addEventListener('change', (e) => {
-        const selectedValue = e.target.value;
-        if (selectedValue === 'latest') {
-          currentSnapshotIndex = domainSnapshots.length - 1;
-        } else {
-          currentSnapshotIndex = parseInt(selectedValue, 10);
-        }
-        displaySelectedSnapshot(currentDomain, currentSnapshotIndex);
-      });
-
-      historySelectContainer.appendChild(select);
+      DOMElements.historySelectContainer.appendChild(select);
       updateHistoryDropdownSelection();
     }
 
     function updateHistoryDropdownSelection() {
-      const historySelect = document.getElementById('historySelect');
+      const historySelect = DOMElements.historySelectContainer.querySelector('#historySelect');
       if (historySelect) {
-        const domainSnapshots = getDomainSnapshots(currentDomain);
-        if (currentSnapshotIndex === domainSnapshots.length - 1) {
+        const domainSnapshots = getDomainSnapshots(appState.currentDomain);
+        if (appState.currentSnapshotIndex === domainSnapshots.length - 1) {
           historySelect.value = 'latest';
-        } else if (currentSnapshotIndex > -1) {
-          historySelect.value = String(currentSnapshotIndex);
+        } else if (appState.currentSnapshotIndex > -1) {
+          historySelect.value = String(appState.currentSnapshotIndex);
         }
       }
     }
@@ -1614,27 +1668,31 @@
         processedRecords = recordsToDisplay.map((r) => ({ ...r, status: 'unchanged' }));
       }
 
-      dnsRecords = processedRecords;
-      renderSections(dnsRecords);
-      initialMessage.classList.add('hidden');
-      resultsHeader.classList.add('flex');
-      resultsHeader.classList.remove('hidden');
-      historySelectContainer.classList.remove('hidden');
-      exportBtn.classList.remove('hidden');
+      DOMElements.initialMessage.classList.add('hidden');
+      DOMElements.resultsHeader.classList.add('flex');
+      DOMElements.resultsHeader.classList.remove('hidden');
+      DOMElements.historySelectContainer.classList.remove('hidden');
+      DOMElements.exportBtn.classList.remove('hidden');
+
+      updateState({
+        dnsRecords: processedRecords,
+        currentDomain: domain,
+        currentSnapshotIndex: snapshotIndex
+      });
     }
 
     function exportRecordsToTxt() {
-      if (!dnsRecords || dnsRecords.length === 0) {
-        alert('No DNS records to export!');
+      if (!appState.dnsRecords || appState.dnsRecords.length === 0) {
+        showUserFeedback('No DNS records to export!', 'warning');
         return;
       }
 
-      let fileContent = `DNS Records for ${currentDomain || 'unknown-domain'}\n`;
+      let fileContent = `DNS Records for ${appState.currentDomain || 'unknown-domain'}\n`;
       fileContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
 
       const recordsByType = {};
       RECORD_TYPES.forEach((type) => {
-        recordsByType[type] = dnsRecords.filter((r) => r.type === type);
+        recordsByType[type] = appState.dnsRecords.filter((r) => r.type === type);
       });
 
       RECORD_TYPES.forEach((type) => {
@@ -1657,7 +1715,7 @@
         }
       });
 
-      const filename = `dns_records_${currentDomain.replace(/[^a-zA-Z0-9-.]/g, '_') || 'export'}.txt`;
+      const filename = `dns_records_${appState.currentDomain.replace(/[^a-zA-Z0-9-.]/g, '_') || 'export'}.txt`;
       const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
 
@@ -1668,27 +1726,22 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      showUserFeedback('DNS records exported successfully.', 'success');
     }
 
     // Theme management
     function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      themeToggle.checked = theme === 'dark';
-      try {
-        localStorage.setItem(LOCAL_STORAGE_THEME_KEY, theme);
-      } catch (e) {
-        console.error('Error saving theme to local storage:', e);
-      }
+      updateState({ theme }, false); // Update state, but let state management handle DOM for theme
+      saveToLocalStorage(LOCAL_STORAGE_THEME_KEY, theme);
     }
 
     function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      const newTheme = appState.theme === 'light' ? 'dark' : 'light';
       setTheme(newTheme);
     }
 
     function initializeTheme() {
-      const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+      const savedTheme = loadFromLocalStorage(LOCAL_STORAGE_THEME_KEY);
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
       setTheme(initialTheme);
@@ -1697,81 +1750,137 @@
     // Debounce utility
     function debounce(func, wait) {
       return function (...args) {
-        clearTimeout(debounceTimeout);
-        debounceTimeout = setTimeout(() => func.apply(this, args), wait);
+        clearTimeout(appState.debounceTimeout);
+        appState.debounceTimeout = setTimeout(() => func.apply(this, args), wait);
       };
     }
 
-    // Event Listeners
-    const historySelectContainer = document.createElement('div');
-    historySelectContainer.id = 'historySelectContainer';
-    historySelectContainer.className = 'flex items-center gap-2 mb-4 hidden';
-    resultsHeader.parentNode.insertBefore(historySelectContainer, resultsHeader.nextSibling);
+    // --- Event Delegation & Handlers ---
+    document.addEventListener('click', (e) => {
+      // Copyable elements
+      const copyableElement = e.target.closest('.copyable');
+      if (copyableElement) {
+        e.stopPropagation();
+        const text = copyableElement.getAttribute('data-copy');
+        const field = copyableElement.getAttribute('aria-label').replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
+        copyToClipboard(text, copyableElement, field);
+      }
 
-    lookupBtn.addEventListener('click', () => {
-      performDNSLookup(domainInput.value.trim());
-    });
+      // Autocomplete list items
+      const autocompleteItem = e.target.closest('#domainAutocompleteList div');
+      if (autocompleteItem) {
+        DOMElements.domainInput.value = autocompleteItem.textContent;
+        performDNSLookup(autocompleteItem.textContent);
+        hideAutocompleteList();
+        DOMElements.domainInput.focus();
+        return; // Stop further processing for this click
+      }
 
-    clearHistoryBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to clear all stored DNS history and records? This cannot be undone.')) {
-        try {
-          localStorage.clear();
-          resetUI();
-          alert('All local storage data has been cleared.');
-        } catch (e) {
-          showError('Failed to clear local storage. Please try again.');
+      // Hide autocomplete if clicked outside
+      if (e.target !== DOMElements.domainInput && !DOMElements.domainAutocompleteList.contains(e.target)) {
+        hideAutocompleteList();
+      }
+
+      // Details/Summary Toggle for ARIA
+      const summaryElement = e.target.closest('summary');
+      if (summaryElement) {
+        const detailsElement = summaryElement.parentNode;
+        if (detailsElement.tagName === 'DETAILS') {
+            const isExpanded = detailsElement.open;
+            // The `open` attribute toggles first, then the event fires.
+            // So, `detailsElement.open` will be the new state.
+            summaryElement.setAttribute('aria-expanded', detailsElement.open ? 'true' : 'false');
         }
       }
     });
 
-    exportBtn.addEventListener('click', exportRecordsToTxt);
+    document.addEventListener('keydown', (e) => {
+      const items = DOMElements.domainAutocompleteList.getElementsByTagName('div');
+      if (e.target === DOMElements.domainInput) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          updateState({ currentAutocompleteFocus: appState.currentAutocompleteFocus + 1 }, false);
+          addActive(items);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          updateState({ currentAutocompleteFocus: appState.currentAutocompleteFocus - 1 }, false);
+          addActive(items);
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          selectAutocompleteItem();
+        } else if (e.key === 'Escape') {
+          hideAutocompleteList();
+        }
+      }
 
-    themeToggle.addEventListener('change', toggleTheme);
-
-    domainInput.addEventListener('keydown', (e) => {
-      const items = domainAutocompleteList.getElementsByTagName('div');
-      if (e.key === 'ArrowDown') {
-        currentAutocompleteFocus++;
-        addActive(items);
-        e.preventDefault();
-      } else if (e.key === 'ArrowUp') {
-        currentAutocompleteFocus--;
-        addActive(items);
-        e.preventDefault();
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        selectAutocompleteItem();
-      } else if (e.key === 'Escape') {
-        hideAutocompleteList();
+      // Keyboard support for copyable and sortable elements
+      const activeElement = document.activeElement;
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (activeElement && activeElement.classList.contains('copyable')) {
+          e.preventDefault();
+          const text = activeElement.getAttribute('data-copy');
+          const field = activeElement.getAttribute('aria-label').replace(/Copy DNS (name|data|TTL)(?::.*)?/, '$1');
+          copyToClipboard(text, activeElement, field);
+        } else if (activeElement && activeElement.tagName === 'TH' && activeElement.hasAttribute('data-sort')) {
+          e.preventDefault();
+          const column = activeElement.getAttribute('data-sort');
+          const type = activeElement.getAttribute('data-type');
+          let direction = 'asc';
+          if (appState.currentSort[type] && appState.currentSort[type].column === column) {
+            direction = appState.currentSort[type].direction === 'asc' ? 'desc' : 'asc';
+          }
+          appState.currentSort[type] = { column, direction }; // Update directly in state
+          renderSections(appState.dnsRecords); // Re-render the relevant section
+        } else if (activeElement && activeElement.tagName === 'SUMMARY') {
+            // Let native details/summary handle space/enter for toggling
+        } else if (activeElement && activeElement.id === 'lookupBtn') {
+            e.preventDefault(); // Prevent default for space bar on button, enter already handled by form submission
+            performDNSLookup(DOMElements.domainInput.value.trim());
+        }
       }
     });
 
-    domainInput.addEventListener('input', debounce(() => {
-      const inputValue = domainInput.value.trim();
+    DOMElements.domainInput.addEventListener('input', debounce(() => {
+      const inputValue = DOMElements.domainInput.value.trim();
       renderAutocompleteList(inputValue);
     }, DEBOUNCE_DELAY));
 
-    document.addEventListener('click', (e) => {
-      if (e.target !== domainInput && !domainAutocompleteList.contains(e.target)) {
-        hideAutocompleteList();
+    // Global delegation for other actions
+    document.addEventListener('change', (e) => {
+        if (e.target === DOMElements.filterType) {
+            updateState({ filterType: e.target.value });
+        } else if (e.target === DOMElements.themeToggle) {
+            toggleTheme();
+        } else if (e.target.dataset.action === 'select-history' && e.target.id === 'historySelect') {
+            const selectedValue = e.target.value;
+            let newSnapshotIndex;
+            if (selectedValue === 'latest') {
+              newSnapshotIndex = getDomainSnapshots(appState.currentDomain).length - 1;
+            } else {
+              newSnapshotIndex = parseInt(selectedValue, 10);
+            }
+            displaySelectedSnapshot(appState.currentDomain, newSnapshotIndex);
+        }
+    });
+
+    DOMElements.lookupBtn.addEventListener('click', () => {
+      performDNSLookup(DOMElements.domainInput.value.trim());
+    });
+
+    DOMElements.clearHistoryBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all stored DNS history and records? This cannot be undone.')) {
+        try {
+          localStorage.clear();
+          resetUI();
+          showUserFeedback('All local storage data has been cleared.', 'success');
+        } catch (e) {
+          showUserFeedback('Failed to clear local storage.', 'error');
+        }
       }
     });
 
-    filterType.addEventListener('change', () => {
-      renderSections(dnsRecords);
-    });
+    DOMElements.exportBtn.addEventListener('click', exportRecordsToTxt);
 
-    // Cleanup event listeners
-    window.addEventListener('beforeunload', () => {
-      domainInput.removeEventListener('input', renderAutocompleteList);
-      domainInput.removeEventListener('keydown', selectAutocompleteItem);
-      document.removeEventListener('click', hideAutocompleteList);
-      filterType.removeEventListener('change', renderSections);
-      lookupBtn.removeEventListener('click', performDNSLookup);
-      clearHistoryBtn.removeEventListener('click', resetUI);
-      exportBtn.removeEventListener('click', exportRecordsToTxt);
-      themeToggle.removeEventListener('change', toggleTheme);
-    });
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
@@ -1779,7 +1888,7 @@
       resetUI();
       const lastDomain = loadSearchHistory()[0];
       if (lastDomain) {
-        domainInput.value = lastDomain;
+        DOMElements.domainInput.value = lastDomain;
       }
     });
   </script>
